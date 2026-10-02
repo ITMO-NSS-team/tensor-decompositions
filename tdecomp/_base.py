@@ -14,7 +14,7 @@ from tdecomp.types import Number, TensorLike
 from tdecomp._random import normalize_random_state
 from tdecomp.matrix.random_projections import ProjectorGenerator
 
-__all__ = ['Number', 'Decomposer', 'TensorDecomposer']
+__all__ = ['Number', 'Decomposer', 'TensorDecomposer', 'BaseSketch']
 DIM_SUM_LIM = 1024
 DIM_LIM = 1024
 
@@ -197,6 +197,52 @@ class Decomposer(AbstractDecomposer):
             left, values, right = factors
             return tl.matmul(left * values, right)
         raise ValueError('Expected two factors or (U,S,Vh)')
+
+
+class BaseSketch(Decomposer):
+    """Column sketches and their minimum-norm least-squares decompositions.
+
+    A size is a positive integer or a fraction of min(matrix.shape), capped
+    by that dimension. The default uses compression_ratio. sketch()/__call__
+    return selected columns C; decompose() returns (C, pinv(C) @ matrix).
+    A conditioner follows Decomposer's weighted approximation contract.
+    Explicit random_state follows the other decomposers' local stream rules.
+    """
+    def __init__(self, sketch_size=None, compression_ratio=0.5, random_state=None):
+        super().__init__(rank=sketch_size, random_state=random_state)
+        if (isinstance(compression_ratio, bool)
+                or not isinstance(compression_ratio, numbers.Real)
+                or not math.isfinite(compression_ratio)
+                or not 0 < compression_ratio < 1):
+            raise ValueError('compression_ratio must lie in (0, 1)')
+        self.sketch_size = sketch_size
+        self.compression_ratio = compression_ratio
+        self.column_indices = None
+
+    def _get_rank(self, tensor, rank):
+        _validate_tensor(tensor, 2)
+        selected = self.sketch_size if rank is None else rank
+        dimension = min(tl.shape(tensor))
+        if selected is None:
+            selected = self.compression_ratio
+        return _normalize_rank(selected, dimension)
+
+    def sketch(self, matrix, sketch_size=None, *, random_state=None):
+        size = self._get_rank(matrix, sketch_size)
+        rng = self.random_state if random_state is None else normalize_random_state(random_state)
+        return self._sketch(matrix, size, random_state=rng)
+
+    def __call__(self, matrix, sketch_size=None, *, random_state=None):
+        return self.sketch(matrix, sketch_size, random_state=random_state)
+
+    @abstractmethod
+    def _sketch(self, matrix, sketch_size, *, random_state):
+        pass
+
+    def _decompose(self, matrix, rank, *, random_state=None):
+        from tdecomp.utils import pseudo_inverse
+        columns = self.sketch(matrix, rank, random_state=random_state)
+        return columns, tl.matmul(pseudo_inverse(columns), matrix)
 
 
 class TensorDecomposer(AbstractDecomposer):

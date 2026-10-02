@@ -1,7 +1,8 @@
 """Lazy matrix submodules; importing a helper does not load decomposers."""
 from importlib import import_module
 
-__all__ = ['decomposer', 'functional', 'random_projections', 'importance_generators']
+__all__ = ['decomposer', 'functional', 'random_projections', 'importance_generators',
+           'sampling_techniques']
 
 
 def __getattr__(name):
