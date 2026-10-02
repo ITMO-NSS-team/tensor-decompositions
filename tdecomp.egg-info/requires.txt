@@ -1,4 +1,0 @@
-matplotlib>=3.7.5
-tensorflow>=2.13.1
-tensorly
-torch
