@@ -8,7 +8,7 @@
 
 ```bash
 python -m pip install .
-python -m pip install '.[test]'
+python -m pip install '.[test,experiments]'
 python -m pytest -q
 ```
 
@@ -22,7 +22,7 @@ python -m pytest -q
 | `tensorflow` | TensorFlow 2.16.2–2.16.x; необязательная ветвь `utils.no_grad` |
 | `distributed` | PyTorch 2.4–2.5; асинхронные распределённые контрольные точки |
 | `visualization` | Matplotlib для графиков |
-| `experiments` | Matplotlib и psutil для дополнительных измерений |
+| `experiments` | Matplotlib, Pandas и psutil для таблиц, графиков и измерений |
 | `training` | Transformers, Accelerate, Datasets, Evaluate и MLflow для внешних сценариев обучения |
 | `profiling` | Дополнительные инструменты NVIDIA; профилирование требует подходящего PyTorch и устройства |
 
@@ -197,8 +197,18 @@ scheduler.step()
 
 `ParallelTG` и `ULTG` — совместимые фабрики: возвращают пару `(optimizer,
 scheduler)`. Первая объединяет низкоранговую и разреженную ветви; вторая
-последовательно проектирует градиент и его остаток. Скалярный ранг задаёт обе
-ветви; пара задаёт их отдельно. Явная настройка доступна через
+последовательно проектирует градиент и его остаток. В обеих фабриках пара
+`rank=(low_rank, sparse_ratio)` задаёт ранг низкоранговой ветви и долю
+сохраняемых элементов разреженной ветви. Для `ULTG` разреженная ветвь
+выполняется первой, но порядок аргументов пары остаётся тем же.
+Скалярный ранг задаёт низкоранговую ветвь; доля разреженной ветви сохраняет
+настроенное значение (по умолчанию `0.25` для `ParallelTG`, `0.1` для `ULTG`).
+В `OptimizerConfig` параметры `rank`, `second_rank`, `sparse_ratio` и
+`second_sparse_ratio` задают соответствующие ветви. Именованные параметры
+фабрик имеют приоритет над значениями пары.
+Фабрика `AdamW(model, ...)` возвращает пару `(torch.optim.AdamW, scheduler)`
+для контрольного сравнения; также принимает прежние аргументы `svd_type`
+и `rank`, которые не включают проекции в AdamW. Явная настройка доступна через
 `TensorGRaDConfig`, `OptimizerConfig` и `setup_optimizer_and_scheduler`.
 Поддержанные алгоритмы: `tensorgrad`, `tensorgrad_sum`, `adamw`, `sgd`.
 Проекторы: `low_rank`, `structured_sparse`, `unstructured_sparse`; параметры
@@ -207,6 +217,32 @@ scheduler)`. Первая объединяет низкоранговую и р�
 расписания и RNG; формат численной SVD не является контрольной точкой обучения.
 
 ## Воспроизводимый CPU-протокол
+
+Для проверки обучения на одинаковых синтетических последовательностях
+запустите команды из репозитория или распакованного sdist:
+
+```bash
+python -m pip install '.[experiments]'
+python -m examples.tensorgrad_train --steps 3 --seed 17 --output tensorgrad-training.json
+```
+
+Пример сравнивает `AdamW`, `ParallelTG` и `ULTG` с одинаковыми начальными
+весами и входами. JSON содержит потери, перплексию (perplexity) на отдельном контрольном
+пакете, время обучения и размер тензорного состояния. Это проверка исполнения,
+а не доказательство качества обучения внешней языковой модели.
+Для CUDA явно укажите `--device cuda`. Запись в MLflow включается только
+при передаче `--mlflow-uri`; для неё установите дополнительные зависимости
+`training`. Вспомогательные функции измерений, таблиц и графиков находятся
+в `examples`; адаптеры Transformers загружаются отдельно по запросу.
+
+CPU-контейнер запускается командой `docker compose run --rm tdecomp`.
+Профиль GPU: `docker compose --profile gpu run --rm tdecomp-gpu`.
+Результаты сохраняются в `outputs` (путь переопределяется через `OUTPUT_DIR`);
+GPU выбирается через `GPU_IDS`. Контейнер по умолчанию не использует внешние
+модели, данные или сервисы. Сопоставление с PR #35 приведено в
+[docs/audit/PR35_COMPARISON.md](docs/audit/PR35_COMPARISON.md).
+
+Для сравнения разложений матриц используется отдельный протокол:
 
 ```bash
 python -m pip install '.[experiments]'

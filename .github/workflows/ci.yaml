@@ -34,9 +34,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install torch==${{ matrix.torch }} --index-url https://download.pytorch.org/whl/cpu
-          python -m pip install '.[test]'
+          python -m pip install '.[test,experiments]'
       - name: Run public regressions without import stubs
         run: python -m pytest -q
+      - name: Verify optional native Transformers adapters
+        run: |
+          python -m pip install 'transformers>=4.46,<5'
+          python -m pytest tests/test_experiment_helpers.py -k optional -q
+      - name: Run portable optimizer training comparison
+        run: python -m examples.tensorgrad_train --steps 2 --output tensorgrad-training.json
       - name: Run small CPU comparison protocol
         run: |
           python -m pip install '.[experiments]'
@@ -45,7 +51,9 @@ jobs:
         if: always()
         with:
           name: protocol-${{ matrix.python }}
-          path: cpu-protocol.json
+          path: |
+            cpu-protocol.json
+            tensorgrad-training.json
 
   tensorflow-smoke:
     runs-on: ubuntu-latest

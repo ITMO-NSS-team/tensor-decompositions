@@ -1,0 +1,24 @@
+services:
+  tdecomp:
+    build: .
+    image: tdecomp-training:cpu
+    volumes:
+      - "${OUTPUT_DIR:-./outputs}:/outputs"
+  tdecomp-gpu:
+    profiles: [gpu]
+    build:
+      context: .
+      args:
+        BASE_IMAGE: pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+        TORCH_INDEX_URL: https://pypi.org/simple
+    image: tdecomp-training:gpu
+    command: ["--device", "cuda", "--output", "/outputs/tensorgrad-training-gpu.json"]
+    volumes:
+      - "${OUTPUT_DIR:-./outputs}:/outputs"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${GPU_IDS:-0}"]
+              capabilities: [gpu]

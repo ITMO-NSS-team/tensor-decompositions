@@ -45,33 +45,35 @@ class GaLoreProjector(ProjectorState):
 
     @torch.no_grad()
     def project(self, full_rank_grad, iter):
-        shape = self._check_input(full_rank_grad)
-        if full_rank_grad.is_complex() and not self.support_complex:
-            raise ValueError("complex projection requires support_complex=True")
-        matrix = full_rank_grad.reshape(shape[0], -1)
-        if self._update_due(iter, self.ortho_matrix is not None):
-            self.ortho_matrix = self.get_orthogonal_matrix(matrix, self.rank, self.galore_2d_proj_type)
-        self._orig_shape = shape
-        if self.galore_2d_proj_type == "left":
-            return optional_checkpoint_matmul(self.ortho_matrix.mH, matrix, self.activation_checkpoint)
-        if self.galore_2d_proj_type == "right":
-            return optional_checkpoint_matmul(matrix, self.ortho_matrix.mH, self.activation_checkpoint)
-        intermediate = optional_checkpoint_matmul(self.ortho_matrix[0].mH, matrix, self.activation_checkpoint)
-        return optional_checkpoint_matmul(intermediate, self.ortho_matrix[1].mH, self.activation_checkpoint)
+        with torch.profiler.record_function("tdecomp.galore.project"):
+            shape = self._check_input(full_rank_grad)
+            if full_rank_grad.is_complex() and not self.support_complex:
+                raise ValueError("complex projection requires support_complex=True")
+            matrix = full_rank_grad.reshape(shape[0], -1)
+            if self._update_due(iter, self.ortho_matrix is not None):
+                self.ortho_matrix = self.get_orthogonal_matrix(matrix, self.rank, self.galore_2d_proj_type)
+            self._orig_shape = shape
+            if self.galore_2d_proj_type == "left":
+                return optional_checkpoint_matmul(self.ortho_matrix.mH, matrix, self.activation_checkpoint)
+            if self.galore_2d_proj_type == "right":
+                return optional_checkpoint_matmul(matrix, self.ortho_matrix.mH, self.activation_checkpoint)
+            intermediate = optional_checkpoint_matmul(self.ortho_matrix[0].mH, matrix, self.activation_checkpoint)
+            return optional_checkpoint_matmul(intermediate, self.ortho_matrix[1].mH, self.activation_checkpoint)
 
     @torch.no_grad()
     def project_back(self, low_rank_grad, output_buffer=None, alpha=1.0, accumulate=False):
-        if self.ortho_matrix is None:
-            raise ValueError("project must be called before project_back")
-        if self.galore_2d_proj_type == "left":
-            result = optional_checkpoint_matmul(self.ortho_matrix, low_rank_grad, self.activation_checkpoint)
-        elif self.galore_2d_proj_type == "right":
-            result = optional_checkpoint_matmul(low_rank_grad, self.ortho_matrix, self.activation_checkpoint)
-        else:
-            intermediate = optional_checkpoint_matmul(self.ortho_matrix[0], low_rank_grad, self.activation_checkpoint)
-            result = optional_checkpoint_matmul(intermediate, self.ortho_matrix[1], self.activation_checkpoint)
-        result = (result * self.scale).reshape(self._orig_shape)
-        return write_back(result, output_buffer, alpha, accumulate)
+        with torch.profiler.record_function("tdecomp.galore.project_back"):
+            if self.ortho_matrix is None:
+                raise ValueError("project must be called before project_back")
+            if self.galore_2d_proj_type == "left":
+                result = optional_checkpoint_matmul(self.ortho_matrix, low_rank_grad, self.activation_checkpoint)
+            elif self.galore_2d_proj_type == "right":
+                result = optional_checkpoint_matmul(low_rank_grad, self.ortho_matrix, self.activation_checkpoint)
+            else:
+                intermediate = optional_checkpoint_matmul(self.ortho_matrix[0], low_rank_grad, self.activation_checkpoint)
+                result = optional_checkpoint_matmul(intermediate, self.ortho_matrix[1], self.activation_checkpoint)
+            result = (result * self.scale).reshape(self._orig_shape)
+            return write_back(result, output_buffer, alpha, accumulate)
 
     @torch.no_grad()
     def get_orthogonal_matrix(self, tensor, rank, galore2dProjectionSide):
