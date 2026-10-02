@@ -1,206 +1,89 @@
 import math
 import torch
-from torch.autograd.profiler import record_function
-from typing import Optional
+from .abstract_sparce_projector import AbstractSparceProjector
+from ._common import kept_size, sparse_name, validate_ratio, write_back
 
-import tdecomp
-from tdecomp.grad_proj.tensorgrad.config import SparseType
-from tdecomp.grad_proj.tensorgrad.projectors.abstract_sparce_projector import AbstractSparceProjector
-from tdecomp.grad_proj.tensorgrad.projectors.update_gap_scheduler import UpdateGapScheduler
-from tdecomp.types import TensorLike
-import tensorly as tl
 
-def mode_unfolding_norms(tensor: TensorLike, mode: int) -> TensorLike:
-    """
-    Returns L2 norm of each 'row' in the mode-unfolding for dimension=mode.
-    If tensor.shape= (D0, D1, ..., Dn), the unfolding w.r.t. mode is shape
-    (Dm, product_of_other_dims). We get a vector of length Dm with norms.
-    """
-    unfolded = tl.unfold(tensor, mode)
-    row_norms = tl.norm(unfolded, order=2, axis=1)
-    return row_norms
+def mode_unfolding_norms(tensor, mode):
+    return torch.linalg.vector_norm(tensor.movedim(mode, 0).reshape(tensor.shape[mode], -1), dim=1)
 
 
 class TensorGradSparseProjector(AbstractSparceProjector):
-    """
-    N-D projector that uses dimension-wise structured sparsity
-    instead of Tucker (like TensorGradLowRankProjector). For each dimension i,
-    we sample a subset of indices according to norms (topk, probability, etc.).
-    """
-    def __init__(
-        self,
-        sparse_ratio: list[float] | float = 0.25,
-        sparse_type: SparseType = "topk",
-        verbose: bool = False,
-        update_gap_scheduler: UpdateGapScheduler = UpdateGapScheduler(100, 1000),
-        scale: float = 1.0,
-        warm_restart: bool = False,
-        n_iter_max: int = 10,
-        scale_by_mask_ratio: bool = False,
-    ):
-        self.sparse_ratio = sparse_ratio
-        self.sparse_type: SparseType = sparse_type
-        self.verbose = verbose
-        self.update_gap_scheduler = update_gap_scheduler
-        self.scale = scale
-        self.warm_restart = warm_restart
-        self.n_iter_max = n_iter_max
+    """Gather a Cartesian product of mode indices; scalar ratio is distributed over nonunit axes."""
+    _config_fields = ("sparse_ratio", "sparse_type", "scale", "scale_by_mask_ratio", "scaling")
+    _data_fields = ("masks", "indices", "scale_factor")
+
+    def __init__(self, sparse_ratio=0.25, sparse_type="topk", verbose=False,
+                 update_gap_scheduler=None, scale=1.0, warm_restart=False,
+                 n_iter_max=10, scale_by_mask_ratio=False, scaling=None, random_state=0):
+        validate_ratio(sparse_ratio)
+        self.sparse_ratio, self.sparse_type = sparse_ratio, sparse_name(sparse_type)
+        self.scale = float(scale)
+        if not math.isfinite(self.scale):
+            raise ValueError("scale must be finite")
+        self.verbose, self.warm_restart, self.n_iter_max = verbose, warm_restart, n_iter_max
         self.scale_by_mask_ratio = scale_by_mask_ratio
-        self.scale_factor = 1.0 * self.scale  # will be updated if scale_by_mask_ratio=True
+        self.scaling = scaling or ("energy" if scale_by_mask_ratio else "none")
+        if self.scaling not in {"none", "energy", "unbiased"}:
+            raise ValueError("scaling must be none, energy or unbiased")
+        if self.scaling == "unbiased" and self.sparse_type != "randk":
+            raise ValueError("unbiased scaling requires uniform randk sampling")
+        self.masks = self.indices = None
+        self.scale_factor = self.scale
+        self._init_state(update_gap_scheduler, random_state)
 
-        # store one mask per dimension => a list of length = tensor.ndim
-        self.masks = None
-        self._orig_shape = None
-        self._last_iter = -1
+    def should_update_projector(self, iteration):
+        return self._update_due(iteration, self.masks is not None)
 
-        print(f"TensorGradSparseProjector initialized with sparse_ratio={self.sparse_ratio}, sparse_type={self.sparse_type}, scale_by_mask_ratio={self.scale_by_mask_ratio}")
-        
-        
-    def should_update_projector(self, iter: int) -> bool:
-        return self.update_gap_scheduler.should_update(iter)
+    @torch.no_grad()
+    def project(self, full_rank_grad, iteration):
+        shape = self._check_input(full_rank_grad)
+        if isinstance(self.sparse_ratio, (tuple, list)) and len(self.sparse_ratio) != len(shape):
+            raise ValueError("sparse_ratio must have one entry per mode")
+        if self.should_update_projector(iteration):
+            self._build_masks(full_rank_grad)
+        self._orig_shape = shape
+        return self._transform(full_rank_grad)
 
-    @tdecomp.utils.no_grad
-    def project(self, full_rank_grad: TensorLike, iteration: int) -> TensorLike:
-        with record_function("### TENSOR_SPARSE_PROJECT_FORWARD"):
-            if self._orig_shape is None:
-                self._orig_shape = tl.shape(full_rank_grad)
-
-            # Only update masks if necessary
-            if (self.masks is None) or self.should_update_projector(iteration):
-                self.masks = self._build_masks(full_rank_grad)
-    
-            # Now transform => produce smaller sub-tensor
-            smaller = self._transform(full_rank_grad)
-            return smaller
-
-    @tdecomp.utils.no_grad
-    def project_back(self, small_grad: TensorLike, output_buffer: Optional[torch.Tensor] =None, alpha=1.0, accumulate=False) -> TensorLike:
-        with record_function("### TENSOR_SPARSE_PROJECT_BACK"):
-            # Create a temporary buffer if none provided
-            if output_buffer is None:
-                output_buffer = tl.zeros(self._orig_shape, **tl.context(small_grad))
-            full = self._inverse_transform(small_grad, output_buffer, alpha=alpha, accumulate=accumulate)
-            return full
-    
-    def _build_masks(self, tensor: TensorLike) -> list[TensorLike]:
-        """
-        Build dimension-wise masks for tensor sparsity. Every mask show selected rows.
-        """
-        # Ensure sparse_ratio is a list of floats, one per dimension.
-        if isinstance(self.sparse_ratio, float):
-        # make multipliers for each dimension
-            non_one_dims = sum(1 for d in tl.shape(tensor) if d != 1)
-            even_distributed_ratio = self.sparse_ratio ** (1/non_one_dims)
-            # Handle dimensions of size 1 separately
-            ratio_list = []
-            for d in tl.shape(tensor):
-                if d == 1:
-                    # Keep ratio 1 for dimensions of size 1
-                    ratio_list.append(1)
-                else:
-                    # Round up for non-1 dimensions
-                    ratio_list.append(even_distributed_ratio)
-        elif isinstance(self.sparse_ratio, list):
-            # if list of floats, convert to multipliers
-            if all(isinstance(r, float) and 0 < r < 1 for r in self.sparse_ratio):
-                ratio_list = [r ** (1/tl.ndim(tensor))
-                                    for r in self.sparse_ratio]
-            else:
-                ratio_list = self.sparse_ratio
+    def _build_masks(self, tensor):
+        if isinstance(self.sparse_ratio, (tuple, list)):
+            ratios = self.sparse_ratio
         else:
-                raise ValueError(f"Invalid sparse_ratio: {self.sparse_ratio}")
-
-        masks = []
-        for mode in range(tl.ndim(tensor)):
-            ratio = ratio_list[mode] if mode < len(ratio_list) else ratio_list[-1]
-            dim_size = tl.shape(tensor)[mode]
-
-            if self.sparse_type.lower() not in ['randomk', 'randk']:
-                # Compute norms directly using mode_unfolding_norms function
-                row_norms = mode_unfolding_norms(tensor, mode)
-            else:
-                row_norms = None
-
-            k = max(1, int(ratio * dim_size + 1))
-
-            mask, _ = self._create_sparse_mask(row_norms, self.sparse_type.lower(), k, tl.context(tensor)) #type: ignore
-
-            # Keep mask on GPU
+            count = sum(size != 1 for size in tensor.shape)
+            ratio = self.sparse_ratio ** (1 / count) if count else 1.0
+            ratios = [ratio if size != 1 else 1.0 for size in tensor.shape]
+        masks, indices = [], []
+        for mode, (size, ratio) in enumerate(zip(tensor.shape, ratios)):
+            scores = None if self.sparse_type == "randk" else mode_unfolding_norms(tensor, mode)
+            mask, index = self._create_sparse_mask(scores, self.sparse_type, kept_size(ratio, size),
+                                                  {"device": tensor.device}, dim_size=size)
             masks.append(mask)
-            if row_norms is not None:
-                del row_norms
-
-        if getattr(self, "scale_by_mask_ratio", False):
-            # Compute overall scaling factor more efficiently
-            scale_factor = 1.0
-            for m in masks:
-                kept = tl.sum(m)
-                total = tdecomp.utils.numel(m)
-                scale_factor *= total / (kept + 1e-8)
-            scale_factor = math.sqrt(scale_factor)
-            self.scale_factor = scale_factor * self.scale
-            self.scale_by_mask_ratio = False
-            print(
-                f"[TensorGradSparseProjector] Setting the scale factor: {self.scale_factor}")
-
-        if self.verbose:
-            kept = [tl.sum(m) for m in masks]
-            print(
-                f"[TensorGradSparseProjector] Recomputed masks => dims kept: {kept}")
-
+            indices.append(index)
+        self.masks, self.indices = masks, indices
+        p = math.prod(index.numel() for index in indices) / tensor.numel()
+        divisor = math.sqrt(p) if self.scaling == "energy" else p if self.scaling == "unbiased" else 1
+        self.scale_factor = self.scale / divisor
         return masks
-    
-    def _transform(self, x: TensorLike) -> TensorLike:
-        """
-        Use masks to select elements from each dimension.
-        The result is smaller: shape= (K0, K1, ..., Kn).
-        """
-        res = x
-        for mode, mask in enumerate(self.masks):
-            # Create a slice object for this dimension
-            slice_obj = [tl.index[None]] * tl.ndim(x)
-            slice_obj = tuple(tl.index_update(slice_obj, tl.index[mode], mask))
-            # Apply the mask to this dimension
-            res = res[slice_obj]
 
-        return res
+    def _transform(self, tensor):
+        result = tensor
+        for mode, index in enumerate(self.indices):
+            result = result.index_select(mode, index)
+        return result
 
+    @torch.no_grad()
+    def project_back(self, small_grad, output_buffer=None, alpha=1.0, accumulate=False):
+        if self.indices is None:
+            raise ValueError("project must be called before project_back")
+        if tuple(small_grad.shape) != tuple(x.numel() for x in self.indices):
+            raise ValueError("compressed gradient has an incompatible shape")
+        result = small_grad * self.scale_factor
+        for mode in reversed(range(len(self.indices))):
+            shape = list(result.shape)
+            shape[mode] = self._orig_shape[mode]
+            bigger = result.new_zeros(shape)
+            bigger.index_copy_(mode, self.indices[mode], result)
+            result = bigger
+        return write_back(result, output_buffer, alpha, accumulate)
 
-    def _inverse_transform(self, small_x: TensorLike, output_buffer: Optional[torch.Tensor] = None, alpha=1.0, accumulate=False):
-        """
-        Start from zero[full_shape], fill in the sub-tensor 'small_x'
-        dimension by dimension.
-        """
-        res = small_x * self.scale_factor
-        nd = len(self._orig_shape)
-            
-        # Create or use the provided buffer
-        if output_buffer is None:
-            output_buffer = torch.zeros(self._orig_shape, **tl.context(res))
-
-                
-        # Process each mode in reverse order
-        for mode in reversed(range(nd)):
-            # Mask is already on GPU
-            mask = self.masks[mode]
-                
-            # Create slice object for the current mode
-            slice_obj = [tl.index[None]] * nd
-            slice_obj = tuple(tl.index_update(slice_obj, tl.index[mode], mask))
-                
-            # Create a temporary tensor of the correct shape
-            shape_expanded = list(tl.shape(res))
-            shape_expanded = tl.index_update(shape_expanded, tl.index[mode], self._orig_shape[mode])
-            bigger = tl.zeros(shape_expanded, **tl.context(res))
-                
-            # Fill in the values
-            bigger = tl.index_update(bigger, slice_obj, res)
-            res = bigger
-                
-        # Final update to the buffer
-        if accumulate:
-            output_buffer.add_(res, alpha=alpha)
-        else:
-            output_buffer.copy_(res * alpha)
-                
-        return output_buffer
+    _inverse_transform = project_back

@@ -5,3 +5,8 @@ mlruns/
 tiny-llm/
 mlflow.db
 *.json
+build/
+dist/
+.delivery-build/
+.delivery-installed/
+*.egg-info/

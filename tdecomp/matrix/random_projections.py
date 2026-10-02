@@ -1,194 +1,125 @@
+"""Input-by-output sketches, with explicit normalization and local RNG.
+
+Normal and sparse sketches preserve squared norms in expectation under right
+projection. ortho gives an orthonormal basis, a contraction when reduced.
+No universal JL guarantee is claimed for every generator.
+"""
 from enum import Enum
 from functools import partial, partialmethod
 import math
-from typing import *
+import numbers
+import numpy as np
 import tensorly as tl
-import tdecomp
-from tdecomp.types import TensorLike
+from tdecomp._random import normalize_random_state, rng_integers
 
-__all__ = [
-    'normal',
-    'ortho',
-    'sparse_iid_entries',
-    'sparse_jl_matrix',
-    'four_wise_independent_matrix',
-    'lean_walsh',
-    'identity_copies',
-    'Projector'
-]
-
-_default_context = {"device": "cpu", "dtype": tl.float32}
-"""Default tensor context for creation"""
-
-def normal(rows: int, cols: int, context: dict = _default_context) -> TensorLike:
-    '''Generates tensor from normal distribution.
-
-    WARN: Can lie in positive way on many iterations!
-    '''
-    return tl.randn((rows, cols), **context)
+__all__ = ['normal', 'ortho', 'sparse_iid_entries', 'sparse_jl_matrix',
+           'four_wise_independent_matrix', 'lean_walsh', 'identity_copies', 'Projector', 'ProjectorGenerator']
 
 
-def ortho(rows: int, cols: int, context: dict = _default_context) -> TensorLike:
-    P = None
-    if (rows >= cols):
-        P = normal(rows, cols, context)
-    else:
-        P = normal(cols, rows, context)
-        
-    q, r = tl.qr(P, mode="reduced")
-    # Make Q uniform according to https://arxiv.org/pdf/math-ph/0609050.pdf
-    ph = tl.sign(tl.diag(r))
-    q = tl.einsum("ij,j->ij", q, ph)
-
-    if (rows < cols):
-        q = tl.transpose(q)
-    return q
+def _dimensions(rows, cols):
+    for name, value in (('rows', rows), ('cols', cols)):
+        if isinstance(value, bool) or not isinstance(value, numbers.Integral) or value <= 0:
+            raise ValueError(f'{name} must be a positive integer')
 
 
-def sparse_iid_entries(d: int, k: int, s: int = 3, context: dict = _default_context) -> TensorLike:
+def _tensor(values, context):
+    return tl.tensor(values, **dict(context or {}))
+
+
+def normal(rows, cols, context=None, *, random_state=None):
+    """Gaussian entries with E|P_ij|^2=1/cols; circular complex if requested."""
+    _dimensions(rows, cols)
+    rng = normalize_random_state(random_state)
+    values = rng.standard_normal((rows, cols))
+    if 'complex' in str((context or {}).get('dtype', '')):
+        values = (values + 1j * rng.standard_normal((rows, cols))) / math.sqrt(2)
+    return _tensor(values / math.sqrt(cols), context)
+
+
+def ortho(rows, cols, context=None, *, random_state=None):
+    """Haar orthonormal columns when rows >= cols, otherwise rows."""
+    _dimensions(rows, cols)
+    p = normal(max(rows, cols), min(rows, cols), context=context, random_state=random_state)
+    q, r = tl.qr(p, mode='reduced')
+    diagonal = tl.diag(r)
+    absolute = tl.abs(diagonal)
+    safe = tl.where(absolute > 0, absolute, tl.ones(tl.shape(absolute), **tl.context(absolute)))
+    phase = tl.where(absolute > 0, diagonal / safe, tl.ones(tl.shape(diagonal), **tl.context(diagonal)))
+    q = q * phase
+    return q if rows >= cols else tl.conj(tl.transpose(q))
+
+
+def sparse_iid_entries(d, k, s=3, context=None, *, random_state=None):
+    """Achlioptas entries +/-sqrt(s/k), each with probability 1/(2s)."""
+    _dimensions(d, k)
+    if isinstance(s, bool) or not isinstance(s, numbers.Real) or not math.isfinite(s) or s < 1:
+        raise ValueError('s must be finite and >= 1')
+    u = normalize_random_state(random_state).random((d, k))
+    signs = (u < 1 / (2 * s)).astype(float) - (u >= 1 - 1 / (2 * s)).astype(float)
+    return _tensor(signs * math.sqrt(s / k), context)
+
+
+def sparse_jl_matrix(d, k, s=3, context=None, *, random_state=None):
+    """Exactly s distinct output coordinates per input, with +/-1/sqrt(s).
+
+    JL bounds require additional relations among s, k, distortion and vectors.
     """
-    Генерирует разреженную проекционную матрицу с элементами {-1, 0, +1} 
-    
-    Параметры:
-        d (int): Исходная размерность.
-        k (int): Новая размерность (k << d).
-        s (int): Параметр разреженности (по умолчанию 3).
-    
-    http://www.yaroslavvb.com/papers/achlioptas-database.pdf
+    _dimensions(d, k)
+    if isinstance(s, bool) or not isinstance(s, numbers.Integral) or not 1 <= s <= k:
+        raise ValueError('s must be an integer in [1, k]')
+    rng = normalize_random_state(random_state)
+    result = np.zeros((d, k))
+    for row in range(d):
+        columns = rng.choice(k, size=s, replace=False)
+        result[row, columns] = (2 * rng_integers(rng, 0, 2, s) - 1) / math.sqrt(s)
+    return _tensor(result, context)
+
+
+def four_wise_independent_matrix(d, k, context=None, *, random_state=None):
+    """Four-wise signs from a cubic over GF(256), limited to d*k <= 256.
+
+    Four distinct points give independent uniform field values through the
+    invertible Vandermonde map. A nonzero binary functional (the low bit)
+    gives unbiased signs. Field polynomial: x^8+x^4+x^3+x+1.
     """
-    R = tl.random.random_tensor((d, k), **context) * 2 * s // 1 #floor to int
-    R = (R == 0) * 1 - (R == 1) * 1 #cast to int
-    return R * math.sqrt(s) 
+    _dimensions(d, k)
+    if d * k > 256:
+        raise ValueError('four_wise_independent_matrix supports at most 256 entries')
+    rng = normalize_random_state(random_state)
+    coefficients = rng_integers(rng, 0, 256, 4)
+    points = np.arange(d * k, dtype=np.int64)
+
+    def multiply(a, b):
+        a = np.asarray(a).copy()
+        b = np.broadcast_to(b, a.shape).copy()
+        result = np.zeros_like(a)
+        for _ in range(8):
+            result ^= np.where(b & 1, a, 0)
+            a = (a << 1) ^ np.where(a & 128, 0x11B, 0)
+            b >>= 1
+        return result
+
+    values = np.full(points.shape, coefficients[3], dtype=np.int64)
+    for coefficient in coefficients[2::-1]:
+        values = multiply(values, points) ^ coefficient
+    return _tensor((2 * (values & 1) - 1).reshape(d, k) / math.sqrt(k), context)
 
 
-def sparse_jl_matrix(d: int, k: int, s: int = 3, context: dict = _default_context) -> TensorLike:
-    """
-    Генерирует разреженную случайную матрицу проекций с элементами {+1, 0, -1},
-    удовлетворяющую Johnson-Lindenstrauss Lemma (JLL) с параметром разреженности s.
-
-    https://eclass.uoa.gr/modules/document/file.php/MATH506/03.%20%CE%98%CE%AD%CE%BC%CE%B1%CF%84%CE%B1%20%CE%B5%CF%81%CE%B3%CE%B1%CF%83%CE%B9%CF%8E%CE%BD/Matousek-VariantsJohnsonLindenstrauss.pdf
-
-    Параметры:
-        d (int): Исходная размерность
-        k (int): Целевая размерность
-        s (int): Параметр разреженности (обычно 1, 2 или 3)
-    """
-    cols = tl.tensor([0] * (k * s))
-    int_dtype = cols.dtype
-
-    nnz_indices = tl.tensor(tl.random.random_tensor((k, s), **context) * d, dtype=int_dtype)
-    
-    values = tl.random.random_tensor((k, s), **context) * 4 // 1 - 1
-    
-    values *= math.sqrt(1 / s)
-    
-    rows = tl.reshape(nnz_indices, (-1,)) # "," here is important!
-
-    #cols = torch.repeat_interleave(tl.arange(k), s) - analogue
-    for i in range(1, k):
-        for j in range(s):
-            cols = tl.index_update(cols, tl.index[s * i + j], i)
-    
-    R = tl.zeros((d, k))
-    R = tl.index_update(R, tl.index[rows, cols], tl.reshape(values, (-1,)))
-    
-    return R
+def lean_walsh(d, k, context=None, *, random_state=None):
+    """Reserved name; the previous matrix was not a Lean Walsh transform."""
+    _dimensions(d, k)
+    raise NotImplementedError('Lean Walsh is unavailable until its rectangular construction is verified')
 
 
-def four_wise_independent_matrix(d: int, k: int, context: dict = _default_context) -> TensorLike:
-    """
-    https://edoliberty.github.io/papers/FastDimensionReduction.pdf
+def identity_copies(d, k, context=None, *, random_state=None):
+    """Permuted I_d copies / sqrt(k/d); an isometric expansion, k multiple d."""
+    _dimensions(d, k)
+    if k < d or k % d:
+        raise ValueError('identity_copies requires k >= d and k divisible by d')
+    rng = normalize_random_state(random_state)
+    result = np.tile(np.eye(d), (1, k // d))[:, rng.permutation(k)] / math.sqrt(k // d)
+    return _tensor(result, context)
 
-    Args:
-        k: power of 2
-    """
-    if not (k > 0 and (k & (k - 1) == 0)):
-        raise ValueError("k must be 2 power for Hadamard matrix")
-    
-    D = tl.diag(tl.random.random_tensor((d,), **context) * 4 // 1 - 1)
-    
-    hadamard_size = k
-    H = tl.tensor([[1]], **context)
-    while tl.shape(H)[1] < hadamard_size:
-        H = tl.concatenate([
-            tl.concatenate([H, H], axis=1),
-            tl.concatenate([H, -H], axis=1)
-        ], axis=0)
-    
-    H = H[:d, :k]
-    Phi = tl.matmul(D, H)
-    Phi = Phi * (1 / math.sqrt(k))
-    
-    return Phi 
-
-
-def lean_walsh(d: int, k: int, context: dict = _default_context) -> TensorLike:
-    """
-    Генерирует матрицу проекции с использованием Lean Walsh Transform и случайной диагональной матрицы.
-    https://edoliberty.github.io/papers/DenseFastRandomProjectionsAndLeanWalshTransforms.pdf
-
-    Параметры:
-        d (int): Исходная размерность (количество строк)
-        k (int): Целевая размерность (количество столбцов, должна быть степенью 2)
-    """
-    if not (k > 0 and (k & (k - 1) == 0)):
-        raise ValueError("k must be a power of 2")
-
-    diag_elements = tl.random.random_tensor((d,), **context) * 4 // 1 - 1
-    D = tl.diag(diag_elements)
-
-    eye_k = tl.eye(k, **context)
-    h = tl.tensor(eye_k, **context)
-    
-    num_iterations = int(math.log2(k))
-    
-    for i in range(num_iterations):
-        s = 2 ** i
-        m = k // s
-        h = tl.reshape(h, (-1, m, s))
-        half = s // 2
-        if half == 0:
-            break
-        even = h[..., :half]
-        odd = h[..., half:]
-        h = tl.index_update(h, tl.index[..., :half], even + odd)
-        h = tl.index_update(h, tl.index[..., half:], even - odd)
-    
-    h = tl.reshape(h, (k, k))
-    H = h * (1.0 / math.sqrt(k))
-
-    if d <= k:
-        H = H[:d, :]
-    else:
-        repeats = (d // k) + 1
-        H = tl.concatenate([H] * repeats, axis=0)[:d, :]
-
-    return tl.matmul(D, H)
-
-def identity_copies(d: int, k: int, context: dict = _default_context) -> TensorLike:
-    """    
-    https://edoliberty.github.io/papers/thesis.pdf
-    
-    Параметры:
-        d (int): Исходная размерность
-        k (int): Целевая размерность (должна делиться на d)
-    """
-    copies = k // d
-    remainder = k % d
-    
-    eye = tl.eye(d, **context)
-    R_parts = [eye] * copies
-    
-    if remainder > 0:
-        R_parts.append(eye[:, :remainder])
-    
-    R = tl.concatenate(R_parts, axis=1)
-
-    perm = tdecomp.utils.randperm(k, context)
-    R = R[:, perm]
-    R *= math.sqrt(d / k)
-    
-    return R
 
 class ProjectorGenerator(Enum):
     normal = partial(normal)
@@ -199,28 +130,40 @@ class ProjectorGenerator(Enum):
     lean_walsh = partial(lean_walsh)
     identity_copies = partial(identity_copies)
 
+
 class Projector:
-    def __init__(self, mode: ProjectorGenerator):
+    """Owns cached P (output,input). renew consumes its local NumPy stream.
+
+    Save/restore the stream with its standard NumPy state API to resume draws.
+    renew=False reuses P only for an identical shape/context/generator contract.
+    """
+    def __init__(self, mode, random_state=None):
         self.P = None
         self.mode = mode
+        self.random_state = normalize_random_state(random_state)
+        self._cache_key = None
 
-    def generate_P(self, d: int, k: int, context: dict, **generator_kws) -> TensorLike:
-        P = self.mode.value(d, k, context, **generator_kws)
-        return P
-    
-    def project(self, tensor: TensorLike, proj_dim: int, *, side: Literal['left', 'right'], renew: bool = True, **gen_kws):
-        d = tl.shape(tensor)[0 if side == 'left' else -1]
-        if (self.P is None) or renew or (tl.shape(self.P)[0] != proj_dim) or (tl.shape(self.P)[-1] != d):
-            self.P = self.generate_P(proj_dim, d, tl.context(tensor), **gen_kws)
-        if side == 'left':
-            return tl.matmul(self.P, tensor)
-        else:
-            return tl.matmul(tensor, tl.transpose(self.P))
-    
+    def generate_P(self, d, k, context, **generator_kws):
+        rng = generator_kws.pop('random_state', self.random_state)
+        return self.mode.value(d, k, context=context, random_state=rng, **generator_kws)
+
+    def project(self, tensor, proj_dim, *, side, renew=True, **gen_kws):
+        if side not in ('left', 'right'):
+            raise ValueError("side must be 'left' or 'right'")
+        if tl.ndim(tensor) != 2:
+            raise ValueError('Projector accepts matrices only')
+        d = tl.shape(tensor)[0 if side == 'left' else 1]
+        _dimensions(d, proj_dim)
+        context = tl.context(tensor)
+        key = (d, proj_dim, side, tl.get_backend(), str(context), repr(gen_kws), self.mode)
+        if self.P is None or renew or key != self._cache_key:
+            p = self.generate_P(d, proj_dim, context, **gen_kws)
+            self.P = tl.conj(tl.transpose(p))
+            self._cache_key = key
+        return tl.matmul(self.P, tensor) if side == 'left' else tl.matmul(tensor, tl.conj(tl.transpose(self.P)))
+
     lproject = partialmethod(project, side='left')
     rproject = partialmethod(project, side='right')
 
-__locals = locals()
-RANDOM_GENS = {
-    name: func for name, func in __locals.items() if not name in ('Projector', '__all__', '_default_context', 'ProjectorGenerator')
-}
+
+RANDOM_GENS = {name: globals()[name] for name in __all__ if name not in ('Projector', 'ProjectorGenerator', 'lean_walsh')}

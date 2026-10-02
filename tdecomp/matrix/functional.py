@@ -1,32 +1,19 @@
-import sys
+"""Explicit functional matrix decomposition wrappers."""
+from tdecomp.matrix.decomposer import RandomizedSVD, TwoSidedRandomSVD, CURDecomposition
 
-from tdecomp.matrix.decomposer import *
-from torch.ao.quantization.utils import _normalize_kwargs # noqa
+__all__ = ['rsvd', 'r2svd', 'cur']
 
-__functionals = {
-    'rsvd': RandomizedSVD,
-    'r2svd': TwoSidedRandomSVD,
-    'cur': CURDecomposition
-}
-__all__ = list(__functionals)
 
-__module = sys.modules[__name__]
+def rsvd(matrix, n_eigenvecs=None, **kwargs):
+    """Randomized SVD; keywords configure RandomizedSVD explicitly."""
+    return RandomizedSVD(**kwargs).decompose(matrix, rank=n_eigenvecs)
 
-__namespace = globals()
 
-def __base_dec_gen(method_name, ):
-    method = __functionals[method_name]
-    exec(
-f'''
-def {method_name}(matrix, n_eigenvecs=None,  **kwargs):
-    """
-    {method.__doc__}
-    """
-    decomposer = {method.__name__}(**_normalize_kwargs({method.__name__}.__init__, kwargs))
-    decomposition = decomposer.decompose(matrix, rank=n_eigenvecs)
-    return decomposition
-''', __namespace)
-    return __namespace[method_name]
+def r2svd(matrix, n_eigenvecs=None, **kwargs):
+    """Two-sided SVD; keywords configure TwoSidedRandomSVD explicitly."""
+    return TwoSidedRandomSVD(**kwargs).decompose(matrix, rank=n_eigenvecs)
 
-for __name in __functionals:
-    setattr(__module, __name, __base_dec_gen(__name))
+
+def cur(matrix, n_eigenvecs=None, **kwargs):
+    """Top-k CUR; keywords configure CURDecomposition explicitly."""
+    return CURDecomposition(**kwargs).decompose(matrix, rank=n_eigenvecs)

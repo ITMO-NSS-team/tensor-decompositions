@@ -1,90 +1,86 @@
+"""Real nonnegative row/column importance probabilities (NumPy/PyTorch)."""
 from enum import Enum
 from functools import partial
-from typing import *
-
+import math
+import numpy as np
 import tensorly as tl
 from tdecomp.types import TensorLike
 
-__all__ = [
-    'l1_norm',
-    'l2_norm',
-    'linf_norm',
-    'fro_norm',
-    'ridge_leverage',
-    'ImportanceComputer'
-]
+__all__ = ['l1_norm', 'l2_norm', 'linf_norm', 'fro_norm', 'ridge_leverage', 'ImportanceComputer']
 
-def _normalize_importances(col_norms: TensorLike, row_norms: TensorLike) -> tuple[TensorLike, TensorLike]:
-    return col_norms / (tl.sum(col_norms) + 1e-10), row_norms / (tl.sum(row_norms) + 1e-10)
 
-def l1_norm(X: TensorLike) -> tuple[TensorLike, TensorLike]:
-    col_norms = tl.norm(X, order=1, axis=0) 
-    row_norms = tl.norm(X, order=1, axis=1)    
-    return _normalize_importances(col_norms, row_norms)
+def _normalize_importances(col_scores, row_scores):
+    """Zero total score means uniform selection; finite scores only."""
+    result = []
+    for scores in (col_scores, row_scores):
+        values = tl.to_numpy(scores)
+        if not np.isfinite(values).all() or np.any(values < 0):
+            raise ValueError('Importance scores must be finite and nonnegative')
+        maximum = float(tl.max(scores))
+        if maximum == 0:
+            result.append(tl.ones(tl.shape(scores), **tl.context(scores)) / tl.shape(scores)[0])
+        else:
+            scaled = scores / maximum
+            result.append(scaled / tl.sum(scaled))
+    return tuple(result)
 
-def l2_norm(X: TensorLike) -> tuple[TensorLike, TensorLike]:
-    col_norms = tl.norm(X, order=2, axis=0) 
-    row_norms = tl.norm(X, order=2, axis=1)
-    return _normalize_importances(col_norms, row_norms)
 
-def linf_norm(X: TensorLike) -> tuple[TensorLike, TensorLike]:
-    col_norms = tl.norm(X, order=float('inf'), axis=0)
-    row_norms = tl.norm(X, order=float('inf'), axis=1)
-    return _normalize_importances(col_norms, row_norms)
+def _norm_importances(matrix, order):
+    maximum = float(tl.max(tl.abs(matrix)))
+    scaled = matrix / maximum if maximum else matrix
+    return _normalize_importances(tl.norm(scaled, order=order, axis=0), tl.norm(scaled, order=order, axis=1))
 
-def fro_norm(X: TensorLike) -> tuple[TensorLike, TensorLike]:
-    '''Diffs from l2_norm in squared sum'''
-    x_squared = X * X
-    col_scores = (x_squared).sum(dim=0)
-    row_scores = (x_squared).sum(dim=1)
-    return _normalize_importances(col_scores, row_scores)
 
-def ridge_leverage(
-    X: TensorLike,
-    lam: Optional[float] = None,
-) -> Tuple[TensorLike, TensorLike]:
-    m, n = tl.shape(X)
-    
+def l1_norm(matrix):
+    return _norm_importances(matrix, 1)
+
+
+def l2_norm(matrix):
+    return _norm_importances(matrix, 2)
+
+
+def linf_norm(matrix):
+    return _norm_importances(matrix, float('inf'))
+
+
+def fro_norm(matrix):
+    """Squared absolute entries; valid for real and complex matrices."""
+    scale = float(tl.max(tl.abs(matrix)))
+    squared = tl.abs(matrix / scale) ** 2 if scale else tl.abs(matrix) ** 2
+    return _normalize_importances(tl.sum(squared, axis=0), tl.sum(squared, axis=1))
+
+
+def ridge_leverage(matrix, lam=None):
+    """Ridge leverage from SVD: sums |U_ij|^2*s_j^2/(s_j^2+lam).
+
+    The analogous expression using V gives column scores. This avoids the
+    cancellation of G-G(G+lam I)^-1G. lam is strictly positive; the default
+    is 1e-6*||X||_F^2/max(shape), with uniform scores for a zero input.
+    """
+    from tdecomp._base import _validate_tensor
+    _validate_tensor(matrix, 2)
+    if not np.isfinite(tl.to_numpy(matrix)).all():
+        raise ValueError('matrix must be finite')
+    u, s, vh = tl.truncated_svd(matrix, n_eigenvecs=min(tl.shape(matrix)))
+    maximum = float(tl.max(s))
     if lam is None:
-        lam = 1e-6 * (tl.sum(X * X) / max(m, n))
-    
-
-    Xt = tl.transpose(X)
-    if m >= n:
-        # Случай "Длинная матрица": инвертируем n x n
-        XtX = tl.matmul(Xt, X)
-        I = tl.eye(n, **tl.context(X))
-        M_reg = XtX + lam * I # type: ignore
-        M_inv = tl.solve(M_reg, I) # n x n
-
-        # 1. Row Scores: diag(X M_inv X^T) -> построчно x_i M_inv x_i^T (m x m)
-        XM = tl.matmul(X, M_inv)
-        row_scores = tl.sum(XM * X, axis=1)
-        
-        # 2. Col Scores: diag( 1/lam * (G - G M_inv G) )
-        # G = XtX. Считаем K = G @ M_inv @ G
-        term2 = tl.matmul(XtX, tl.matmul(M_inv, XtX))
-        col_scores = (tl.diag(XtX) - tl.diag(term2)) / lam
-        
+        if maximum == 0:
+            factors = tl.zeros_like(s)
+        else:
+            squared = (s / maximum) ** 2
+            ridge = 1e-6 * float(tl.sum(squared)) / max(tl.shape(matrix))
+            factors = squared / (squared + ridge)
     else:
-        # Случай "Широкая матрица": инвертируем m x m
-        XXt = tl.matmul(X, Xt)
-        I = tl.eye(m, **tl.context(X))
-        M_reg = XXt + lam * I
-        M_inv = tl.solve(M_reg, I) # m x m
-        
-        # 1. Col Scores: diag(X^T M_inv X)
-        XtM = tl.matmul(Xt, M_inv) # n x m
-        col_scores = tl.sum(XtM * Xt, axis=1)
-        
-        # 2. Row Scores: diag( 1/lam * (G - G M_inv G) ) где G = XXt
-        term2 = tl.matmul(XXt, tl.matmul(M_inv, XXt))
-        row_scores = (tl.diag(XXt) - tl.diag(term2)) / lam
-
-    # Clamp для удаления численного шума (например -1e-16)
-    row_scores = tl.clip(row_scores, 0.0, None)
-    col_scores = tl.clip(col_scores, 0.0, None)
-    
+        if isinstance(lam, bool) or not np.isscalar(lam) or not math.isfinite(lam) or lam <= 0:
+            raise ValueError('lam must be finite and strictly positive')
+        scale = max(maximum, math.sqrt(lam))
+        squared = (s / scale) ** 2
+        ridge = (math.sqrt(lam) / scale) ** 2
+        denominator = squared + ridge
+        safe = tl.where(denominator > 0, denominator, tl.ones(tl.shape(s), **tl.context(s)))
+        factors = squared / safe
+    row_scores = tl.sum(tl.abs(u) ** 2 * factors, axis=1)
+    col_scores = tl.sum(tl.abs(vh) ** 2 * tl.reshape(factors, (-1, 1)), axis=0)
     return _normalize_importances(col_scores, row_scores)
 
 
@@ -95,17 +91,13 @@ class ColumnRowImportancesGenerator(Enum):
     fro_norm = partial(fro_norm)
     ridge_leverage = partial(ridge_leverage)
 
+
 class ImportanceComputer:
-
-    def __init__(self, mode: ColumnRowImportancesGenerator):
+    def __init__(self, mode):
         self.mode = mode
-    
-    def compute(self, X: TensorLike) -> Tuple[TensorLike, TensorLike]:
-        method = self.mode.value
-        return method(X)
+
+    def compute(self, matrix):
+        return self.mode.value(matrix)
 
 
-__locals = locals()
-IMPORTANCE_GENS = {
-    name: func for name, func in __locals.items() if name not in ('ImportanceComputer',)
-}
+IMPORTANCE_GENS = {name: globals()[name] for name in __all__ if name != 'ImportanceComputer'}

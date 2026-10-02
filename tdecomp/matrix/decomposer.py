@@ -1,160 +1,127 @@
-from functools import partial
-
-from typing import *
-
-import tdecomp
-from tdecomp.types import Number, TensorLike
-from tdecomp._base import Decomposer, _need_t
+"""Matrix factorizations with stable power iterations and explicit sampling."""
+import math
+import numbers
+import numpy as np
+import tensorly as tl
+from tdecomp._base import Decomposer, _adjoint
+from tdecomp._random import normalize_random_state
 from tdecomp.matrix.random_projections import ProjectorGenerator
 from tdecomp.matrix.importance_generators import ColumnRowImportancesGenerator
-import tensorly as tl
 
-__all__ = [
-    'SVDDecomposition',
-    'RandomizedSVD',
-    'TwoSidedRandomSVD',
-    'CURDecomposition'
-]
+__all__ = ['SVDDecomposition', 'RandomizedSVD', 'TwoSidedRandomSVD', 'CURDecomposition']
+
+
+def _nonnegative_integer(value, name):
+    if isinstance(value, bool) or not isinstance(value, numbers.Integral) or value < 0:
+        raise ValueError(f'{name} must be a nonnegative integer')
+    return int(value)
+
 
 class SVDDecomposition(Decomposer):
-    def _decompose(self, X: TensorLike, rank, **kwargs) -> tuple[TensorLike, TensorLike, TensorLike]:
-        """Standart SVD decomposition, realization depends on various backends.  
-        Result is non-determenistic, sign of U and V can change in columns together.
-
-        Args:
-            W: matrix to decompose
-        Returns:
-            U, S, Vt: decomposition
-        """
-        return tl.truncated_svd(X, n_eigenvecs=min(tl.shape(X)))
+    def _decompose(self, matrix, rank, **kwargs):
+        u, s, vh = tl.truncated_svd(matrix, n_eigenvecs=rank)
+        return u[:, :rank], s[:rank], vh[:rank, :]
 
 
 class RandomizedSVD(Decomposer):
-    """
-    https://arxiv.org/pdf/2404.09276
-    """
+    """QR-stabilized randomized range finder followed by a small exact SVD.
 
-    def __init__(self, rank: Optional[Number] = None, power: int = 3,
-                 distortion_factor: float = 0.6, 
-                 random_init: ProjectorGenerator = ProjectorGenerator.normal):
-        super().__init__(rank, distortion_factor, random_init)
-        self.power = power
+    power counts alternating A.H/A passes; power=0 uses A@Omega directly.
+    Work is O((2*power+1)*m*n*(rank+oversampling)); no Gram matrix is built.
+    distortion_factor tunes an automatic stable-rank heuristic, not a bound
+    on approximation error. Small and large input paths use the same method.
+    """
+    def __init__(self, rank=None, power=3, distortion_factor=0.6,
+                 random_init=ProjectorGenerator.normal, random_state=None, oversampling=0):
+        super().__init__(rank, distortion_factor, random_init, random_state)
+        self.power = _nonnegative_integer(power, 'power')
+        self.oversampling = _nonnegative_integer(oversampling, 'oversampling')
 
-    def estimate_stable_rank(self, W: TensorLike) -> int:
-        svals_squared = tdecomp.utils.svdvals(W) ** 2
-        stable_rank = (tl.sum(svals_squared) / tl.max(svals_squared))
-        return max(1, min(min(tl.shape(W)), int(stable_rank * (1 / self.distortion_factor))))
-    
-    @_need_t
-    def _decompose_big(self, X: TensorLike, rank: int, **kwargs) -> tuple[TensorLike, TensorLike, TensorLike]:
-        P = self.random_init.value(rank, tl.shape(X)[-2], tl.context(X))
-        G = tl.matmul(P, tl.matmul(X, tl.matmul(tl.transpose(X), tl.transpose(P))))
-        Q, _ = tl.qr(
-            tl.transpose(tl.matmul(G ** self.power, tl.matmul(P, X))),
-            mode='reduced')
-        B = tl.matmul(X, Q)
-        U, S, Vh = tl.truncated_svd(B, n_eigenvecs=min(tl.shape(B)))
-        return U, S, tl.matmul(Vh, tl.transpose(Q))
-        
-    @_need_t
-    def _decompose(self, X: TensorLike, rank: int, **kwargs) -> tuple[TensorLike, TensorLike, TensorLike]:
-        G = tl.matmul(X, tl.transpose(X))
-        P = self.random_init.value(tl.shape(X)[-1], rank, tl.context(X))
-        Q, _ = tl.qr(tl.matmul(G ** self.power, tl.matmul(X, P)), mode='reduced')
-        B = tl.matmul(tl.transpose(Q), X)
-        U, S, Vh = tl.truncated_svd(B, n_eigenvecs=min(tl.shape(B)))
-        return tl.matmul(Q, U), S, Vh
+    def estimate_stable_rank(self, matrix):
+        from tdecomp.utils import svdvals
+        singular = svdvals(matrix)
+        maximum = float(tl.max(singular))
+        if maximum == 0:
+            return 1
+        squared = (singular / maximum) ** 2
+        heuristic = float(tl.sum(squared)) / self.distortion_factor
+        return max(1, min(min(tl.shape(matrix)), int(heuristic)))
+
+    def _range(self, matrix, width, rng, **generator_kws):
+        omega = self.random_init.value(tl.shape(matrix)[1], width, context=tl.context(matrix), random_state=rng, **generator_kws)
+        scale = float(tl.max(tl.abs(matrix)))
+        working = matrix / scale if scale else matrix
+        q, _ = tl.qr(tl.matmul(working, omega), mode='reduced')
+        for _ in range(self.power):
+            z, _ = tl.qr(tl.matmul(_adjoint(working), q), mode='reduced')
+            q, _ = tl.qr(tl.matmul(working, z), mode='reduced')
+        return q
+
+    def _decompose(self, matrix, rank, random_state=None, **generator_kws):
+        rng = self.random_state if random_state is None else normalize_random_state(random_state)
+        width = min(rank + self.oversampling, min(tl.shape(matrix)))
+        q = self._range(matrix, width, rng, **generator_kws)
+        b = tl.matmul(_adjoint(q), matrix)
+        u, s, vh = tl.truncated_svd(b, n_eigenvecs=rank)
+        return tl.matmul(q, u[:, :rank]), s[:rank], vh[:rank, :]
+
+    def _decompose_big(self, matrix, rank, **kwargs):
+        return self._decompose(matrix, rank, **kwargs)
 
 
 class TwoSidedRandomSVD(RandomizedSVD):
+    """Independent row/column sketches; small SVD of Q1.H@A@Q2.
+
+    This class has no size-dependent switch to a one-sided method. It is a
+    projection approximation, with no universal optimality guarantee.
     """
-    Randomized Two-Sided SVD with explicit rank parameter support
-    https://scispace.com/pdf/randomized-algorithms-for-computation-of-tucker-1stsnpusvv.pdf
-    """
-    def __init__(self, rank: Optional[int] = None, distortion_factor: float = 0.6, 
-                 random_init: ProjectorGenerator = ProjectorGenerator.normal):
-        super().__init__(rank=rank, distortion_factor=distortion_factor, random_init=random_init)
-        if random_init == ProjectorGenerator.lean_walsh and rank is not None:
-            if not (rank > 0 and (rank & (rank - 1) == 0)):
-                raise ValueError(f"For lean_walsh, rank must be power of 2, got {rank}")
-    
-    def _decompose(self, X: TensorLike, rank: int, **kwargs) -> Tuple[TensorLike, TensorLike, TensorLike]:
-        I, J = tl.shape(X)[-2], tl.shape(X)[-1]
-        random_gen: partial[TensorLike] = self.random_init.value
-        Omega1 = random_gen(J, rank, tl.context(X))
-        Omega2 = random_gen(I, rank, tl.context(X))
-            
-        Y1 = tl.matmul(X, Omega1)
-        Y2 = tl.matmul(tl.transpose(X), Omega2)
-            
-        Q1, _ = tl.qr(Y1, mode='reduced')
-        Q2, _ = tl.qr(Y2, mode='reduced')
-            
-        B = tl.matmul(tl.transpose(Q1), tl.matmul(X, Q2))
-            
-        U_bar, S, Vh_bar = tl.truncated_svd(B, n_eigenvecs=min(tl.shape(B)))
-        U = tl.matmul(Q1, U_bar)
-        Vh = tl.transpose(tl.matmul(Q2, tl.transpose(Vh_bar)))  
-        return U, S, Vh
+    def __init__(self, rank=None, distortion_factor=0.6, random_init=ProjectorGenerator.normal,
+                 random_state=None, oversampling=0, power=0):
+        super().__init__(rank, power, distortion_factor, random_init, random_state, oversampling)
+
+    def _decompose(self, matrix, rank, random_state=None, **generator_kws):
+        rng = self.random_state if random_state is None else normalize_random_state(random_state)
+        width = min(rank + self.oversampling, min(tl.shape(matrix)))
+        q1 = self._range(matrix, width, rng, **generator_kws)
+        q2 = self._range(_adjoint(matrix), width, rng, **generator_kws)
+        b = tl.matmul(_adjoint(q1), tl.matmul(matrix, q2))
+        u, s, vh = tl.truncated_svd(b, n_eigenvecs=rank)
+        return tl.matmul(q1, u[:, :rank]), s[:rank], tl.matmul(vh[:rank, :], _adjoint(q2))
 
 
 class CURDecomposition(Decomposer):
+    """Top-k importance rows/columns with the Moore-Penrose intersection.
+
+    Singular intersections are permitted and yield a finite approximation.
+    Exact recovery requires the samples/intersection to preserve matrix rank;
+    this deterministic selection is not a globally optimal SVD or a JL map.
     """
-    CUR decomposition is a low-rank matrix decomposition method that is based on selecting
-    a subset of columns and rows of the original matrix. The method is based on the
-    Johnson-Lindenstrauss lemma and is used to approximate the original matrix with a
-    low-rank matrix. The CUR decomposition is defined as follows:
-    A = C @ U @ R
-    where A is the original matrix, C is a subset of columns of A, U is a subset of rows of A,
-    and R is a subset of rows of A. The selection of columns and rows is based on the
-    probabilities p and q, which are computed based on the norms of the columns and rows of A.
-    The selection of columns and rows is done in such a way that the approximation error is minimized.
+    def __init__(self, rank=None, distortion_factor=0.6,
+                 random_init=ColumnRowImportancesGenerator.l2_norm, random_state=None):
+        super().__init__(rank, distortion_factor, random_init, random_state)
+        self.column_indices = None
+        self.row_indices = None
 
-    Args:
-        params: the parameters of the operation
-            rank: the rank of the decomposition
-            tolerance: the tolerance of the decomposition
-            return_samples: whether to return the samples or the decomposition matrices
+    def _decompose(self, matrix, rank, **kwargs):
+        from tdecomp.utils import pseudo_inverse
+        c, w, r = self.select_rows_cols(matrix, rank)
+        return c, pseudo_inverse(w), r
 
-    """
+    def _importance(self, matrix):
+        return self.random_init.value(matrix)
 
-    def __init__(self, rank: Optional[Number] = None, distortion_factor: float = 0.6, 
-                 random_init: ColumnRowImportancesGenerator = ColumnRowImportancesGenerator.l2_norm):
-        super().__init__(random_init=random_init, rank=rank, distortion_factor=distortion_factor)
-        
-    def _decompose(self, X: TensorLike, rank: int, **kwargs) -> tuple[TensorLike, TensorLike, TensorLike]:
-        # create sub matrices for CUR-decompostion
-        c, w, r = self.select_rows_cols(X, rank)
-        # evaluate pseudoinverse for W - U^-1
-        u = tdecomp.utils.pseudo_inverse(w)
-        # aprox U using pseudoinverse
-        return c, u, r
+    def select_rows_cols(self, matrix, rank):
+        cols, rows = self._importance(matrix)
+        column_indices = tl.sort(tl.argsort(cols, 0)[-rank:], 0)
+        row_indices = tl.sort(tl.argsort(rows, 0)[-rank:], 0)
+        c, r = matrix[:, column_indices], matrix[row_indices, :]
+        w = r[:, column_indices]
+        self.column_indices, self.row_indices = column_indices, row_indices
+        return c, w, r
 
-    def _importance(self, X) -> tuple[TensorLike, TensorLike]:
-        col_probs, row_probs = cast(ColumnRowImportancesGenerator, self.random_init).value(X)
-        return col_probs, row_probs
-    
+    def compose(self, *factors, **kwargs):
+        c, u, r = factors
+        return tl.matmul(c, tl.matmul(u, r))
 
-    def select_rows_cols(self, X: TensorLike, rank: int) -> tuple[TensorLike, TensorLike, TensorLike]:
-        # Evaluate norms for columns and rows
-        col_probs, row_probs = self._importance(X)
 
-        #topk most important indices
-        column_indices = tl.sort(tl.argsort(col_probs, 0)[-rank:], 0)
-        row_indices = tl.sort(tl.argsort(row_probs, 0)[-rank:], 0)
-
-        C_matrix = X[:, column_indices] 
-        R_matrix = X[row_indices, :]
-        W_matrix = X[row_indices, :][:, column_indices]
-
-        return C_matrix, W_matrix, R_matrix
-
-    def compose(self, *factors: TensorLike, **kwargs) -> TensorLike:
-        C, U, R = factors
-        return tl.matmul(C, tl.matmul(U, R))
-
-__local_names = locals() 
-
-DECOMPOSERS: Dict[str, Decomposer]= {
-    name: __local_names[name] for name in __all__
-}
+DECOMPOSERS = {name: globals()[name] for name in __all__}

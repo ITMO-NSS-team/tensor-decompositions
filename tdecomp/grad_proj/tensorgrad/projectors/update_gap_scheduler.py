@@ -1,195 +1,83 @@
-from typing import Literal
-import matplotlib.pyplot as plt
+import math
+
+UPDATE_MODES = {"fixed", "linear", "cosine", "step", "exponential", "exponential2"}
+
 
 class UpdateGapScheduler:
-    """
-    Scheduler for determining when to update projections during training.
-    
-    This class manages the frequency of projection updates, which can be fixed or
-    change over time according to various schedules (linear, exponential, etc.).
+    """Zero-based projection updates. Fixed gap k updates at 0, k, 2k."""
+    def __init__(self, start, end=None, mode="fixed", batch_size=1, epochs=1,
+                 training_samples=1, verbose=False, total_iters=None):
+        end = start if end is None else end
+        for name, value in (("start", start), ("end", end)):
+            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                raise ValueError(f"{name} must be a positive integer")
+        if mode not in UPDATE_MODES:
+            raise ValueError(f"Unknown update mode={mode!r}")
+        for name, value in (("batch_size", batch_size), ("epochs", epochs), ("training_samples", training_samples)):
+            if value is not None and (isinstance(value, bool) or not isinstance(value, int) or value <= 0):
+                raise ValueError(f"{name} must be a positive integer or None")
+        if total_iters is None:
+            total_iters = math.ceil((training_samples or 1) / (batch_size or 1)) * (epochs or 1)
+        if isinstance(total_iters, bool) or not isinstance(total_iters, int) or total_iters <= 0:
+            raise ValueError("total_iters must be a positive integer")
+        self.update_gap, self.update_gap_end, self.mode = start, end, mode
+        self.batch_size, self.epochs, self.training_samples = batch_size, epochs, training_samples
+        self.iter_per_epoch = math.ceil((training_samples or 1) / (batch_size or 1))
+        self.total_iters, self.verbose = total_iters, verbose
+        self.next_update, self.last_iter = 0, -1
 
-    The main usage - method `should_update`
-    """
-    
-    def __init__(self, start: int, end: int, mode: Literal['fixed', 'linear', 'exponential', 'exponential2'] = "fixed",
-                 batch_size=1, epochs=1, training_samples=1, verbose=False):
-        """
-        Initialize the update gap scheduler.
-        
-        Args:
-            start (int): Initial update interval (iterations between updates)
-            end (int): Final update interval (for non-fixed modes)
-            mode (str, optional): Scheduling mode. Defaults to "fixed".
-            batch_size (int, optional): Batch size used in training. Defaults to 1.
-            epochs (int, optional): Number of training epochs. Defaults to 1.
-            training_samples (int, optional): Number of training samples. Defaults to 1.
-        """
-        self.update_gap = start
-        '''Initial update interval (iterations between updates)'''
-        self.update_gap_end = end
-        '''Final update interval (for non-fixed modes)'''
-        self.mode = mode
-        '''Scheduling mode ('fixed', 'linear', 'exponential', or 'exponential2')'''
-        self.batch_size = batch_size
-        '''batch_size (int): Batch size used in training'''
-        self.epochs = epochs
-        '''epochs (int): Number of training epochs'''
-        self.training_samples = training_samples
-        '''Number of training samples'''
-        self.verbose = verbose
-        
-        # Compute iterations and related values
-        self.iter_per_epoch = self.training_samples / self.batch_size
-        '''Iterations per epoch'''
-        self.total_iters = int(self.iter_per_epoch * self.epochs)
-        '''Total number of iterations in training'''
-        
-        # Initialize the first update at iteration 0
-        self.next_update = 0
-        '''Iteration number for the next scheduled update'''
-        
-        # Only print gap end if not fixed
-        if self.verbose:
-            print(f"Update gap scheduler initialized with {self.update_gap} start, {self.update_gap_end} end, {self.mode} mode"
-                  if self.mode != "fixed" else
-                f"Update gap scheduler initialized with {self.update_gap} start"
-            )
-    
     def compute_gap(self, current_iter):
-        """
-        Compute the next update gap based on current iteration.
-        
-        The update gap changes over time according to the specified mode.
-        
-        Args:
-            current_iter (int): Current iteration number
-            
-        Returns:
-            float: The computed update gap (iterations until next update)
-            
-        Raises:
-            ValueError: If an unknown scheduler mode is specified
-        """
+        progress = min(1.0, max(0.0, current_iter / self.total_iters))
+        start, end = self.update_gap, self.update_gap_end
         if self.mode == "fixed":
-            return self.update_gap
+            value = start
         elif self.mode == "linear":
-            progress = self.next_update / self.total_iters
-            return self.update_gap + (self.update_gap_end - self.update_gap) * progress
-        elif self.mode == "exponential":
-            progress = self.next_update / self.total_iters
-            return self.update_gap * ((self.update_gap_end / self.update_gap) ** progress)
-        elif self.mode == "exponential2":
-            # More aggressive exponential growth by squaring the progress
-            progress = (self.next_update / self.total_iters) ** 2
-            return self.update_gap * ((self.update_gap_end / self.update_gap) ** progress)
+            value = start + (end - start) * progress
+        elif self.mode == "cosine":
+            value = start + (end - start) * (1 - math.cos(math.pi * progress)) / 2
+        elif self.mode == "step":
+            value = end if progress >= 0.5 else start
         else:
-            raise ValueError(f"Unknown scheduler mode: {self.mode}")
-    
-    def should_update(self, current_iter: int) -> bool:
-        """
-        Check if we should update at the current iteration.
-        
-        This method is called during training to determine if it's time
-        to update the projections.
-        """
-        if current_iter >= self.next_update:
-            current_gap = max(1, int(self.compute_gap(current_iter)))
-            self.next_update = current_iter + current_gap
-            return True
-        return False
-            
-    def print_update_steps(self):
-        """
-        Simulate and print the update schedule without affecting the scheduler's state.
-        
-        This method is useful for debugging and visualizing the update schedule
-        before training begins.
-        """
-        list_of_updates = []
-        next_update_sim = 0
-        
-        # For epoch statistics
-        epoch_updates = [[] for _ in range(self.epochs)]
-        
-        for i in range(self.total_iters):
-            if i >= next_update_sim:
-                progress = next_update_sim / self.total_iters
-                if self.mode == "fixed":
-                    current_gap = self.update_gap
-                elif self.mode == "linear":
-                    current_gap = self.update_gap + (self.update_gap_end - self.update_gap) * progress
-                elif self.mode == "exponential":
-                    current_gap = self.update_gap * ((self.update_gap_end / self.update_gap) ** progress)
-                elif self.mode == "exponential2":
-                    progress = progress ** 2  # Square the progress for more aggressive growth
-                    current_gap = self.update_gap * ((self.update_gap_end / self.update_gap) ** progress)
-                
-                current_gap = max(1, int(current_gap))
-                list_of_updates.append((i, current_gap))
-                
-                # Track updates per epoch
-                current_epoch = int(i / self.iter_per_epoch)
-                if current_epoch < self.epochs:
-                    epoch_updates[current_epoch].append(current_gap)
-                
-                next_update_sim = i + current_gap
-        
-        print(f"Update schedule simulation: {list_of_updates}")
-        
-        # Print epoch statistics
-        print("\nEpoch-wise statistics:")
-        for epoch, gaps in enumerate(epoch_updates):
-            if gaps:
-                avg_gap = sum(gaps) / len(gaps)
-                print(f"Epoch {epoch}: average gap = {avg_gap:.2f} ({len(gaps)} updates)")
-            
-    def plot_update_schedule(self, save_path=None):
-        """
-        Plot the update schedule showing intervals over iterations.
-        
-        This method creates a visualization of how the update interval
-        changes over the course of training.
-        
-        Args:
-            save_path (str, optional): If provided, saves the plot to this path.
-                                     If None, displays the plot.
-        """
-        # Simulate the schedule
-        iterations = []
-        gaps = []
-        next_update_sim = 0
-        
-        for i in range(self.total_iters):
-            if i >= next_update_sim:
-                progress = next_update_sim / self.total_iters
-                if self.mode == "fixed":
-                    current_gap = self.update_gap
-                elif self.mode == "linear":
-                    current_gap = self.update_gap + (self.update_gap_end - self.update_gap) * progress
-                elif self.mode == "exponential":
-                    current_gap = self.update_gap * ((self.update_gap_end / self.update_gap) ** progress)
-                elif self.mode == "exponential2":
-                    progress = progress ** 2
-                    current_gap = self.update_gap * ((self.update_gap_end / self.update_gap) ** progress)
-                
-                current_gap = max(1, int(current_gap))
-                iterations.append(i)
-                gaps.append(current_gap)
-                next_update_sim = i + current_gap
+            value = start * (end / start) ** (progress**2 if self.mode == "exponential2" else progress)
+        return max(1, int(value))
 
-        # Create the plot
-        plt.figure(figsize=(10, 6))
-        plt.plot(iterations, gaps, 'b.-', label='Update Interval')
-        
-        plt.title(f'Update Interval Schedule ({self.mode} mode)')
-        plt.xlabel('Iteration')
-        plt.ylabel('Update Interval')
-        plt.grid(True, alpha=0.3)
-        plt.legend()
-        
-        # Either save or display the plot
+    def should_update(self, current_iter):
+        if isinstance(current_iter, bool) or not isinstance(current_iter, int) or current_iter < self.last_iter or current_iter < 0:
+            raise ValueError("iteration must be a nonnegative, nondecreasing integer")
+        self.last_iter = current_iter
+        if current_iter < self.next_update:
+            return False
+        self.next_update = current_iter + self.compute_gap(current_iter)
+        return True
+
+    step = should_update
+
+    def state_dict(self):
+        return {"version": 1, "start": self.update_gap, "end": self.update_gap_end, "mode": self.mode,
+                "batch_size": self.batch_size, "epochs": self.epochs, "training_samples": self.training_samples,
+                "total_iters": self.total_iters, "next_update": self.next_update, "last_iter": self.last_iter}
+
+    def load_state_dict(self, state):
+        if state.get("version") != 1 or not {"start", "end", "mode", "total_iters", "next_update", "last_iter"} <= state.keys():
+            raise ValueError("unsupported or incomplete update schedule state")
+        restored = type(self)(state["start"], state["end"], state["mode"], state.get("batch_size"),
+                              state.get("epochs"), state.get("training_samples"), total_iters=state["total_iters"])
+        if not isinstance(state["next_update"], int) or not isinstance(state["last_iter"], int) or state["last_iter"] < -1 or state["next_update"] <= state["last_iter"]:
+            raise ValueError("invalid update schedule position")
+        restored.next_update, restored.last_iter = state["next_update"], state["last_iter"]
+        self.__dict__.update(restored.__dict__)
+
+    def simulate_update_schedule(self):
+        simulation = type(self)(self.update_gap, self.update_gap_end, self.mode, total_iters=self.total_iters)
+        return [(i, simulation.compute_gap(i)) for i in range(self.total_iters) if simulation.should_update(i)]
+
+    def plot_update_schedule(self, save_path=None):
+        import matplotlib.pyplot as plt
+        schedule = self.simulate_update_schedule()
+        figure, axis = plt.subplots()
+        axis.plot([x[0] for x in schedule], [x[1] for x in schedule], ".-")
+        axis.set(xlabel="Iteration", ylabel="Update interval", title=self.mode)
         if save_path:
-            plt.savefig(save_path)
-            plt.close()
-        else:
-            plt.show()
+            figure.savefig(save_path)
+            plt.close(figure)
+        return figure

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,8 +7,8 @@ name = "tdecomp"
 version = "0.2.4"
 description = "Library for tensor and matrix decompositions applications"
 readme = "README.md"
-requires-python = "==3.10.*"
-license = {file = "LICENSE"}  # Updated license format
+requires-python = ">=3.10,<3.13"
+license = {text = "BSD License"}
 authors = [
     {name = "Leon Strelkov", email = "strelllleo@mail.ru"}
 ]
@@ -16,17 +16,27 @@ keywords = ["tensor decompositions", "matrix decompositions", "randomized algori
 classifiers = [
     "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 dependencies = [
-    "matplotlib>=3.7.5",
-    "tensorflow>=2.13.1",
-    "tensorly",  # Fixed: removed invalid wildcard
-    "torch",     # Fixed: removed invalid wildcard
+    "numpy>=1.26.4,<2",
+    "tensorly>=0.9.0,<0.10",
+    "torch>=2.2,<2.6",
 ]
 
+[project.optional-dependencies]
+tensorflow = ["tensorflow>=2.16.2,<2.17"]
+distributed = ["torch>=2.4,<2.6"]
+visualization = ["matplotlib>=3.7.5,<4"]
+test = ["pytest>=7.2,<9", "build>=1,<2", "twine>=5,<7"]
+experiments = ["matplotlib>=3.7.5,<4", "psutil>=5.9,<8", "pandas>=2.1,<3"]
+training = ["transformers>=4.46,<5", "accelerate>=1,<2", "datasets>=3,<5", "evaluate>=0.4,<1", "mlflow>=2.17,<4"]
+profiling = ["nvidia-ml-py>=12,<14"]
+
 [project.urls]
-Homepage = "https://github.com/leostre/tensor-decompositions.git"
+Homepage = "https://github.com/ITMO-NSS-team/tensor-decompositions"
 
 # If you want to include both packages, use:
 # packages = ["tdecomp", "experiments"]
@@ -36,15 +46,8 @@ Homepage = "https://github.com/leostre/tensor-decompositions.git"
 include = ["tdecomp*"]  # Include tdecomp and all subpackages
 exclude = ["tests*", "experiments*"]  # Exclude test/experiment packages
 
-[dependency-groups]
-experiments = [
-    "accelerate>=1.0.1",
-    "datasets>=3.1.0",
-    "evaluate>=0.4.6",
-    "ipykernel>=6.29.5",
-    "mlflow[auth]>=2.17.2",
-    "nvidia-ml-py>=13.590.48",
-    "scikit-learn>=1.3.2",
-    "seaborn>=0.13.2",
-    "transformers>=4.46.3",
-]
+[tool.setuptools]
+include-package-data = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

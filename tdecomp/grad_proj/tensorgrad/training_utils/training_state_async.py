@@ -10,12 +10,16 @@ from torch import nn
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 
-import torch.distributed.checkpoint as dcp
-from torch.distributed.checkpoint.stateful import Stateful
-from torch.distributed.checkpoint.state_dict import get_state_dict, set_state_dict
-from torch.distributed.checkpoint.format_utils import dcp_to_torch_save
+def _distributed_api():
+    try:
+        import torch.distributed.checkpoint as dcp
+        from torch.distributed.checkpoint.state_dict import get_state_dict, set_state_dict
+        from torch.distributed.checkpoint.format_utils import dcp_to_torch_save
+    except ImportError as exc:
+        raise ImportError("asynchronous distributed checkpoints require tdecomp[distributed] with PyTorch >= 2.4") from exc
+    return dcp, get_state_dict, set_state_dict, dcp_to_torch_save
 
-class AppState(Stateful):
+class AppState:
     """This is a useful wrapper for checkpointing the Application State. Since this object is compliant
     with the Stateful protocol, DCP will automatically call state_dict/load_stat_dict as needed in the
     dcp.save/load APIs.
@@ -29,6 +33,7 @@ class AppState(Stateful):
         self.optimizer = optimizer
 
     def state_dict(self):
+        _, get_state_dict, _, _ = _distributed_api()
         # this line automatically manages FSDP FQN's, as well as sets the default state dict type to FSDP.SHARDED_STATE_DICT
         model_state, opt_state = get_state_dict(self.model, self.optimizer)
         return {
@@ -37,6 +42,7 @@ class AppState(Stateful):
         }
 
     def load_state_dict(self, state_dict):
+        _, _, set_state_dict, _ = _distributed_api()
         set_state_dict(
             self.model,
             self.optimizer,
@@ -44,7 +50,7 @@ class AppState(Stateful):
             optim_state_dict=state_dict["optimizer"]
         )
 
-def load_training_state(save_dir: Union[str, Path], 
+def load_training_state(save_dir: Union[str, Path],
                         save_name: str,
                         model: nn.Module,
                         optimizer: nn.Module = None,
@@ -80,6 +86,7 @@ def load_training_state(save_dir: Union[str, Path],
     dict
         loaded model, optimizer, scheduler, regularizer, and epoch.
     """
+    _, _, _, dcp_to_torch_save = _distributed_api()
     if isinstance(save_dir, str):
         save_dir = Path(save_dir)
 
@@ -157,7 +164,7 @@ def load_training_state(save_dir: Union[str, Path],
     if distributed and dist.is_initialized():
         rank = dist.get_rank()
         model = DDP(model, device_ids=[rank], output_device=rank)
-        
+
     return model, optimizer, scheduler, regularizer, epoch
 
 
@@ -171,6 +178,7 @@ def save_training_state(
     epoch: int=None,
     ) -> None:
 
+    dcp, _, _, _ = _distributed_api()
     if isinstance(save_dir, str):
         save_dir = Path(save_dir)
     save_dir.mkdir(exist_ok=True, parents=True)
