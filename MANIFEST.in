@@ -1,0 +1,3 @@
+recursive-include examples *.py
+include Dockerfile docker-compose.yaml .dockerignore
+recursive-include docs/audit *.md
