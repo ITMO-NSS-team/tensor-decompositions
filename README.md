@@ -1,6 +1,6 @@
 # tensor-decompositions
 
-`tdecomp` предоставляет SVD, CUR, разложения Tucker и оптимизатор TensorGRaD.
+`tdecomp` предоставляет SVD, CUR, разложения Tucker и CP, а также оптимизатор TensorGRaD.
 Переносимая вычислительная граница `tdecomp.api` предназначена для плотной
 вещественной SVD на CPU; у остальных модулей свои параметры и результаты.
 
@@ -121,6 +121,7 @@ import tensorly as tl
 from tdecomp.matrix.functional import rsvd
 from tdecomp.matrix.decomposer import CURDecomposition
 from tdecomp.tensor.tucker import RSTHOSVDDecomposition
+from tdecomp.tensor import CPDecomposition
 
 with tl.backend_context("numpy"):
     X = np.random.default_rng(5).normal(size=(12, 8))
@@ -133,6 +134,9 @@ with tl.backend_context("numpy"):
     tucker = RSTHOSVDDecomposition(rank=(3, 2, 2), random_state=6)
     core, factors = tucker.decompose(tensor)
     tensor_approx = tucker.compose(core, factors)
+    cp = CPDecomposition(rank=2, random_state=6)
+    weights, factors = cp.decompose(tensor)
+    cp_approx = cp.compose(weights, factors)
 ```
 
 В `matrix.decomposer` доступны `SVDDecomposition`, `RandomizedSVD`,
@@ -142,13 +146,24 @@ with tl.backend_context("numpy"):
 вызывают ошибку. Реестры `DECOMPOSERS`, `RANDOM_GENS`, `IMPORTANCE_GENS`
 содержат только объявленные операции.
 
-Целый ранг классического API ограничивается размером оси. Дробь в `(0,1]`
+Целый ранг SVD, CUR и Tucker ограничивается размером оси. Дробь в `(0,1]`
 означает долю соответствующего размера, с округлением вниз и минимумом 1.
 `None` использует настроенный ранг; точная SVD без настройки возвращает полный
 спектр, случайные методы могут выбрать ранг по своей оценке. Ранги пересчитываются
 для каждого входа и не заменяют настройку объекта. Для Tucker доступны
 `RPHOSVDDecomposition`, `RSTHOSVDDecomposition`, `RSTDecomposition`,
 `HOOIDecomposition`; результат — `(core, factors)` с модальными факторами.
+
+Для CP доступен `CPDecomposition`; результат — `(weights, factors)`, где
+`weights` имеет форму `(rank,)`, а каждый фактор — `(mode_size, rank)`.
+Целый ранг задаёт общее число CP-компонент и не ограничивается размером
+отдельной моды. Дробный ранг задаёт долю от минимального размера входа
+с округлением вниз и минимум одной компонентой; `None` выбирает минимальный
+размер. Последовательность должна содержать одно значение либо одинаковое
+число компонент для всех мод. Массивы сохраняют тип данных и устройство входа.
+ALS решает невыпуклую задачу и не гарантирует оптимальную аппроксимацию;
+`n_iterations_` показывает фактическое число шагов.
+
 CUR возвращает `(C, middle, R)`, реконструкция равна `C @ middle @ R`.
 
 В классическом API `set_conditioner(C)` решает задачу аппроксимации взвешенной
