@@ -5,6 +5,11 @@ on:
   push:
     branches: [main, release-0.3]
   workflow_call:
+    inputs:
+      require_license:
+        description: Require approved license metadata before publishing
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -69,6 +74,9 @@ jobs:
       - name: Build wheel from sdist
         run: python -m pip wheel --no-deps dist/*.tar.gz --wheel-dir from-sdist
       - name: Validate metadata and installed native public imports
+        run: python tools/verify_distribution.py dist/*.whl from-sdist/*.whl
+      - name: Require license before release
+        if: inputs.require_license
         run: python tools/verify_distribution.py dist/*.whl from-sdist/*.whl --require-license
       - run: python -m twine check dist/*
       - uses: actions/upload-artifact@v4

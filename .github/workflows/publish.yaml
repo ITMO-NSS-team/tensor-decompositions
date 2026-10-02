@@ -10,6 +10,8 @@ permissions:
 jobs:
   acceptance:
     uses: ./.github/workflows/ci.yaml
+    with:
+      require_license: true
 
   publish-testpypi:
     needs: acceptance
