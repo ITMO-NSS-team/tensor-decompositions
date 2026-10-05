@@ -35,6 +35,88 @@ def test_rank_one_roundtrip_and_native_context(backend, dtype):
     assert 1 <= dec.n_iterations_ < dec.n_iter_max
 
 
+@pytest.mark.parametrize('dtype', ['float32', 'complex64'])
+@pytest.mark.parametrize('scale', [1e-12, 1.0, 1e12])
+def test_scaled_rank_one_uses_direct_relative_residual(backend, dtype, scale):
+    x = rank_one(dtype=dtype) * scale
+    if dtype.startswith('complex'):
+        x = x * (1 + 2j)
+    dec = CPDecomposition(rank=1, random_state=7, normalize_factors=True, tol=1e-5)
+    weights, factors = dec.decompose(x)
+    reconstructed = tl.to_numpy(dec.compose(weights, factors))
+    # Accumulate the independent reference in double precision. A relative
+    # check must hold at every scale, rather than pass due to an absolute atol.
+    reference_dtype = np.complex128 if dtype.startswith('complex') else np.float64
+    reference = tl.to_numpy(x).astype(reference_dtype)
+    direct_error = np.linalg.norm(reference - reconstructed.astype(reference_dtype)) / np.linalg.norm(reference)
+    assert direct_error < dec.tol
+    assert 1 <= dec.n_iterations_ < dec.n_iter_max
+    assert len(dec.errors_) == dec.n_iterations_
+    np.testing.assert_allclose(dec.errors_[-1], direct_error, rtol=2e-6, atol=2e-7)
+    assert all(tl.context(value) == tl.context(x) for value in (weights, *factors))
+
+
+def test_rank_one_stops_despite_unstable_tensorly_error_estimates(backend, monkeypatch):
+    import tensorly.decomposition._cp as tensorly_cp
+
+    original_error_calc = tensorly_cp.error_calc
+    estimated_steps = 0
+
+    def alternating_roundoff(*args, **kwargs):
+        nonlocal estimated_steps
+        unnormalized_error, tensor, norm = original_error_calc(*args, **kwargs)
+        mttkrp = kwargs.get('mttkrp', args[6] if len(args) > 6 else None)
+        if mttkrp is not None:
+            # Reproduce the cancellation floor deterministically, independently
+            # of the BLAS reduction order used by the host.
+            estimated_steps += 1
+            unnormalized_error = norm * (1e-3 if estimated_steps % 2 else 0.0)
+        return unnormalized_error, tensor, norm
+
+    monkeypatch.setattr(tensorly_cp, 'error_calc', alternating_roundoff)
+    x = rank_one(dtype='float32')
+    dec = CPDecomposition(rank=1, random_state=7, normalize_factors=True, tol=1e-5)
+    dec.decompose(x)
+    assert estimated_steps >= 1
+    assert dec.n_iterations_ < 100
+    assert float(dec.get_approximation_error(x)) < dec.tol
+    assert dec.errors_[-1] < dec.tol
+
+
+def test_slow_als_is_not_stopped_by_a_spurious_error_plateau(backend, monkeypatch):
+    import tensorly.decomposition._cp as tensorly_cp
+
+    original_error_calc = tensorly_cp.error_calc
+
+    def spurious_plateau(*args, **kwargs):
+        unnormalized_error, tensor, norm = original_error_calc(*args, **kwargs)
+        mttkrp = kwargs.get('mttkrp', args[6] if len(args) > 6 else None)
+        if mttkrp is not None:
+            unnormalized_error = norm * 0.5
+        return unnormalized_error, tensor, norm
+
+    x = tl.tensor(np.random.default_rng(18).normal(size=(6, 7, 8)).astype('float32'))
+    baseline = CPDecomposition(rank=2, random_state=7, n_iter_max=12, tol=0)
+    baseline.decompose(x)
+    monkeypatch.setattr(tensorly_cp, 'error_calc', spurious_plateau)
+    dec = CPDecomposition(rank=2, random_state=7, n_iter_max=12, tol=1e-12)
+    dec.decompose(x)
+    assert dec.n_iterations_ == 12
+    assert dec.errors_[-1] > 0.5
+    assert dec.errors_[0] - dec.errors_[-1] > 0.05
+    np.testing.assert_allclose(tl.to_numpy(dec.compose(dec.weights_, dec.factors_)),
+                               tl.to_numpy(baseline.compose(baseline.weights_, baseline.factors_)),
+                               rtol=1e-6, atol=1e-6)
+
+
+def test_numpy_scalar_tolerance_can_stop_the_solver(backend):
+    x = rank_one(dtype='float32')
+    dec = CPDecomposition(rank=1, random_state=7, tol=np.float32(1e-5))
+    dec.decompose(x)
+    assert dec.n_iterations_ < dec.n_iter_max
+    assert dec.errors_[-1] < dec.tol
+
+
 def test_component_rank_is_not_a_tucker_modal_rank(backend):
     # A (2,2,2) tensor can have real CP rank 3: components must not be capped
     # by the smallest mode. Use a zero tensor to avoid a nonunique ALS fit.
@@ -134,14 +216,26 @@ def test_random_stream_is_local_and_integer_seed_reproducible(backend, seed):
 
 
 @pytest.mark.parametrize('linesearch', [False, True])
-def test_actual_iteration_count_with_disabled_tolerance(backend, linesearch):
+@pytest.mark.parametrize('tolerance', [0, None])
+def test_actual_iteration_count_with_disabled_tolerance(backend, linesearch, tolerance):
     x = tl.tensor(np.random.default_rng(4).normal(size=(3, 4, 5)))
-    dec = CPDecomposition(rank=2, random_state=9, n_iter_max=10, tol=0, linesearch=linesearch)
+    dec = CPDecomposition(rank=2, random_state=9, n_iter_max=10, tol=tolerance, linesearch=linesearch)
     dec.decompose(x)
     assert dec.n_iterations_ == 10
     assert 0 < len(dec.errors_) <= 10
     if linesearch:
         assert len(dec.errors_) < dec.n_iterations_
+
+
+def test_direct_error_history_includes_line_search_steps(backend):
+    x = tl.tensor(np.random.default_rng(18).normal(size=(6, 7, 8)).astype('float32'))
+    dec = CPDecomposition(rank=2, random_state=7, n_iter_max=10,
+                          tol=1e-12, linesearch=True)
+    dec.decompose(x)
+    assert dec.n_iterations_ == 10
+    assert len(dec.errors_) == dec.n_iterations_
+    assert np.isfinite(dec.errors_).all()
+    np.testing.assert_allclose(dec.errors_[-1], float(dec.get_approximation_error(x)), rtol=2e-6)
 
 
 def test_per_call_options_and_seed_override(backend):

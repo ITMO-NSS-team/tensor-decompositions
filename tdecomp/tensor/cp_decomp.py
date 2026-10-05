@@ -46,6 +46,13 @@ class CPDecomposition(TensorDecomposer):
     random_init is retained for constructor compatibility; TensorLy controls
     initialization through init. None creates a local stream; integers create
     reproducible streams.
+
+    A positive tol stops when the direct relative reconstruction error is at
+    most tol, or its absolute change between ALS steps is below tol. This
+    requires one dense reconstruction per step and errors_ records those direct
+    residuals, including line-search steps. tol=0 or None disables tolerance
+    stopping and retains TensorLy's error history. A small change in error does
+    not certify an optimal CP fit.
     """
     def __init__(self, rank=None, random_init=ProjectorGenerator.normal,
                  n_iter_max=100, tol=1e-6, init='random',
@@ -103,16 +110,41 @@ class CPDecomposition(TensorDecomposer):
             errors, iterations = [], 0
         else:
             callbacks = 0
+            direct_errors = []
+            tolerance = None if options['tol'] is None else float(options['tol'])
+            check_convergence = tolerance is not None and tolerance > 0
+            if check_convergence:
+                # Scaling avoids overflow/underflow in the squared norm without
+                # changing the ALS input or factor dtype/device.
+                error_scale = tl.max(tl.abs(tensor))
+                scaled_norm = tl.norm(tensor / error_scale, order=2)
 
             def count_iteration(cp_tensor, error):
                 nonlocal callbacks
                 callbacks += 1
+                if check_convergence and callbacks > 1:
+                    # TensorLy's fast norm identity subtracts almost equal
+                    # squares near an exact fit. In float32 its error can jump
+                    # by O(sqrt(eps)), even when the true residual is O(eps).
+                    residual = (tensor - cp_to_tensor(cp_tensor)) / error_scale
+                    current_error = float(tl.norm(residual, order=2) / scaled_norm)
+                    previous_error = direct_errors[-1] if direct_errors else None
+                    direct_errors.append(current_error)
+                    return current_error <= tolerance or (
+                        previous_error is not None
+                        and abs(previous_error - current_error) < tolerance
+                    )
 
             # TensorLy accepts RandomState/int, rather than NumPy Generator.
             seed = int(rng_integers(rng, 0, 2**31 - 1))
-            solver = CP(rank=rank, random_state=seed, callback=count_iteration, **options)
+            solver_options = dict(options)
+            if check_convergence:
+                # Only the direct residual may trigger tolerance stopping;
+                # TensorLy still calculates its errors for line-search choices.
+                solver_options['tol'] = 0
+            solver = CP(rank=rank, random_state=seed, callback=count_iteration, **solver_options)
             cp_tensor = solver.fit_transform(tensor)
-            errors = [float(error) for error in solver.errors_]
+            errors = direct_errors if check_convergence else [float(error) for error in solver.errors_]
             # TensorLy calls back for initialization and after every ALS step,
             # including line-search steps omitted from solver.errors_.
             iterations = callbacks - 1
