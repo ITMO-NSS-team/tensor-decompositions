@@ -7,6 +7,7 @@ from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import TensorDataset
 
+pytest.importorskip("torchvision", reason="real neural experiment optional dependency")
 from experiments.hypotheses import run_h12_real as h12
 
 

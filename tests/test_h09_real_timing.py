@@ -8,6 +8,7 @@ import pytest
 import torch
 from torch import nn
 
+pytest.importorskip("torchvision", reason="real neural experiment optional dependency")
 from experiments.hypotheses import run_h09_real as h09
 
 
