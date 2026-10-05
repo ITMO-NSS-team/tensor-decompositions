@@ -1,0 +1,623 @@
+[
+  {
+    "seed": 101,
+    "rule": "functional",
+    "pair": [
+      [
+        64,
+        64
+      ],
+      [
+        64,
+        64
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.8403333333333334,
+      "cross_entropy": 0.5353489869435628,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.8393333333333334,
+      "cross_entropy": 0.5240140794118245,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8386666666666667,
+      "cross_entropy": 0.4954583066304525,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 22.917550199999823,
+    "fixed_factor_seconds": 0.08239469999898574,
+    "fixed_initial32_seconds": 0,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 5.970477900002152,
+    "recovery_seconds": 21.735726799997792,
+    "measured_additional_training_and_search_seconds": 50.70614959999875,
+    "measured_cost_seconds_per_image": 0.00949461496065378,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.424000000653905,
+      "p95_ms": 5.174159999478434,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.432949999682023,
+      "p95_ms": 4.7675900013928185,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 122880,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 0.16666666666666666,
+    "mathematical_storage_reduction": true,
+    "checkpoint_sha256": "1d326a9c385fc96dda369d84bc921e2f5462d47dd9f6a619e5cc4230c2ee5066",
+    "status": "completed",
+    "peak_ram_bytes": 1876688896,
+    "peak_gpu_allocated_bytes": 259773952,
+    "peak_gpu_reserved_bytes": 562036736
+  },
+  {
+    "seed": 101,
+    "rule": "fractional",
+    "pair": [
+      [
+        96,
+        96
+      ],
+      [
+        192,
+        192
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.8403333333333334,
+      "cross_entropy": 0.5353489869435628,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.8393333333333334,
+      "cross_entropy": 0.5200071608225505,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8393333333333334,
+      "cross_entropy": 0.49408912467956545,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 23.228848599999765,
+    "fixed_factor_seconds": 0.08187719999841647,
+    "fixed_initial32_seconds": 0,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 4.465996400002041,
+    "recovery_seconds": 19.940235400001256,
+    "measured_additional_training_and_search_seconds": 47.71695760000148,
+    "measured_cost_seconds_per_image": 0.009150145761240857,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.378450001240708,
+      "p95_ms": 4.818164997959683,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.302850000385661,
+      "p95_ms": 4.4760799983123425,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 537600,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 0.7291666666666666,
+    "mathematical_storage_reduction": true,
+    "checkpoint_sha256": "02a239b3206e7b1b13308c11705f373a3efc6a281c984baa1a3805c66e44edd5",
+    "status": "completed",
+    "peak_ram_bytes": 1873698816,
+    "peak_gpu_allocated_bytes": 255294976,
+    "peak_gpu_reserved_bytes": 562036736
+  },
+  {
+    "seed": 101,
+    "rule": "energy",
+    "pair": [
+      [
+        128,
+        128
+      ],
+      [
+        256,
+        256
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.8403333333333334,
+      "cross_entropy": 0.5353489869435628,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.839,
+      "cross_entropy": 0.5070064811706543,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8393333333333334,
+      "cross_entropy": 0.4976866569519043,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 20.930821599999035,
+    "fixed_factor_seconds": 0.08417609999742126,
+    "fixed_initial32_seconds": 0,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 4.37273020000066,
+    "recovery_seconds": 22.14615330000015,
+    "measured_additional_training_and_search_seconds": 47.53388119999727,
+    "measured_cost_seconds_per_image": 0.009169788120991142,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.416400000991416,
+      "p95_ms": 5.19373000061023,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.343499998867628,
+      "p95_ms": 4.686064999077643,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 901120,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 1.2222222222222223,
+    "mathematical_storage_reduction": false,
+    "checkpoint_sha256": "5c638922bcb7bb46b1197596c757c79d9459fa67c80b5d5679094ca0255078c2",
+    "status": "completed",
+    "peak_ram_bytes": 1877184512,
+    "peak_gpu_allocated_bytes": 266642944,
+    "peak_gpu_reserved_bytes": 562036736
+  },
+  {
+    "seed": 202,
+    "rule": "functional",
+    "pair": [
+      [
+        64,
+        64
+      ],
+      [
+        64,
+        64
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.8453333333333334,
+      "cross_entropy": 0.5097913093566895,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.8383333333333334,
+      "cross_entropy": 0.5111562201182047,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.844,
+      "cross_entropy": 0.47701551946004234,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 22.917550199999823,
+    "fixed_factor_seconds": 0.9450368999969214,
+    "fixed_initial32_seconds": 0.9721543000014208,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 4.21032170000035,
+    "recovery_seconds": 20.39480089999779,
+    "measured_additional_training_and_search_seconds": 49.439863999996305,
+    "measured_cost_seconds_per_image": 0.00933673640098823,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.392750000988599,
+      "p95_ms": 5.63364000081492,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.358250000223052,
+      "p95_ms": 4.601265002020227,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 122880,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 0.16666666666666666,
+    "mathematical_storage_reduction": true,
+    "checkpoint_sha256": "80745025077c955ca8558510a0972aabe91fb85aae325377c60099743a0f91bc",
+    "status": "completed",
+    "peak_ram_bytes": 1878331392,
+    "peak_gpu_allocated_bytes": 263212544,
+    "peak_gpu_reserved_bytes": 562036736
+  },
+  {
+    "seed": 202,
+    "rule": "fractional",
+    "pair": [
+      [
+        96,
+        96
+      ],
+      [
+        192,
+        192
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.8453333333333334,
+      "cross_entropy": 0.5097913093566895,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.8396666666666667,
+      "cross_entropy": 0.5025970624287923,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8436666666666667,
+      "cross_entropy": 0.476620454788208,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 23.228848599999765,
+    "fixed_factor_seconds": 1.1179919999995036,
+    "fixed_initial32_seconds": 0.9960973000015656,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 4.504912100001093,
+    "recovery_seconds": 20.602206400002615,
+    "measured_additional_training_and_search_seconds": 50.45005640000454,
+    "measured_cost_seconds_per_image": 0.009439155638916417,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.394149998915964,
+      "p95_ms": 5.685709999670507,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.33570000132022,
+      "p95_ms": 5.249724996792791,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 537600,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 0.7291666666666666,
+    "mathematical_storage_reduction": true,
+    "checkpoint_sha256": "3a6ef5907cb87feeabc99c9ec82fd0325717a8ba248ebcc126022e87296c9171",
+    "status": "completed",
+    "peak_ram_bytes": 1874497536,
+    "peak_gpu_allocated_bytes": 259332608,
+    "peak_gpu_reserved_bytes": 562036736
+  },
+  {
+    "seed": 202,
+    "rule": "energy",
+    "pair": [
+      [
+        128,
+        128
+      ],
+      [
+        256,
+        256
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.8453333333333334,
+      "cross_entropy": 0.5097913093566895,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.8336666666666667,
+      "cross_entropy": 0.5008746026357015,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.845,
+      "cross_entropy": 0.48372065353393556,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 20.930821599999035,
+    "fixed_factor_seconds": 0.014808200001425575,
+    "fixed_initial32_seconds": 1.018314900000405,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 4.801309200000105,
+    "recovery_seconds": 21.582770799999707,
+    "measured_additional_training_and_search_seconds": 48.34802470000068,
+    "measured_cost_seconds_per_image": 0.009194252468446575,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.359449998446507,
+      "p95_ms": 5.04410499925143,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.311450000386685,
+      "p95_ms": 6.049370000437191,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 901120,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 1.2222222222222223,
+    "mathematical_storage_reduction": false,
+    "checkpoint_sha256": "95dbeff6d5d3b99dec7df5a8131b27f87d894ded11fb2f2fcc53f8b45a15c93e",
+    "status": "completed",
+    "peak_ram_bytes": 1878581248,
+    "peak_gpu_allocated_bytes": 267346432,
+    "peak_gpu_reserved_bytes": 562036736
+  },
+  {
+    "seed": 303,
+    "rule": "functional",
+    "pair": [
+      [
+        64,
+        64
+      ],
+      [
+        64,
+        64
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.847,
+      "cross_entropy": 0.5221703446706136,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.844,
+      "cross_entropy": 0.516480328877767,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.4900405559539795,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 22.917550199999823,
+    "fixed_factor_seconds": 0.8391572999971686,
+    "fixed_initial32_seconds": 1.0204021999998076,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 4.590978000000177,
+    "recovery_seconds": 20.2438067999974,
+    "measured_additional_training_and_search_seconds": 49.61189449999438,
+    "measured_cost_seconds_per_image": 0.009410689450191058,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.44950000019162,
+      "p95_ms": 5.339064997679088,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.429000000527594,
+      "p95_ms": 4.781634998289519,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 122880,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 0.16666666666666666,
+    "mathematical_storage_reduction": true,
+    "checkpoint_sha256": "c9b4ae12b33da20077c84328a19f2b4c9d98b4e900a226eb03ff8f87a2b59060",
+    "status": "completed",
+    "peak_ram_bytes": 1878544384,
+    "peak_gpu_allocated_bytes": 261967360,
+    "peak_gpu_reserved_bytes": 562036736
+  },
+  {
+    "seed": 303,
+    "rule": "fractional",
+    "pair": [
+      [
+        96,
+        96
+      ],
+      [
+        192,
+        192
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.847,
+      "cross_entropy": 0.5221703446706136,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.844,
+      "cross_entropy": 0.5114049313863118,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8436666666666667,
+      "cross_entropy": 0.4863743743896484,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 23.228848599999765,
+    "fixed_factor_seconds": 0.7797131999977864,
+    "fixed_initial32_seconds": 1.037973200000124,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 4.506950800001505,
+    "recovery_seconds": 21.183702300000732,
+    "measured_additional_training_and_search_seconds": 50.73718809999991,
+    "measured_cost_seconds_per_image": 0.009480468810271123,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.406750000271131,
+      "p95_ms": 4.636930000378924,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.433000000062748,
+      "p95_ms": 5.495659998632616,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 537600,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 0.7291666666666666,
+    "mathematical_storage_reduction": true,
+    "checkpoint_sha256": "52bdd17364b1d3a1ea8f47cb3e120a72fa4b0be34229b2945a9656483c5968a4",
+    "status": "completed",
+    "peak_ram_bytes": 1875050496,
+    "peak_gpu_allocated_bytes": 258382336,
+    "peak_gpu_reserved_bytes": 562036736
+  },
+  {
+    "seed": 303,
+    "rule": "energy",
+    "pair": [
+      [
+        128,
+        128
+      ],
+      [
+        256,
+        256
+      ]
+    ],
+    "full_rank_reserve": false,
+    "selection_seed": 101,
+    "new_rank_search": false,
+    "original_tuning": {
+      "accuracy": 0.847,
+      "cross_entropy": 0.5221703446706136,
+      "n": 3000
+    },
+    "tuning_before_selected128": {
+      "accuracy": 0.8413333333333334,
+      "cross_entropy": 0.5061497643788656,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8423333333333334,
+      "cross_entropy": 0.491632937113444,
+      "n": 3000
+    },
+    "quality_passed": true,
+    "shared_search_seconds_charged": 20.930821599999035,
+    "fixed_factor_seconds": 0.014156899997033179,
+    "fixed_initial32_seconds": 0.9766779999990831,
+    "initial_calibration_updates": 32,
+    "selected_calibration_updates": 128,
+    "recovery_updates": 400,
+    "selected_calibration_seconds": 5.309171599998081,
+    "recovery_seconds": 21.945649799999956,
+    "measured_additional_training_and_search_seconds": 49.17647789999319,
+    "measured_cost_seconds_per_image": 0.0092651477884021,
+    "amortization_requests": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.347499998402782,
+      "p95_ms": 5.643334997512284,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "latency_batch64_secondary": {
+      "p50_ms": 4.259999999703723,
+      "p95_ms": 4.7741950020281365,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16 autocast/FP32 parameters"
+    },
+    "factor_parameters": 901120,
+    "dense_target_coefficients": 737280,
+    "mathematical_storage_ratio": 1.2222222222222223,
+    "mathematical_storage_reduction": false,
+    "checkpoint_sha256": "a4da6a3cdcc8d8eae78618c5256ccba004e5cf66c937e25c755985c390ac6561",
+    "status": "completed",
+    "peak_ram_bytes": 1877884928,
+    "peak_gpu_allocated_bytes": 267723264,
+    "peak_gpu_reserved_bytes": 562036736
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "grid_bounds.csv": {
+    "tail_squared": "squared Frobenius weight units",
+    "relative_error_lower_bound": "dimensionless",
+    "mathematical_storage_ratio": "Tucker/dense coefficient count"
+  },
+  "modal_tails.csv": {
+    "tail_squared": "squared Frobenius weight units",
+    "relative_modal_tail": "dimensionless"
+  }
+}

@@ -1,0 +1,392 @@
+[
+  {
+    "seed": 101,
+    "rank": 32,
+    "method": "independent",
+    "factor_parameters": 163840,
+    "factor_seconds": 0.03783549999934621,
+    "calibration_seconds": 3.6438444999985222,
+    "primary_block_normalized_mse": 6.748471745127046e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.8403333333333334,
+      "cross_entropy": 0.5351325963338216,
+      "n": 3000
+    },
+    "recovery_seconds": 19.531715899998744,
+    "tuning_after": {
+      "accuracy": 0.835,
+      "cross_entropy": 0.5009158935546875,
+      "n": 3000
+    },
+    "checkpoint_sha256": "57faa493c7789ca7459a4a377d9257ebb681a21e5f09ae65f722c612b5d27019",
+    "total_seconds": 25.35181080000075,
+    "status": "completed",
+    "rss_bytes": 1724960768,
+    "gpu_allocated_peak_bytes": 244984832,
+    "gpu_reserved_peak_bytes": 310378496
+  },
+  {
+    "seed": 101,
+    "rank": 32,
+    "method": "shared_initial",
+    "factor_parameters": 163840,
+    "factor_seconds": 0.027535400000488153,
+    "calibration_seconds": 4.233135199998287,
+    "primary_block_normalized_mse": 3.6443605806905397e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.5356533164978028,
+      "n": 3000
+    },
+    "recovery_seconds": 17.191292600000452,
+    "tuning_after": {
+      "accuracy": 0.8353333333333334,
+      "cross_entropy": 0.5012662296295166,
+      "n": 3000
+    },
+    "checkpoint_sha256": "61af0c221d537cef94c24409be207df833c49f5a6435e7fe9b92a0f7e02024c3",
+    "total_seconds": 23.914741200000208,
+    "status": "completed",
+    "rss_bytes": 1756975104,
+    "gpu_allocated_peak_bytes": 245623296,
+    "gpu_reserved_peak_bytes": 312475648
+  },
+  {
+    "seed": 101,
+    "rank": 32,
+    "method": "joint",
+    "factor_parameters": 163840,
+    "factor_seconds": 0.0607213999992382,
+    "calibration_seconds": 4.043372100000852,
+    "primary_block_normalized_mse": 3.965570594781711e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.5356817099253337,
+      "n": 3000
+    },
+    "recovery_seconds": 17.77714079999896,
+    "tuning_after": {
+      "accuracy": 0.8346666666666667,
+      "cross_entropy": 0.5015642108917236,
+      "n": 3000
+    },
+    "checkpoint_sha256": "209f69d5428068666192e3d49eeb99a230a283ec47da3a022918df0d44e0ee95",
+    "total_seconds": 24.011200299999473,
+    "status": "completed",
+    "rss_bytes": 1757036544,
+    "gpu_allocated_peak_bytes": 245623296,
+    "gpu_reserved_peak_bytes": 312475648
+  },
+  {
+    "seed": 101,
+    "rank": 64,
+    "method": "independent",
+    "factor_parameters": 327680,
+    "factor_seconds": 0.07324279999920691,
+    "calibration_seconds": 5.004447299999811,
+    "primary_block_normalized_mse": 3.656894007697421e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.5355657189687093,
+      "n": 3000
+    },
+    "recovery_seconds": 21.29491860000053,
+    "tuning_after": {
+      "accuracy": 0.834,
+      "cross_entropy": 0.4981325823465983,
+      "n": 3000
+    },
+    "checkpoint_sha256": "cc2c6cee3d207b4d064616ae536fcfbdd1786a8424cad843734e16b3112d4192",
+    "total_seconds": 29.149481000000378,
+    "status": "completed",
+    "rss_bytes": 1763749888,
+    "gpu_allocated_peak_bytes": 247802368,
+    "gpu_reserved_peak_bytes": 312475648
+  },
+  {
+    "seed": 101,
+    "rank": 64,
+    "method": "shared_initial",
+    "factor_parameters": 327680,
+    "factor_seconds": 0.0151968999998644,
+    "calibration_seconds": 4.766974500000288,
+    "primary_block_normalized_mse": 2.381992064060275e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.841,
+      "cross_entropy": 0.5358875160217285,
+      "n": 3000
+    },
+    "recovery_seconds": 18.522473600000012,
+    "tuning_after": {
+      "accuracy": 0.8343333333333334,
+      "cross_entropy": 0.4975817082722982,
+      "n": 3000
+    },
+    "checkpoint_sha256": "17d954d7f3e1235e279c9080ac719ab490e42a3774fe6119fcb645c114a68f24",
+    "total_seconds": 25.713572299999214,
+    "status": "completed",
+    "rss_bytes": 1764417536,
+    "gpu_allocated_peak_bytes": 248457728,
+    "gpu_reserved_peak_bytes": 312475648
+  },
+  {
+    "seed": 101,
+    "rank": 64,
+    "method": "joint",
+    "factor_parameters": 327680,
+    "factor_seconds": 0.06947000000036496,
+    "calibration_seconds": 3.992895800000042,
+    "primary_block_normalized_mse": 2.64651562786856e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.5358132305145263,
+      "n": 3000
+    },
+    "recovery_seconds": 20.403856000000815,
+    "tuning_after": {
+      "accuracy": 0.8343333333333334,
+      "cross_entropy": 0.49822947120666505,
+      "n": 3000
+    },
+    "checkpoint_sha256": "46955da80ff553a3c4e103eb538fb8aee9082218b38ca74f6a6d5a7c337b98eb",
+    "total_seconds": 27.064161399999648,
+    "status": "completed",
+    "rss_bytes": 1764630528,
+    "gpu_allocated_peak_bytes": 248457728,
+    "gpu_reserved_peak_bytes": 314572800
+  },
+  {
+    "seed": 101,
+    "rank": 96,
+    "method": "independent",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.060565800000404124,
+    "calibration_seconds": 4.504204400000162,
+    "primary_block_normalized_mse": 2.432694504451795e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.841,
+      "cross_entropy": 0.5357048002878825,
+      "n": 3000
+    },
+    "recovery_seconds": 19.799136899999212,
+    "tuning_after": {
+      "accuracy": 0.8346666666666667,
+      "cross_entropy": 0.49612921396891274,
+      "n": 3000
+    },
+    "checkpoint_sha256": "06c46d98c7b9e2275af3199fd4059e742c80134b48e7d766cbe8fac990a247c8",
+    "total_seconds": 26.6795989000002,
+    "status": "completed",
+    "rss_bytes": 1791750144,
+    "gpu_allocated_peak_bytes": 306310144,
+    "gpu_reserved_peak_bytes": 507510784
+  },
+  {
+    "seed": 101,
+    "rank": 96,
+    "method": "shared_initial",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.017754799999238458,
+    "calibration_seconds": 4.645908200000122,
+    "primary_block_normalized_mse": 1.7295525591654817e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.841,
+      "cross_entropy": 0.5359438482920329,
+      "n": 3000
+    },
+    "recovery_seconds": 18.501566900000398,
+    "tuning_after": {
+      "accuracy": 0.835,
+      "cross_entropy": 0.4959004154205322,
+      "n": 3000
+    },
+    "checkpoint_sha256": "7ee97be3ae203a3064212baebee079b9caceeaed53d28fbc05e46bdae133adbd",
+    "total_seconds": 25.464929600000687,
+    "status": "completed",
+    "rss_bytes": 1792364544,
+    "gpu_allocated_peak_bytes": 307293184,
+    "gpu_reserved_peak_bytes": 509607936
+  },
+  {
+    "seed": 101,
+    "rank": 96,
+    "method": "joint",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.05677629999991041,
+    "calibration_seconds": 4.1695959999997285,
+    "primary_block_normalized_mse": 1.836122724046646e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.841,
+      "cross_entropy": 0.5359146728515625,
+      "n": 3000
+    },
+    "recovery_seconds": 19.180033500000718,
+    "tuning_after": {
+      "accuracy": 0.835,
+      "cross_entropy": 0.4964467748006185,
+      "n": 3000
+    },
+    "checkpoint_sha256": "adc7f7d4d309a645130ac925027182324d4026f7599fe5e8dc1f413f939decd6",
+    "total_seconds": 25.860398000000714,
+    "status": "completed",
+    "rss_bytes": 1792552960,
+    "gpu_allocated_peak_bytes": 307293184,
+    "gpu_reserved_peak_bytes": 509607936
+  },
+  {
+    "seed": 202,
+    "rank": 96,
+    "method": "independent",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.04391540000142413,
+    "calibration_seconds": 4.995526599999721,
+    "primary_block_normalized_mse": 2.0969521785223832e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.8446666666666667,
+      "cross_entropy": 0.5099771213531494,
+      "n": 3000
+    },
+    "recovery_seconds": 21.31578720000107,
+    "tuning_after": {
+      "accuracy": 0.8393333333333334,
+      "cross_entropy": 0.47519292259216306,
+      "n": 3000
+    },
+    "checkpoint_sha256": "a77da27a216ab5c2cda1040ff02e56ae2173d334bd3a3732377701b0636c017d",
+    "total_seconds": 29.179005699999834,
+    "status": "completed",
+    "rss_bytes": 1792729088,
+    "gpu_allocated_peak_bytes": 305392640,
+    "gpu_reserved_peak_bytes": 509607936
+  },
+  {
+    "seed": 202,
+    "rank": 96,
+    "method": "shared_initial",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.017188600000736187,
+    "calibration_seconds": 4.471926399999575,
+    "primary_block_normalized_mse": 1.4158901813036547e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.845,
+      "cross_entropy": 0.5099767583211263,
+      "n": 3000
+    },
+    "recovery_seconds": 19.998309999999037,
+    "tuning_after": {
+      "accuracy": 0.8393333333333334,
+      "cross_entropy": 0.475032408396403,
+      "n": 3000
+    },
+    "checkpoint_sha256": "9236726e5d85597eba7cc352a7cba48a3499c082807f3c771aceaf895eaf019b",
+    "total_seconds": 26.61720570000034,
+    "status": "completed",
+    "rss_bytes": 1792888832,
+    "gpu_allocated_peak_bytes": 306375680,
+    "gpu_reserved_peak_bytes": 509607936
+  },
+  {
+    "seed": 202,
+    "rank": 96,
+    "method": "joint",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.0683392000009917,
+    "calibration_seconds": 4.369636599998557,
+    "primary_block_normalized_mse": 1.537508595153445e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.845,
+      "cross_entropy": 0.5101100851694743,
+      "n": 3000
+    },
+    "recovery_seconds": 18.448090700001558,
+    "tuning_after": {
+      "accuracy": 0.84,
+      "cross_entropy": 0.4750680522918701,
+      "n": 3000
+    },
+    "checkpoint_sha256": "5423145b7d98790253357bdf01c662657ee0abfdac474fa3fbb59eed05914956",
+    "total_seconds": 25.068903899998986,
+    "status": "completed",
+    "rss_bytes": 1793376256,
+    "gpu_allocated_peak_bytes": 306375680,
+    "gpu_reserved_peak_bytes": 509607936
+  },
+  {
+    "seed": 303,
+    "rank": 96,
+    "method": "independent",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.05028139999922132,
+    "calibration_seconds": 4.090444900000875,
+    "primary_block_normalized_mse": 2.021008244371082e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.847,
+      "cross_entropy": 0.5225389499664307,
+      "n": 3000
+    },
+    "recovery_seconds": 17.83005830000002,
+    "tuning_after": {
+      "accuracy": 0.8416666666666667,
+      "cross_entropy": 0.49040197626749676,
+      "n": 3000
+    },
+    "checkpoint_sha256": "48ccd36308db625314c547a7790a1b1f57862d856cb88cc2a9d10342ff75367e",
+    "total_seconds": 23.944572100001096,
+    "status": "completed",
+    "rss_bytes": 1793544192,
+    "gpu_allocated_peak_bytes": 305392640,
+    "gpu_reserved_peak_bytes": 509607936
+  },
+  {
+    "seed": 303,
+    "rank": 96,
+    "method": "shared_initial",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.011420799999541487,
+    "calibration_seconds": 3.86612199999945,
+    "primary_block_normalized_mse": 1.4097386865448648e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.8466666666666667,
+      "cross_entropy": 0.5226395250956217,
+      "n": 3000
+    },
+    "recovery_seconds": 18.390147699999943,
+    "tuning_after": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.4903545150756836,
+      "n": 3000
+    },
+    "checkpoint_sha256": "026e3dae3a1946a88b710fc7d47dbb58275bbccf6b3e791a5d19f0bbb9ad3ce6",
+    "total_seconds": 24.324982199999795,
+    "status": "completed",
+    "rss_bytes": 1792712704,
+    "gpu_allocated_peak_bytes": 306375680,
+    "gpu_reserved_peak_bytes": 509607936
+  },
+  {
+    "seed": 303,
+    "rank": 96,
+    "method": "joint",
+    "factor_parameters": 491520,
+    "factor_seconds": 0.02251050000086252,
+    "calibration_seconds": 4.007703999999649,
+    "primary_block_normalized_mse": 1.5240118408957533e-05,
+    "quality_before_recovery": {
+      "accuracy": 0.847,
+      "cross_entropy": 0.5226287924448649,
+      "n": 3000
+    },
+    "recovery_seconds": 24.160736700001507,
+    "tuning_after": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.4906625912984212,
+      "n": 3000
+    },
+    "checkpoint_sha256": "44dc19557b11604bfcc39bbb1a1ecdede02111b316b4a288602ba731883804a7",
+    "total_seconds": 31.185141700001623,
+    "status": "completed",
+    "rss_bytes": 1793241088,
+    "gpu_allocated_peak_bytes": 306375680,
+    "gpu_reserved_peak_bytes": 509607936
+  }
+]

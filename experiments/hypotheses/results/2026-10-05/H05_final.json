@@ -1,0 +1,392 @@
+[
+  {
+    "seed": 101,
+    "method": "original",
+    "checkpoint_sha256": "b12cdd0003e7b9f38026c412fad80d9cbcfc46f395521e74f60b7f460a82eea1",
+    "test": {
+      "accuracy": 0.8302,
+      "cross_entropy": 0.547021344614029,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 3.817749999143416,
+      "p95_ms": 5.135194997274084,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.6594999983208254,
+      "p95_ms": 5.024519999642507,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 101,
+    "method": "exact_als",
+    "checkpoint_sha256": "3d86af6f4b319559a71498fa3387218589ca393d025a1409a1e36716c01d30ea",
+    "test": {
+      "accuracy": 0.8295,
+      "cross_entropy": 0.5053856564760209,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 3.881449998516473,
+      "p95_ms": 5.202054999790561,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.8958499990258133,
+      "p95_ms": 5.321254998852964,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 101,
+    "method": "refreshed_tensorsketch",
+    "checkpoint_sha256": "7130ad1d7c5c3f5513e3038e5da169813c1788454a3c7080708d9aa96c7aca52",
+    "test": {
+      "accuracy": 0.827,
+      "cross_entropy": 0.5032337901592254,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 3.9537499997095438,
+      "p95_ms": 4.580755000279168,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.819699999439763,
+      "p95_ms": 5.105120001826434,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 101,
+    "method": "fixed_tensorsketch",
+    "checkpoint_sha256": "b3e23330006221f41ea50f3f8aa458c0de3b048ac6f885fc727066432add016c",
+    "test": {
+      "accuracy": 0.8293,
+      "cross_entropy": 0.5024960323810578,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 3.9354999989882344,
+      "p95_ms": 5.328535000262489,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.7897500005783513,
+      "p95_ms": 4.902325001057761,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 101,
+    "method": "hooi",
+    "checkpoint_sha256": "625838f7f9805826f8d6290201f176f0d8d8e958f0ceffec565123db0e4eacfd",
+    "test": {
+      "accuracy": 0.83,
+      "cross_entropy": 0.5054054457426072,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 5.118900000525173,
+      "p95_ms": 5.926454999826092,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.994050000983407,
+      "p95_ms": 5.466185002296697,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "original",
+    "checkpoint_sha256": "47b6eadb03fca5d2baf006df3a62b8d2154ad1fea70bad2b4fe52ff1f69224f9",
+    "test": {
+      "accuracy": 0.8358,
+      "cross_entropy": 0.535396293926239,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 3.6677999996754806,
+      "p95_ms": 5.009439997775189,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.5910999977204483,
+      "p95_ms": 5.418419999114121,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "exact_als",
+    "checkpoint_sha256": "5ddf38fbb2c6cea45259f36da2f7fd61794da5c1fd413b2d491e1bc9741db1c7",
+    "test": {
+      "accuracy": 0.8335,
+      "cross_entropy": 0.49831378593444825,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 5.078799998955219,
+      "p95_ms": 5.871650000517548,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.062299998826347,
+      "p95_ms": 5.945729998165916,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "refreshed_tensorsketch",
+    "checkpoint_sha256": "5eb2c143b637d8a2af289a9e2cd0050151f3cb7396d826902835b8f11450932a",
+    "test": {
+      "accuracy": 0.8346,
+      "cross_entropy": 0.497226197719574,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 5.526299999473849,
+      "p95_ms": 7.344215001467089,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.87475000025006,
+      "p95_ms": 5.635959999381152,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "fixed_tensorsketch",
+    "checkpoint_sha256": "a0893d36cb746d0747b402d74c84ae19d4050d5500dd2ac5a340265cf0eb3ce1",
+    "test": {
+      "accuracy": 0.8346,
+      "cross_entropy": 0.49766172747612,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 5.28775000020687,
+      "p95_ms": 6.311119996826164,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.8804499999969266,
+      "p95_ms": 5.8495550003499375,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "hooi",
+    "checkpoint_sha256": "1ca92a75697db32901b81b5e0b1a540b98859e69759a55530272fc9a0b8704e3",
+    "test": {
+      "accuracy": 0.8329,
+      "cross_entropy": 0.4982313774585724,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 3.79975000032573,
+      "p95_ms": 4.627830001300026,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.8461000003735535,
+      "p95_ms": 6.1512499998571,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "original",
+    "checkpoint_sha256": "0afd4f8dada877364214a38231e917695c7b7729e1ef47f7659bf340c11aa80d",
+    "test": {
+      "accuracy": 0.834,
+      "cross_entropy": 0.5389636929512024,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 3.7113999987923307,
+      "p95_ms": 4.447210000034829,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 3.6003999994136393,
+      "p95_ms": 4.186169999957199,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "exact_als",
+    "checkpoint_sha256": "a47e1654b0d1f55fd4257d2bf48a1dcd459a5d7377bca603ac093fe5df08444c",
+    "test": {
+      "accuracy": 0.8332,
+      "cross_entropy": 0.49962393827438356,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 5.541399999856367,
+      "p95_ms": 6.241244999182527,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 4.547399999864865,
+      "p95_ms": 5.893805000232533,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "refreshed_tensorsketch",
+    "checkpoint_sha256": "b5091c8bb5aeeccda854b7e5a0c590e953c019bea749c9c8d6874b0cf458eca2",
+    "test": {
+      "accuracy": 0.8326,
+      "cross_entropy": 0.4969196194648743,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 5.486799998834613,
+      "p95_ms": 5.928019997372758,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.272799999147537,
+      "p95_ms": 5.862964999505493,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "fixed_tensorsketch",
+    "checkpoint_sha256": "cb9c2a4a9f83aba159ecd29a4a75a7af86dc35da081690eee497c6d8306ba31b",
+    "test": {
+      "accuracy": 0.8329,
+      "cross_entropy": 0.49663861470222476,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 5.014500000470434,
+      "p95_ms": 5.790529999285354,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.005700000765501,
+      "p95_ms": 5.953679999947781,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "hooi",
+    "checkpoint_sha256": "91a7c2106f831b9ebb432fdb2981e2eff961c891011ec3f9483a7b0c50a1b477",
+    "test": {
+      "accuracy": 0.8328,
+      "cross_entropy": 0.49981245431900023,
+      "n": 10000
+    },
+    "latency_batch1": {
+      "p50_ms": 4.833999999391381,
+      "p95_ms": 5.953224998302176,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.215199998929165,
+      "p95_ms": 6.005790000926936,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  }
+]

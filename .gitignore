@@ -5,6 +5,8 @@ mlruns/
 tiny-llm/
 mlflow.db
 *.json
+!experiments/hypotheses/asset-lock.json
+!experiments/hypotheses/results/2026-10-05/*.json
 build/
 dist/
 .delivery-build/

@@ -1,0 +1,290 @@
+[
+  {
+    "seed": 101,
+    "method": "original",
+    "checkpoint_sha256": "9a4aadc8e6ace8a24069a1d4a8a79752cc913ba5d25ba156ef31df84d9f77329",
+    "accuracy": 0.8303,
+    "cross_entropy": 0.5475141556024551,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 5.739299999731884,
+      "p95_ms": 7.328815000073518,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.537999999432941,
+      "p95_ms": 6.364724999184546,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 101,
+    "method": "independent",
+    "checkpoint_sha256": "06c46d98c7b9e2275af3199fd4059e742c80134b48e7d766cbe8fac990a247c8",
+    "accuracy": 0.828,
+    "cross_entropy": 0.5078582191467285,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 5.811049999465467,
+      "p95_ms": 10.918834999847604,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.853050000951043,
+      "p95_ms": 10.547900000346992,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 101,
+    "method": "shared_initial",
+    "checkpoint_sha256": "7ee97be3ae203a3064212baebee079b9caceeaed53d28fbc05e46bdae133adbd",
+    "accuracy": 0.8282,
+    "cross_entropy": 0.5075692657232285,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 6.477599999925587,
+      "p95_ms": 12.66145999970831,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 6.322400000499329,
+      "p95_ms": 11.708079999334586,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 101,
+    "method": "joint",
+    "checkpoint_sha256": "adc7f7d4d309a645130ac925027182324d4026f7599fe5e8dc1f413f939decd6",
+    "accuracy": 0.8277,
+    "cross_entropy": 0.5080131638765335,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 5.51030000042374,
+      "p95_ms": 6.753189999199091,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.633549999402021,
+      "p95_ms": 11.23436499856325,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "original",
+    "checkpoint_sha256": "8a79f9892c91becf2faacae88d45fe92d4f69f43c4c1167838c29fa70a334195",
+    "accuracy": 0.8355,
+    "cross_entropy": 0.5357497637033463,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 5.680350000147882,
+      "p95_ms": 11.459760000343522,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 6.365949999235454,
+      "p95_ms": 9.710520000317047,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "independent",
+    "checkpoint_sha256": "a77da27a216ab5c2cda1040ff02e56ae2173d334bd3a3732377701b0636c017d",
+    "accuracy": 0.8328,
+    "cross_entropy": 0.49814252038002016,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.466400000637805,
+      "p95_ms": 7.024949999959054,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 4.470400000172958,
+      "p95_ms": 7.720309999604068,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "shared_initial",
+    "checkpoint_sha256": "9236726e5d85597eba7cc352a7cba48a3499c082807f3c771aceaf895eaf019b",
+    "accuracy": 0.8332,
+    "cross_entropy": 0.49797616462707517,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.652999999962049,
+      "p95_ms": 7.1523049992720145,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 8.036699999138364,
+      "p95_ms": 9.305329998733214,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 202,
+    "method": "joint",
+    "checkpoint_sha256": "5423145b7d98790253357bdf01c662657ee0abfdac474fa3fbb59eed05914956",
+    "accuracy": 0.8328,
+    "cross_entropy": 0.4980906718015671,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.415349999362661,
+      "p95_ms": 6.976174999908833,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.8042499995281105,
+      "p95_ms": 9.27284999961557,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "original",
+    "checkpoint_sha256": "2baaba39e3f9bdba7932905b950479b73265bd3289957d36214d9e554d58cadc",
+    "accuracy": 0.834,
+    "cross_entropy": 0.5395409788131714,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 5.763449999903969,
+      "p95_ms": 11.900369999148097,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.796600000394392,
+      "p95_ms": 12.041669999962323,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "independent",
+    "checkpoint_sha256": "48ccd36308db625314c547a7790a1b1f57862d856cb88cc2a9d10342ff75367e",
+    "accuracy": 0.8321,
+    "cross_entropy": 0.501465443277359,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 6.089350000365812,
+      "p95_ms": 10.289224999814898,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.797099999654165,
+      "p95_ms": 11.737909999828842,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "shared_initial",
+    "checkpoint_sha256": "026e3dae3a1946a88b710fc7d47dbb58275bbccf6b3e791a5d19f0bbb9ad3ce6",
+    "accuracy": 0.8319,
+    "cross_entropy": 0.5014074715137482,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.742150000311085,
+      "p95_ms": 6.909740000082819,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 4.570950000015728,
+      "p95_ms": 5.333704999611655,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  },
+  {
+    "seed": 303,
+    "method": "joint",
+    "checkpoint_sha256": "44dc19557b11604bfcc39bbb1a1ecdede02111b316b4a288602ba731883804a7",
+    "accuracy": 0.832,
+    "cross_entropy": 0.5015506963729859,
+    "n": 10000,
+    "latency_batch1": {
+      "p50_ms": 4.867849999754981,
+      "p95_ms": 6.892540000080769,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 1,
+      "precision": "BF16"
+    },
+    "latency_batch64": {
+      "p50_ms": 5.291399999805435,
+      "p95_ms": 9.080664998873544,
+      "warmups": 30,
+      "measured": 200,
+      "batch": 64,
+      "precision": "BF16"
+    }
+  }
+]

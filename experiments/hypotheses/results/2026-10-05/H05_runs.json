@@ -1,0 +1,413 @@
+[
+  {
+    "seed": 101,
+    "method": "exact_als",
+    "status": "completed",
+    "factor_seconds": 0.37041170000156853,
+    "core_projection_seconds": 0.004096600008779205,
+    "initialization_hashes": {
+      "core": "0524d274591c6814e527f3ecb709b11414b0b632825b108631b80de96651f20d",
+      "factors": [
+        "b7be3b69609c519fa57f6358f98c21578c741e140a47eec8764c727eb188aeac",
+        "8f89210905336c013faa371acaeec42f89a5b38db17caaf28b6ede0b485879b5",
+        "e5d0b863a52e70df8633c8f167db1c11851951f4eb419e06a428a999624b0bb2",
+        "d6194cf031c24ab56e284a5f799618584d2c8c46e3e50ac52b6a5c5fba3b1b3b"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 10,
+    "tuning_before": {
+      "accuracy": 0.839,
+      "cross_entropy": 0.5416074962615967,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8393333333333334,
+      "cross_entropy": 0.49372677930196124,
+      "n": 3000
+    },
+    "checkpoint_sha256": "3d86af6f4b319559a71498fa3387218589ca393d025a1409a1e36716c01d30ea",
+    "parameters": 69632,
+    "total_seconds": 24.44866120000006,
+    "rss_bytes": 1678630912,
+    "gpu_peak_allocated_bytes": 244278784,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 101,
+    "method": "refreshed_tensorsketch",
+    "status": "completed",
+    "factor_seconds": 0.36355600000024424,
+    "core_projection_seconds": 0.0006653000018559396,
+    "initialization_hashes": {
+      "core": "0524d274591c6814e527f3ecb709b11414b0b632825b108631b80de96651f20d",
+      "factors": [
+        "b7be3b69609c519fa57f6358f98c21578c741e140a47eec8764c727eb188aeac",
+        "8f89210905336c013faa371acaeec42f89a5b38db17caaf28b6ede0b485879b5",
+        "e5d0b863a52e70df8633c8f167db1c11851951f4eb419e06a428a999624b0bb2",
+        "d6194cf031c24ab56e284a5f799618584d2c8c46e3e50ac52b6a5c5fba3b1b3b"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 1,
+    "tuning_before": {
+      "accuracy": 0.8403333333333334,
+      "cross_entropy": 0.5109254296620687,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8416666666666667,
+      "cross_entropy": 0.4918929951985677,
+      "n": 3000
+    },
+    "checkpoint_sha256": "7130ad1d7c5c3f5513e3038e5da169813c1788454a3c7080708d9aa96c7aca52",
+    "parameters": 69632,
+    "total_seconds": 26.334651699999085,
+    "rss_bytes": 1825284096,
+    "gpu_peak_allocated_bytes": 245020672,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 101,
+    "method": "fixed_tensorsketch",
+    "status": "completed",
+    "factor_seconds": 0.14061000000219792,
+    "core_projection_seconds": 0.0012978999984625261,
+    "initialization_hashes": {
+      "core": "0524d274591c6814e527f3ecb709b11414b0b632825b108631b80de96651f20d",
+      "factors": [
+        "b7be3b69609c519fa57f6358f98c21578c741e140a47eec8764c727eb188aeac",
+        "8f89210905336c013faa371acaeec42f89a5b38db17caaf28b6ede0b485879b5",
+        "e5d0b863a52e70df8633c8f167db1c11851951f4eb419e06a428a999624b0bb2",
+        "d6194cf031c24ab56e284a5f799618584d2c8c46e3e50ac52b6a5c5fba3b1b3b"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 1,
+    "tuning_before": {
+      "accuracy": 0.8346666666666667,
+      "cross_entropy": 0.52381662940979,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.49347408294677736,
+      "n": 3000
+    },
+    "checkpoint_sha256": "b3e23330006221f41ea50f3f8aa458c0de3b048ac6f885fc727066432add016c",
+    "parameters": 69632,
+    "total_seconds": 27.09371540000211,
+    "rss_bytes": 1825193984,
+    "gpu_peak_allocated_bytes": 245020672,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 101,
+    "method": "hooi",
+    "status": "completed",
+    "factor_seconds": 0.4834274999993795,
+    "initialization_hashes": {
+      "core": "0524d274591c6814e527f3ecb709b11414b0b632825b108631b80de96651f20d",
+      "factors": [
+        "b7be3b69609c519fa57f6358f98c21578c741e140a47eec8764c727eb188aeac",
+        "8f89210905336c013faa371acaeec42f89a5b38db17caaf28b6ede0b485879b5",
+        "e5d0b863a52e70df8633c8f167db1c11851951f4eb419e06a428a999624b0bb2",
+        "d6194cf031c24ab56e284a5f799618584d2c8c46e3e50ac52b6a5c5fba3b1b3b"
+      ]
+    },
+    "algorithm": "orthogonal HOOI",
+    "tuning_before": {
+      "accuracy": 0.8396666666666667,
+      "cross_entropy": 0.5420319105784098,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8396666666666667,
+      "cross_entropy": 0.49363081804911296,
+      "n": 3000
+    },
+    "checkpoint_sha256": "625838f7f9805826f8d6290201f176f0d8d8e958f0ceffec565123db0e4eacfd",
+    "parameters": 69632,
+    "total_seconds": 24.23223660000076,
+    "rss_bytes": 1872363520,
+    "gpu_peak_allocated_bytes": 245020672,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 202,
+    "method": "exact_als",
+    "status": "completed",
+    "factor_seconds": 0.4083580000005895,
+    "core_projection_seconds": 0.0036522000009426847,
+    "initialization_hashes": {
+      "core": "a4fe9feebdbd1f2a019f3acb7a5d0dcd54ebad05d2030e6e45c2aeafda65c0f8",
+      "factors": [
+        "014d78bab3c4346c36051ad965e5c89a5d86ecc92e8b2a318cdb93ab9a5ad048",
+        "68b05059fb693138e27188f0657e8af0b9ba5da0a76ee4b5becb2f2b605c850e",
+        "d47cb87f6b8ac0bb686104782afe7e893928774c6ff763e2303bf93f8dfcc938",
+        "89ad9385967fd31153d62b79caace3e72b7b6cfac2e0a0b576a3115369ce4493"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 10,
+    "tuning_before": {
+      "accuracy": 0.8446666666666667,
+      "cross_entropy": 0.5147314637502034,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8416666666666667,
+      "cross_entropy": 0.47506149419148763,
+      "n": 3000
+    },
+    "checkpoint_sha256": "5ddf38fbb2c6cea45259f36da2f7fd61794da5c1fd413b2d491e1bc9741db1c7",
+    "parameters": 69632,
+    "total_seconds": 22.98639760000151,
+    "rss_bytes": 1872412672,
+    "gpu_peak_allocated_bytes": 245413888,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 202,
+    "method": "refreshed_tensorsketch",
+    "status": "completed",
+    "factor_seconds": 0.2267162999996799,
+    "core_projection_seconds": 0.0003915999986929819,
+    "initialization_hashes": {
+      "core": "a4fe9feebdbd1f2a019f3acb7a5d0dcd54ebad05d2030e6e45c2aeafda65c0f8",
+      "factors": [
+        "014d78bab3c4346c36051ad965e5c89a5d86ecc92e8b2a318cdb93ab9a5ad048",
+        "68b05059fb693138e27188f0657e8af0b9ba5da0a76ee4b5becb2f2b605c850e",
+        "d47cb87f6b8ac0bb686104782afe7e893928774c6ff763e2303bf93f8dfcc938",
+        "89ad9385967fd31153d62b79caace3e72b7b6cfac2e0a0b576a3115369ce4493"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 1,
+    "tuning_before": {
+      "accuracy": 0.841,
+      "cross_entropy": 0.494116548538208,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8456666666666667,
+      "cross_entropy": 0.4740631694793701,
+      "n": 3000
+    },
+    "checkpoint_sha256": "5eb2c143b637d8a2af289a9e2cd0050151f3cb7396d826902835b8f11450932a",
+    "parameters": 69632,
+    "total_seconds": 26.49608310000258,
+    "rss_bytes": 1872486400,
+    "gpu_peak_allocated_bytes": 245413888,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 202,
+    "method": "fixed_tensorsketch",
+    "status": "completed",
+    "factor_seconds": 0.21005910000167205,
+    "core_projection_seconds": 0.0003586000020732172,
+    "initialization_hashes": {
+      "core": "a4fe9feebdbd1f2a019f3acb7a5d0dcd54ebad05d2030e6e45c2aeafda65c0f8",
+      "factors": [
+        "014d78bab3c4346c36051ad965e5c89a5d86ecc92e8b2a318cdb93ab9a5ad048",
+        "68b05059fb693138e27188f0657e8af0b9ba5da0a76ee4b5becb2f2b605c850e",
+        "d47cb87f6b8ac0bb686104782afe7e893928774c6ff763e2303bf93f8dfcc938",
+        "89ad9385967fd31153d62b79caace3e72b7b6cfac2e0a0b576a3115369ce4493"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 1,
+    "tuning_before": {
+      "accuracy": 0.84,
+      "cross_entropy": 0.48784621810913087,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8423333333333334,
+      "cross_entropy": 0.4721425526936849,
+      "n": 3000
+    },
+    "checkpoint_sha256": "a0893d36cb746d0747b402d74c84ae19d4050d5500dd2ac5a340265cf0eb3ce1",
+    "parameters": 69632,
+    "total_seconds": 23.83489990000089,
+    "rss_bytes": 1872486400,
+    "gpu_peak_allocated_bytes": 245413888,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 202,
+    "method": "hooi",
+    "status": "completed",
+    "factor_seconds": 0.4417180999989796,
+    "initialization_hashes": {
+      "core": "a4fe9feebdbd1f2a019f3acb7a5d0dcd54ebad05d2030e6e45c2aeafda65c0f8",
+      "factors": [
+        "014d78bab3c4346c36051ad965e5c89a5d86ecc92e8b2a318cdb93ab9a5ad048",
+        "68b05059fb693138e27188f0657e8af0b9ba5da0a76ee4b5becb2f2b605c850e",
+        "d47cb87f6b8ac0bb686104782afe7e893928774c6ff763e2303bf93f8dfcc938",
+        "89ad9385967fd31153d62b79caace3e72b7b6cfac2e0a0b576a3115369ce4493"
+      ]
+    },
+    "algorithm": "orthogonal HOOI",
+    "tuning_before": {
+      "accuracy": 0.846,
+      "cross_entropy": 0.5149187507629395,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.844,
+      "cross_entropy": 0.47477138074239095,
+      "n": 3000
+    },
+    "checkpoint_sha256": "1ca92a75697db32901b81b5e0b1a540b98859e69759a55530272fc9a0b8704e3",
+    "parameters": 69632,
+    "total_seconds": 25.778586899999937,
+    "rss_bytes": 1872912384,
+    "gpu_peak_allocated_bytes": 245413888,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 303,
+    "method": "exact_als",
+    "status": "completed",
+    "factor_seconds": 0.3598874000017531,
+    "core_projection_seconds": 0.003841100009594811,
+    "initialization_hashes": {
+      "core": "ca438a89edd71537836d9c426bae3ec42176b23e82203edd6253bb343495c07a",
+      "factors": [
+        "678351f9843245abad305a80c29914acce92d8d857f7ed14c12b16b7f4f661bd",
+        "1cf87344ed92eef14a99d47089fb1696dfb78a349c399470fdf95d1f10ada5d9",
+        "fa72a508866c5e1fba94b1f108e3d8fc15003d5e178ee083b4fe71cc725b3b0c",
+        "8697af8aea5dc204d30783b07cc213c7ac1bc298127111b58f54f832c4333f3b"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 10,
+    "tuning_before": {
+      "accuracy": 0.8483333333333334,
+      "cross_entropy": 0.5248317985534668,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.843,
+      "cross_entropy": 0.48919672838846845,
+      "n": 3000
+    },
+    "checkpoint_sha256": "a47e1654b0d1f55fd4257d2bf48a1dcd459a5d7377bca603ac093fe5df08444c",
+    "parameters": 69632,
+    "total_seconds": 23.475345200000447,
+    "rss_bytes": 1872973824,
+    "gpu_peak_allocated_bytes": 245413888,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 303,
+    "method": "refreshed_tensorsketch",
+    "status": "completed",
+    "factor_seconds": 0.13907539999854635,
+    "core_projection_seconds": 0.00040889999945648015,
+    "initialization_hashes": {
+      "core": "ca438a89edd71537836d9c426bae3ec42176b23e82203edd6253bb343495c07a",
+      "factors": [
+        "678351f9843245abad305a80c29914acce92d8d857f7ed14c12b16b7f4f661bd",
+        "1cf87344ed92eef14a99d47089fb1696dfb78a349c399470fdf95d1f10ada5d9",
+        "fa72a508866c5e1fba94b1f108e3d8fc15003d5e178ee083b4fe71cc725b3b0c",
+        "8697af8aea5dc204d30783b07cc213c7ac1bc298127111b58f54f832c4333f3b"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 1,
+    "tuning_before": {
+      "accuracy": 0.8456666666666667,
+      "cross_entropy": 0.502263671875,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.847,
+      "cross_entropy": 0.4835618190765381,
+      "n": 3000
+    },
+    "checkpoint_sha256": "b5091c8bb5aeeccda854b7e5a0c590e953c019bea749c9c8d6874b0cf458eca2",
+    "parameters": 69632,
+    "total_seconds": 24.902249399998254,
+    "rss_bytes": 1872928768,
+    "gpu_peak_allocated_bytes": 245413888,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 303,
+    "method": "fixed_tensorsketch",
+    "status": "completed",
+    "factor_seconds": 0.24085870000271825,
+    "core_projection_seconds": 0.00034979999691131525,
+    "initialization_hashes": {
+      "core": "ca438a89edd71537836d9c426bae3ec42176b23e82203edd6253bb343495c07a",
+      "factors": [
+        "678351f9843245abad305a80c29914acce92d8d857f7ed14c12b16b7f4f661bd",
+        "1cf87344ed92eef14a99d47089fb1696dfb78a349c399470fdf95d1f10ada5d9",
+        "fa72a508866c5e1fba94b1f108e3d8fc15003d5e178ee083b4fe71cc725b3b0c",
+        "8697af8aea5dc204d30783b07cc213c7ac1bc298127111b58f54f832c4333f3b"
+      ]
+    },
+    "algorithm": "fixed-core factor LS with gauge transport and per-sweep core projection",
+    "local_exact_validation_included": true,
+    "sweeps": 1,
+    "tuning_before": {
+      "accuracy": 0.841,
+      "cross_entropy": 0.5026061356862386,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8483333333333334,
+      "cross_entropy": 0.4854828758239746,
+      "n": 3000
+    },
+    "checkpoint_sha256": "cb9c2a4a9f83aba159ecd29a4a75a7af86dc35da081690eee497c6d8306ba31b",
+    "parameters": 69632,
+    "total_seconds": 24.996532000001025,
+    "rss_bytes": 1872936960,
+    "gpu_peak_allocated_bytes": 245413888,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 303,
+    "method": "hooi",
+    "status": "completed",
+    "factor_seconds": 0.4412929999998596,
+    "initialization_hashes": {
+      "core": "ca438a89edd71537836d9c426bae3ec42176b23e82203edd6253bb343495c07a",
+      "factors": [
+        "678351f9843245abad305a80c29914acce92d8d857f7ed14c12b16b7f4f661bd",
+        "1cf87344ed92eef14a99d47089fb1696dfb78a349c399470fdf95d1f10ada5d9",
+        "fa72a508866c5e1fba94b1f108e3d8fc15003d5e178ee083b4fe71cc725b3b0c",
+        "8697af8aea5dc204d30783b07cc213c7ac1bc298127111b58f54f832c4333f3b"
+      ]
+    },
+    "algorithm": "orthogonal HOOI",
+    "tuning_before": {
+      "accuracy": 0.848,
+      "cross_entropy": 0.5259420312245687,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8446666666666667,
+      "cross_entropy": 0.4890725205739339,
+      "n": 3000
+    },
+    "checkpoint_sha256": "91a7c2106f831b9ebb432fdb2981e2eff961c891011ec3f9483a7b0c50a1b477",
+    "parameters": 69632,
+    "total_seconds": 25.090059799997107,
+    "rss_bytes": 1873039360,
+    "gpu_peak_allocated_bytes": 245413888,
+    "gpu_peak_reserved_bytes": 274726912
+  }
+]

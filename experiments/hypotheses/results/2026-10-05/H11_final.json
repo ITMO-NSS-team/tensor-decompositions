@@ -1,0 +1,488 @@
+[
+  {
+    "seed": 101,
+    "method": "original",
+    "final_test": {
+      "accuracy": 0.8302,
+      "cross_entropy": 0.547021344614029,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.9007999996319995,
+        "p95_ms": 8.598649999385088,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 5.021050000323157,
+        "p95_ms": 8.943840001575152,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "exact_svd",
+    "final_test": {
+      "accuracy": 0.831,
+      "cross_entropy": 0.5044971039772034,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.170800000792951,
+        "p95_ms": 5.168824999327626,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.856450000261248,
+        "p95_ms": 6.18207500074277,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "gaussian",
+    "final_test": {
+      "accuracy": 0.8301,
+      "cross_entropy": 0.5035031685113907,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.125450000174169,
+        "p95_ms": 5.352460000540303,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.711250000582368,
+        "p95_ms": 9.053114999187526,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "countsketch",
+    "final_test": {
+      "accuracy": 0.8322,
+      "cross_entropy": 0.5038173882484436,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.631099999642174,
+        "p95_ms": 9.056299999701878,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.357900000286463,
+        "p95_ms": 4.939394998473289,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "sparse_jl",
+    "final_test": {
+      "accuracy": 0.8326,
+      "cross_entropy": 0.5027836085557937,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.130600000280538,
+        "p95_ms": 5.406834999939747,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.017350000140141,
+        "p95_ms": 5.347314999471563,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "srht_reference",
+    "final_test": {
+      "accuracy": 0.8305,
+      "cross_entropy": 0.5044106034517288,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.474200000913697,
+        "p95_ms": 6.11639999979161,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.707799999778217,
+        "p95_ms": 6.1812399999325836,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "original",
+    "final_test": {
+      "accuracy": 0.8358,
+      "cross_entropy": 0.535396293926239,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 3.99939999988419,
+        "p95_ms": 4.516984999372653,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.658099999687693,
+        "p95_ms": 5.898424998849805,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "exact_svd",
+    "final_test": {
+      "accuracy": 0.8342,
+      "cross_entropy": 0.49718315863609314,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.183600000033039,
+        "p95_ms": 8.372915001200452,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 5.096099999718717,
+        "p95_ms": 9.841350000351662,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "gaussian",
+    "final_test": {
+      "accuracy": 0.8332,
+      "cross_entropy": 0.49788066465854647,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 3.9233999996213242,
+        "p95_ms": 4.855355001109273,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.078300000401214,
+        "p95_ms": 4.915754999092314,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "countsketch",
+    "final_test": {
+      "accuracy": 0.8335,
+      "cross_entropy": 0.4970985300540924,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.381699999612465,
+        "p95_ms": 5.306309999377844,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.210850000163191,
+        "p95_ms": 5.188570000882463,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "sparse_jl",
+    "final_test": {
+      "accuracy": 0.8324,
+      "cross_entropy": 0.4972529989719391,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.34534999931202,
+        "p95_ms": 8.884350000153063,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 5.543299999771989,
+        "p95_ms": 6.827920000159792,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "srht_reference",
+    "final_test": {
+      "accuracy": 0.8325,
+      "cross_entropy": 0.49582960534095766,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 5.532899999707297,
+        "p95_ms": 11.441895000643854,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 6.187550000504416,
+        "p95_ms": 12.207599998964723,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "original",
+    "final_test": {
+      "accuracy": 0.834,
+      "cross_entropy": 0.5389636929512024,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.861700000219571,
+        "p95_ms": 6.349944999510626,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.593599999680009,
+        "p95_ms": 6.3026250002621955,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "exact_svd",
+    "final_test": {
+      "accuracy": 0.832,
+      "cross_entropy": 0.4984555139541626,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.677100000662904,
+        "p95_ms": 7.716194999647981,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.521050001130789,
+        "p95_ms": 5.537569999978586,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "gaussian",
+    "final_test": {
+      "accuracy": 0.8321,
+      "cross_entropy": 0.4973773718357086,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.19285000043601,
+        "p95_ms": 7.9196800003956005,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 5.134749999342603,
+        "p95_ms": 8.3707200002209,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "countsketch",
+    "final_test": {
+      "accuracy": 0.8314,
+      "cross_entropy": 0.49731630177497865,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 5.104599999867787,
+        "p95_ms": 6.8453549993137095,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.178099999990081,
+        "p95_ms": 5.707949999759875,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "sparse_jl",
+    "final_test": {
+      "accuracy": 0.8324,
+      "cross_entropy": 0.4984699661254883,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.223749999255233,
+        "p95_ms": 8.166505000008327,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 7.50025000070309,
+        "p95_ms": 8.467089999248856,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "srht_reference",
+    "final_test": {
+      "accuracy": 0.8316,
+      "cross_entropy": 0.49766971702575685,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 4.141300000810588,
+        "p95_ms": 5.334989999028039,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.773000000568572,
+        "p95_ms": 8.645505000276897,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  }
+]

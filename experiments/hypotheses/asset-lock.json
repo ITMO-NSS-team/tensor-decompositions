@@ -1,0 +1,25 @@
+{
+  "gpt2_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+  "switch_revision": "92fe2d22b024d9937146fe097ba3d3a7ba146e1b",
+  "wikitext_revision": "b08601e04326c79dfdd32d625aee71d232d685c3",
+  "files": {
+    "gpt2/config.json": "0daed7749b4f02b8f76240d5444551d7b08712dab4d0adb8239c56ba823bb7b4",
+    "gpt2/generation_config.json": "ed0b32ac72c0f5f44a719abb2d7786ea5146c871f83717b7f2018065954de02b",
+    "gpt2/merges.txt": "1ce1664773c50f3e0cc8842619a93edc4624525b728b188a9e0be33b7726adc5",
+    "gpt2/model.safetensors": "248dfc3911869ec493c76e65bf2fcf7f615828b0254c12b473182f0f81d3a707",
+    "gpt2/tokenizer_config.json": "5e04eb606e3a1583530a42e36c2a6b6615c86f34fe77e44d9ddeb43ff940931f",
+    "gpt2/tokenizer.json": "8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6",
+    "gpt2/vocab.json": "196139668be63f3b5d6574427317ae82f612a97c5d1cdaf36ed2256dbf636783",
+    "wikitext2/README.md": "d5aabf145d341366745ac703b5844c442c143943b6c77929481395c822b1c28c",
+    "wikitext2/wikitext-2-raw-v1/test-00000-of-00001.parquet": "5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91",
+    "wikitext2/wikitext-2-raw-v1/train-00000-of-00001.parquet": "e83889baabc497075506f91975be5fac0d45c5290b6b20582c8cd1e853d0c9f7",
+    "wikitext2/wikitext-2-raw-v1/validation-00000-of-00001.parquet": "204929b7ff9d6184953f867dedb860e40aa69c078fc1e54b3baaa8fb28511c4c",
+    "switch-base-8/config.json": "6a1e1426873221034f8488e514ac127218c833e7d357b1e12dc002889c98fa53",
+    "switch-base-8/generation_config.json": "f5a1c7e2be8092018d8835128987edf0111637dd98e90599cc80310fef75d95a",
+    "switch-base-8/pytorch_model.bin": "ff91705b718f692fa0c994a49d094154583db40b536e80f20f52e05498ff6856",
+    "switch-base-8/special_tokens_map.json": "5c87151ef0f72a99d1f766a4c418bd2a1f90aaa30a8e22fe5eca9641daebb64f",
+    "switch-base-8/spiece.model": "d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86",
+    "switch-base-8/tokenizer_config.json": "4969f8d76ef05a16553bd2b07b3501673ae8d36972aea88a0f78ad31a3ff2de9",
+    "switch-base-8/tokenizer.json": "5f0ed8ab5b8cfa9812bb73752f1d80c292e52bcf5a87a144dc9ab2d251056cbb"
+  }
+}

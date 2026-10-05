@@ -1,0 +1,230 @@
+[
+  {
+    "seed": 101,
+    "rule": "original",
+    "final_test": {
+      "accuracy": 0.8302,
+      "cross_entropy": 0.547021344614029,
+      "n": 10000
+    },
+    "baseline_checkpoint_sha256": "b12cdd0003e7b9f38026c412fad80d9cbcfc46f395521e74f60b7f460a82eea1"
+  },
+  {
+    "seed": 101,
+    "rule": "functional",
+    "pair": [
+      [
+        64,
+        64
+      ],
+      [
+        64,
+        64
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8291,
+      "cross_entropy": 0.5055495283126831,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "1d326a9c385fc96dda369d84bc921e2f5462d47dd9f6a619e5cc4230c2ee5066",
+    "selection_and_checkpoint_frozen": true
+  },
+  {
+    "seed": 101,
+    "rule": "fractional",
+    "pair": [
+      [
+        96,
+        96
+      ],
+      [
+        192,
+        192
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8299,
+      "cross_entropy": 0.5055770400762558,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "02a239b3206e7b1b13308c11705f373a3efc6a281c984baa1a3805c66e44edd5",
+    "selection_and_checkpoint_frozen": true
+  },
+  {
+    "seed": 101,
+    "rule": "energy",
+    "pair": [
+      [
+        128,
+        128
+      ],
+      [
+        256,
+        256
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8287,
+      "cross_entropy": 0.5099393723964691,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "5c638922bcb7bb46b1197596c757c79d9459fa67c80b5d5679094ca0255078c2",
+    "selection_and_checkpoint_frozen": true
+  },
+  {
+    "seed": 202,
+    "rule": "original",
+    "final_test": {
+      "accuracy": 0.8358,
+      "cross_entropy": 0.535396293926239,
+      "n": 10000
+    },
+    "baseline_checkpoint_sha256": "47b6eadb03fca5d2baf006df3a62b8d2154ad1fea70bad2b4fe52ff1f69224f9"
+  },
+  {
+    "seed": 202,
+    "rule": "functional",
+    "pair": [
+      [
+        64,
+        64
+      ],
+      [
+        64,
+        64
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8327,
+      "cross_entropy": 0.5005045311450959,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "80745025077c955ca8558510a0972aabe91fb85aae325377c60099743a0f91bc",
+    "selection_and_checkpoint_frozen": true
+  },
+  {
+    "seed": 202,
+    "rule": "fractional",
+    "pair": [
+      [
+        96,
+        96
+      ],
+      [
+        192,
+        192
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8326,
+      "cross_entropy": 0.5015695419788361,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "3a6ef5907cb87feeabc99c9ec82fd0325717a8ba248ebcc126022e87296c9171",
+    "selection_and_checkpoint_frozen": true
+  },
+  {
+    "seed": 202,
+    "rule": "energy",
+    "pair": [
+      [
+        128,
+        128
+      ],
+      [
+        256,
+        256
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8327,
+      "cross_entropy": 0.5049616277217865,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "95dbeff6d5d3b99dec7df5a8131b27f87d894ded11fb2f2fcc53f8b45a15c93e",
+    "selection_and_checkpoint_frozen": true
+  },
+  {
+    "seed": 303,
+    "rule": "original",
+    "final_test": {
+      "accuracy": 0.834,
+      "cross_entropy": 0.5389636929512024,
+      "n": 10000
+    },
+    "baseline_checkpoint_sha256": "0afd4f8dada877364214a38231e917695c7b7729e1ef47f7659bf340c11aa80d"
+  },
+  {
+    "seed": 303,
+    "rule": "functional",
+    "pair": [
+      [
+        64,
+        64
+      ],
+      [
+        64,
+        64
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8307,
+      "cross_entropy": 0.4988720528125763,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "c9b4ae12b33da20077c84328a19f2b4c9d98b4e900a226eb03ff8f87a2b59060",
+    "selection_and_checkpoint_frozen": true
+  },
+  {
+    "seed": 303,
+    "rule": "fractional",
+    "pair": [
+      [
+        96,
+        96
+      ],
+      [
+        192,
+        192
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8296,
+      "cross_entropy": 0.5008479991912842,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "52bdd17364b1d3a1ea8f47cb3e120a72fa4b0be34229b2945a9656483c5968a4",
+    "selection_and_checkpoint_frozen": true
+  },
+  {
+    "seed": 303,
+    "rule": "energy",
+    "pair": [
+      [
+        128,
+        128
+      ],
+      [
+        256,
+        256
+      ]
+    ],
+    "final_test": {
+      "accuracy": 0.8304,
+      "cross_entropy": 0.5030028108119965,
+      "n": 10000
+    },
+    "quality_passed": true,
+    "checkpoint_sha256": "a4da6a3cdcc8d8eae78618c5256ccba004e5cf66c937e25c755985c390ac6561",
+    "selection_and_checkpoint_frozen": true
+  }
+]

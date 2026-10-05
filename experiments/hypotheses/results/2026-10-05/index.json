@@ -1,0 +1,501 @@
+{
+  "H01": {
+    "run_id": "h01-real-001",
+    "manifest_sha256": "d59fff8c8fafc50fce7996e64febcccbbaf390887ba51e7daeab0419d67a214c",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "runner_sha256": "4c21478b91bdefacfe1419e84609807a1cb3ca171df61ec2af237a93e1888fbf",
+      "torch": "2.2.0+cu121",
+      "device": "cuda",
+      "limitations": [
+        "compressed layer trainable; remaining parameters frozen",
+        "affected teacher BN calibrated once; common buffers copied and frozen in all branches",
+        "support-only solution diagnosed before recovery, not full secondary neural branch",
+        "three paired model seeds; exploratory uncertainty",
+        "torchvision differs from protocol interface reference; actual version recorded",
+        "WDDM process memory unavailable; total-device conservative guard"
+      ]
+    },
+    "exports": {
+      "H01_runs.json": {
+        "raw_sha256": "e2094f8f1239a421f090bcd195d992426c44b9ad869528d161863ee8ba818b16",
+        "export_sha256": "e2094f8f1239a421f090bcd195d992426c44b9ad869528d161863ee8ba818b16"
+      },
+      "H01_final.json": {
+        "raw_sha256": "f4b403866af3af05e2e3cc2ddae1cbeee25e602b784ed65e652d2c53b46a5ed5",
+        "export_sha256": "f4b403866af3af05e2e3cc2ddae1cbeee25e602b784ed65e652d2c53b46a5ed5"
+      }
+    }
+  },
+  "H02": {
+    "run_id": "h02-real-001",
+    "manifest_sha256": "8b5084dce465362e3735199be31b48cdf08d10ef57637eba88ebdf77416a1018",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "base_sha": "a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b",
+      "source_hashes": {
+        "run_h02_real.py": "494628abf6f796b79a58d6f21bc5a087105a02b77b681d009ad1601146436036",
+        "real_composition_core.py": "bf75ae63673d78d7b4603b11815d554e127059019515b4a2ccce740e04b3d2a7",
+        "run_h04_real.py": "ba68bc8ff8c111c2b3b6424b62ce9d201c57f70820e19e8211d8473f74bfe25d",
+        "run_local.py": "a301b6d92ac918cb052f808db95faa1ebf471d6d949c255dd797da437b8033df",
+        "run_h02_synthetic.py": "f2bd6e1ad96321836e312dced55d9311c6210857c231f9b2051bff9a415cc3c9",
+        "H02_adjacent_subspaces.md": "fa6a520a3bfa5778a235ab8c2a1a3d4752fa1516777d3fb953502ec20751ce08"
+      },
+      "torch": "2.2.0+cu121",
+      "device": "cuda",
+      "limitations": [
+        "only two compressed convolutions trained; all other parameters frozen",
+        "shared_initial has two independently trainable Q arrays; not parameter sharing",
+        "common target-block BN recalibration in teacher then identical frozen student buffers",
+        "illegal ReLU relocation and missing compensation negative neural controls pending",
+        "no full time-to-quality trajectory; final quality alone cannot confirm time criterion"
+      ],
+      "limits": {
+        "gpu_bytes": 12884901888,
+        "rss_bytes": 25769803776,
+        "variant_seconds": 2700
+      }
+    },
+    "exports": {
+      "H02_runs.json": {
+        "raw_sha256": "9ede6e156d4c20a2c1f30ebe543cd8dde9be639430ce8aab06bcb0125b95878b",
+        "export_sha256": "dc5d53876ccc7d8afb393e2bac58b8a77bc12de515af1f8747b2a4965978bb79"
+      },
+      "H02_final.json": {
+        "raw_sha256": "4a0c0216e78d899f61092f65adc5e36d80a89ccc67167d25c2e4117f1c3a959f",
+        "export_sha256": "4a0c0216e78d899f61092f65adc5e36d80a89ccc67167d25c2e4117f1c3a959f"
+      }
+    }
+  },
+  "H03": {
+    "run_id": "h03-real-001",
+    "manifest_sha256": "db3e13814de604a0975687dcbd131d9c4239f03337374264b086a2c8f39721d4",
+    "metadata": {
+      "status": "complete",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "base_sha": "a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b",
+      "source_hashes": {
+        "run_h03_real.py": "8169d90a552e5b8d5e9d6c876d9974f655c7d9a46260723039228a96a337384d",
+        "gpt2_rotation_core.py": "27c580414ce7aa16b6a776ff224a44f384c04b76bd5d634508d83f1d5056a1ee",
+        "run_h03_synthetic.py": "e14461159cd2c2c0068eabbaa61e0c7981396511096a3566814c36eb3d41bad3",
+        "run_h02_synthetic.py": "f2bd6e1ad96321836e312dced55d9311c6210857c231f9b2051bff9a415cc3c9",
+        "H03_rotations_recovery.md": "ba02c066f49322240e4ef840bebc6bae8b0dff7e8ca70ea2f33cd28885f3c5cb"
+      },
+      "torch": "2.2.0+cu121",
+      "transformers": "4.39.1",
+      "device": "cuda",
+      "dtype": "FP32 parameters/gradients/Adam/QR/SVD",
+      "limitations": [
+        "one common pretrained checkpoint; three interventions, not independently trained GPT2 models",
+        "global dense Q compensation includes all12blocks; internal attention heads and GELU coordinates unchanged",
+        "only block5 four Conv1D matrices quantized; biases, embeddings and head remain FP32",
+        "fake int4 training/dequantized execution; no native int4 hardware speed claim",
+        "Cayley adds293761coordinates for50calibration steps; identity is fixed-A=0 ablation",
+        "microbatch chosen before main; OOM stops a branch instead of silently changing a paired protocol",
+        "tuning assessed at0/10/.../200updates; quality time resolved only on this grid",
+        "raw packed bytes exclude serialization and other unquantized parameters",
+        "RMSNorm/RoPE full neural control series remain separate",
+        "n=3paired t interval is conditional on approximate normality; weak uncertainty estimate"
+      ],
+      "model_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+      "data_revision": "b08601e04326c79dfdd32d625aee71d232d685c3"
+    },
+    "exports": {
+      "H03_runs.csv": {
+        "raw_sha256": "3040f81baa9aaebb8e20db21dd681e3550de2c9e2f650570291eb7ef528e2a74",
+        "export_sha256": "3040f81baa9aaebb8e20db21dd681e3550de2c9e2f650570291eb7ef528e2a74"
+      },
+      "H03_paired_summary.csv": {
+        "raw_sha256": "56e1a8cb22077cba01f0f6c0d0902d6a70f02423d590e63ce8600de931b32307",
+        "export_sha256": "56e1a8cb22077cba01f0f6c0d0902d6a70f02423d590e63ce8600de931b32307"
+      },
+      "H03_units.json": {
+        "raw_sha256": "fd6319be343e1e830d82d49414162ff60c153552373864a0c3621e5a3ddf1068",
+        "export_sha256": "fd6319be343e1e830d82d49414162ff60c153552373864a0c3621e5a3ddf1068"
+      }
+    }
+  },
+  "H04": {
+    "run_id": "h04-real-001",
+    "manifest_sha256": "05ddb7ca5dc5fd4e932dc80d2f26a0f704ab9e9b1d26842bb4ba4d1f2c7edc7e",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "source_hashes": {
+        "run_local.py": "3da14d0a2d9a090a09690d51d91f9ab42441628f21572e20382b55b55f458ef4"
+      },
+      "runner_sha256": "3754e252487a3884e2fa52969ef178ef5ea951186b72b889611e38c92668633f",
+      "torch": "2.2.0+cu121",
+      "device": "cuda",
+      "limitations": [
+        "only compressed layer trained; original BN and remaining parameters frozen",
+        "dense comparison is one-time materialization of the same recovered Tucker weight",
+        "torchvision actual version differs from protocol interface reference 0.20",
+        "WDDM process GPU memory unavailable; total-device conservative bound",
+        "single-device empirical result; no fused kernel",
+        "rank selection uses seed 101 tuning only; three paired seeds are exploratory"
+      ]
+    },
+    "exports": {
+      "H04_runs.json": {
+        "raw_sha256": "e77e8fad789db856ad5e12b389328b95ce73d8e377b1f423ec62982bed5f9ff9",
+        "export_sha256": "e77e8fad789db856ad5e12b389328b95ce73d8e377b1f423ec62982bed5f9ff9"
+      },
+      "H04_final.json": {
+        "raw_sha256": "e4a63f9fcf05af5cb4f0e93dd0c0a7ae27798d9a6620ba5aa4eeb5ae11f84dc8",
+        "export_sha256": "e4a63f9fcf05af5cb4f0e93dd0c0a7ae27798d9a6620ba5aa4eeb5ae11f84dc8"
+      }
+    }
+  },
+  "H05": {
+    "run_id": "h05-real-001",
+    "manifest_sha256": "fa2d03debc90508c279637f8f9f81e853dcafa0c3aeb16598bf91c12e608473f",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "base_sha": "a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b",
+      "source_hashes": {
+        "run_h05_real.py": "27fd4069a3cdd45b7d8ee3a1d8adef7d2f08ca7127b1e21a34388dae1238aadd",
+        "run_h05_synthetic.py": "d63fd8ea9349917abf1cf4a33b2ad94650d971e4c4c1fbee9bae86f18ae06333",
+        "run_h07_synthetic.py": "4231fcdabddb151713ef4048204f3b699ba0d2228b3f0df9dafb325180eaa673",
+        "synthetic_tucker_common.py": "9b406ef7827779a8273b60626cc819cdafa35cbd2f972c0589d873119112339b",
+        "run_h02_synthetic.py": "f2bd6e1ad96321836e312dced55d9311c6210857c231f9b2051bff9a415cc3c9",
+        "run_h04_real.py": "ba68bc8ff8c111c2b3b6424b62ce9d201c57f70820e19e8211d8473f74bfe25d",
+        "run_local.py": "a301b6d92ac918cb052f808db95faa1ebf471d6d949c255dd797da437b8033df",
+        "H05_sketched_tucker_ls.md": "c02e610101863735bc80f3c3deef209eb7036c74b30a16a5d1bf653701dbf7ad"
+      },
+      "torch": "2.2.0+cu121",
+      "device": "cuda",
+      "limitations": [
+        "protocol-default sketch/sampling size256 used;128/512 secondary tuning not run",
+        "true LS validation and exact core projection costs included",
+        "BN frozen to common original teacher buffers; only target factors/core trained",
+        "full3x3 spatial factors absorbed into trainable core identically in all neural branches",
+        "full time-to-quality recovery trajectory not available"
+      ],
+      "limits": {
+        "gpu_bytes": 12884901888,
+        "rss_bytes": 25769803776,
+        "variant_seconds": 2700
+      }
+    },
+    "exports": {
+      "H05_runs.json": {
+        "raw_sha256": "ae8f358c11f4d448dad511e1a11b993d7e89317ff9d2226917453098fd168898",
+        "export_sha256": "ae8f358c11f4d448dad511e1a11b993d7e89317ff9d2226917453098fd168898"
+      },
+      "H05_final.json": {
+        "raw_sha256": "a338d27807fac0f3723c5ffa6dc2c99de853ab5a68972396f036b8be606d5ffc",
+        "export_sha256": "a338d27807fac0f3723c5ffa6dc2c99de853ab5a68972396f036b8be606d5ffc"
+      }
+    }
+  },
+  "H06": {
+    "run_id": "h06-real-feasibility-001",
+    "manifest_sha256": "4954f0433135e68e9b9a004246810a5a22574add01db451e696a3cc4689126b2",
+    "metadata": {
+      "state": "preliminary_feasibility_completed",
+      "stage": "preliminary_original_unfolding_necessary_feasibility",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "base_sha": "a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b",
+      "source_hashes": {
+        "experiments\\hypotheses\\run_h06_real_feasibility.py": "22223c75db0759bd0ecd0536b5cecdf9e56b118194d66caff05fd6fc7ff3dc04",
+        "experiments\\hypotheses\\H06_residual_rank_budget.md": "4b44eaf9b25a98acaf11bcf1314f2f2ec6a9759249397e523b8ff6874db3ce78",
+        "tests\\test_h06_real_feasibility.py": "c5e0b3e583048fdd2bf060714d46a5f06879f27e764b54b897ec35b16fc57d79"
+      },
+      "torch": "2.2.0+cu121",
+      "device": "cpu",
+      "precision": "FP64 exact-spectrum CPU preliminary audit of original FP32 weights",
+      "limitations": [
+        "necessary lower bounds do not certify any compressed Tucker approximation",
+        "enumeration only excludes impossible tuples; no <=12-tuple method search or neural training is performed",
+        "FP64 LAPACK spectra and floating-point decision margin are numerical evidence, not rigorous interval arithmetic",
+        "mathematical coefficients are not execution memory or speed",
+        "baseline tuning metrics are reused from metadata; no dataset or model forward pass is opened"
+      ],
+      "limits": {
+        "rss_bytes": 25769803776,
+        "total_seconds": 600
+      },
+      "neural_experiment_completed": false
+    },
+    "exports": {
+      "H06_summary.json": {
+        "raw_sha256": "845f1ee21488ff98596ebdf698f0dca42e1e1151dd5d969b6231e17586106617",
+        "export_sha256": "845f1ee21488ff98596ebdf698f0dca42e1e1151dd5d969b6231e17586106617"
+      },
+      "H06_validation.json": {
+        "raw_sha256": "e6d3063c408ff9b4b19c23eb15bd7691839c3694c8a5b5386407ca9bd507f4e8",
+        "export_sha256": "cbfea148a415ade6bfb47af0829153da1e495d9db36206e9a92cad15743dcf27"
+      },
+      "H06_table_units.json": {
+        "raw_sha256": "1bc86aaf802b2d23749702062eb59659a780d0ad40218c66d485effc38738ea3",
+        "export_sha256": "1bc86aaf802b2d23749702062eb59659a780d0ad40218c66d485effc38738ea3"
+      }
+    }
+  },
+  "H07": {
+    "run_id": "h07-real-001",
+    "manifest_sha256": "5a25111ccb3d97feb77acb218c0af6799b34ecfc049cfeb475d44dfddc4bc831",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "base_sha": "a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b",
+      "source_hashes": {
+        "run_h05_real.py": "27fd4069a3cdd45b7d8ee3a1d8adef7d2f08ca7127b1e21a34388dae1238aadd",
+        "run_h05_synthetic.py": "d63fd8ea9349917abf1cf4a33b2ad94650d971e4c4c1fbee9bae86f18ae06333",
+        "run_h07_synthetic.py": "4231fcdabddb151713ef4048204f3b699ba0d2228b3f0df9dafb325180eaa673",
+        "synthetic_tucker_common.py": "30420e25c5b9d81bb3748fe4111995e487c004f79c628b4dc9e8767f2d248b39",
+        "run_h02_synthetic.py": "f2bd6e1ad96321836e312dced55d9311c6210857c231f9b2051bff9a415cc3c9",
+        "run_h04_real.py": "ba68bc8ff8c111c2b3b6424b62ce9d201c57f70820e19e8211d8473f74bfe25d",
+        "run_local.py": "a301b6d92ac918cb052f808db95faa1ebf471d6d949c255dd797da437b8033df",
+        "run_h07_real.py": "0f49ad621528e0864e42335db005cfd55ca4b30f334de9adb4fcdd872cfdad6f",
+        "H07_contraction_sampling.md": "40657ada40d989fcb0d65dcbccca5336788bc3f31cf095d6d9dc7894040d08ce"
+      },
+      "torch": "2.2.0+cu121",
+      "device": "cuda",
+      "limitations": [
+        "protocol-default sketch/sampling size256 used;128/512 secondary tuning not run",
+        "logical read counter excludes opaque QR/SVD internal rereads; complete16T pass bound not certified",
+        "BN frozen to common original teacher buffers; only target factors/core trained",
+        "full3x3 spatial factors absorbed into trainable core identically in all neural branches",
+        "full time-to-quality recovery trajectory not available"
+      ],
+      "limits": {
+        "gpu_bytes": 12884901888,
+        "rss_bytes": 25769803776,
+        "variant_seconds": 2700
+      }
+    },
+    "exports": {
+      "H07_runs.json": {
+        "raw_sha256": "56d173c898b9b16333c9e2a71631289bb4f0939067aaccb5802268749ec6c3e0",
+        "export_sha256": "e5f76c6608623f53cca249448cffe45bea9b2c84808ae618cae71c300aec28b8"
+      },
+      "H07_final.json": {
+        "raw_sha256": "65cf75f9ab747a0041b88a930a52b6ea7f014104f72423bc22de471b2dc7406a",
+        "export_sha256": "65cf75f9ab747a0041b88a930a52b6ea7f014104f72423bc22de471b2dc7406a"
+      }
+    }
+  },
+  "H08": {
+    "run_id": "h08-real-001",
+    "manifest_sha256": "e8588dba976e2e34566c3adcc2db98b9eef7ef58f240ac5921501ff022d670dd",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "source_hashes": {
+        "run_h08_real.py": "1cb104a008bfcb81402b61c338a28346479e51c62229becbb6f47d9b5edd4732",
+        "run_h08_real_null.py": "ad581db57ef1bd7483bfcd26b6dac88f14c413f17c6e14a11486a1be9e3908e2",
+        "run_h08_null_calibration.py": "13365042b28ed0b824eefe45f54e27ecbc633403e0f0e876b82951a51f264a0a",
+        "synthetic_tucker_common.py": "30420e25c5b9d81bb3748fe4111995e487c004f79c628b4dc9e8767f2d248b39",
+        "run_local.py": "a301b6d92ac918cb052f808db95faa1ebf471d6d949c255dd797da437b8033df"
+      },
+      "torch": "2.2.0+cu121",
+      "device": "cpu",
+      "limitations": [
+        "independent16probe baseline and correlated-noise/zero-noise controls pending",
+        "test-group reconstruction is unsupervised transductive intervention, registered in advance",
+        "Gaussian null envelope is shape-specific, not a model of natural activation noise",
+        "no network recovery training or native compressed convolution claims",
+        "null setup charged once in each full-cost comparison; amortization reported separately"
+      ]
+    },
+    "exports": {
+      "H08_runs.json": {
+        "raw_sha256": "a5af5b8db236c7b8dce82ab70bd1216d7b49966f46e678f2cd45d0e8d9f8eb3b",
+        "export_sha256": "a5af5b8db236c7b8dce82ab70bd1216d7b49966f46e678f2cd45d0e8d9f8eb3b"
+      },
+      "H08_paired_summary.json": {
+        "raw_sha256": "36a337acf4692aee3de531cffb3c5febcd21cdd73f816d392a53127962b18f71",
+        "export_sha256": "36a337acf4692aee3de531cffb3c5febcd21cdd73f816d392a53127962b18f71"
+      }
+    }
+  },
+  "H09": {
+    "run_id": "h09-real-002",
+    "manifest_sha256": "f9b6a33add259727009cf49f746d81cfc15c1daf706bbc09e83a06e47d16a4bd",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "base_sha": "a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b",
+      "source_hashes": {
+        "run_h09_real.py": "6be8aea5f8ccc55d95bd9dffab0517998d6b6d482ab28e58df8b106b569f4f60",
+        "run_h09_synthetic.py": "b017db27f1ae636bb160904d905d5a2110aade50158be0a3b54423593796bb22",
+        "run_h04_real.py": "ba68bc8ff8c111c2b3b6424b62ce9d201c57f70820e19e8211d8473f74bfe25d",
+        "run_local.py": "a301b6d92ac918cb052f808db95faa1ebf471d6d949c255dd797da437b8033df",
+        "train_cifar_baseline.py": "73b17b76abca2d48eaf654380299ed7f06213b2820a89f04fc91d7f21ad08ae6"
+      },
+      "torch": "2.2.0+cu121",
+      "device": "cuda",
+      "precision": "FP32 states/gradients/QR/SVD; BF16 neural autocast",
+      "timing_scope": {
+        "branch_origin": "after prior-work synchronization, before model deepcopy and optimizer construction",
+        "branch_setup_included": true,
+        "quality_endpoint": "tuning evaluation, model checkpoint save and current checkpoint SHA256 complete",
+        "current_checkpoint_sha_included_in_observation": true,
+        "observation_json": "outside its own observation timestamp; included in later observations and branch total",
+        "branch_total_endpoint": "resume save, frozen-buffer checks, batch-index SHA256 and resume SHA256 complete",
+        "batch_indices_and_resume_sha_included_in_branch_total": true,
+        "final_reporting_excluded": true,
+        "final_reporting": "resource telemetry sampling and final projection-events.json/branch.json serialization",
+        "common_warmup_excluded": true,
+        "common_setup": "shared five-epoch warmup, checkpoint loading, dataset construction and initial tuning evaluation; warmup cost reported separately"
+      },
+      "limitations": [
+        "rank64 preregistered main; rank32 tuning is a separate pending branch",
+        "all methods save the same observation-grid model states; that cost is included",
+        "quality-time criterion uninformative if dense tuning gain is below2percentage points",
+        "one projected matrix; full-coordinate EF memory charged; no total model memory guarantee",
+        "n=3 paired t intervals conditional on approximate normality",
+        "observations every10steps; earliest checkpoint only resolved on that grid"
+      ],
+      "limits": {
+        "gpu_bytes": 12884901888,
+        "ram_bytes": 25769803776,
+        "branch_seconds": 3600
+      }
+    },
+    "exports": {
+      "H09_runs.json": {
+        "raw_sha256": "c709778a600b8398963a577cd39d22078107f8d91245e9a698738f498bd0de72",
+        "export_sha256": "1b1bea912de42dfc0fa43c8c7e783bdbd8c2720818ab10659d5f7684f1dc79eb"
+      },
+      "H09_paired_summary.json": {
+        "raw_sha256": "ddae731b5d556c985b861d8f258440aa04ed39f288b16e6ed6b68bd75029eb20",
+        "export_sha256": "ddae731b5d556c985b861d8f258440aa04ed39f288b16e6ed6b68bd75029eb20"
+      }
+    }
+  },
+  "H10": {
+    "run_id": "h10-real-002",
+    "manifest_sha256": "bd84fc759ccfff74da07d681289849deffaf124d33e3d99d115a3f12cd4ad85e",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "base_sha": "a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b",
+      "source_hashes": {
+        "run_h10_real.py": "3ac7bfc1a7575c3eb56d7503f067073893273226e33c13305d2e4bfc1d7d22a2",
+        "switch_trace_core.py": "49f3d8cb1a5e62668e9b2c8a1b11004c0510ded047edb7691e9311dbe5c8bf3a",
+        "run_h03_real.py": "8169d90a552e5b8d5e9d6c876d9974f655c7d9a46260723039228a96a337384d",
+        "gpt2_rotation_core.py": "27c580414ce7aa16b6a776ff224a44f384c04b76bd5d634508d83f1d5056a1ee",
+        "run_h03_synthetic.py": "e14461159cd2c2c0068eabbaa61e0c7981396511096a3566814c36eb3d41bad3",
+        "run_h02_synthetic.py": "f2bd6e1ad96321836e312dced55d9311c6210857c231f9b2051bff9a415cc3c9",
+        "run_local.py": "a301b6d92ac918cb052f808db95faa1ebf471d6d949c255dd797da437b8033df",
+        "H10_moe_placement.md": "84aa3d654fe5235ea837f664dd5fb0bd3597260e0a8390f99d1c57128e921959"
+      },
+      "torch": "2.2.0+cu121",
+      "transformers": "4.39.1",
+      "device": "cuda",
+      "limitations": [
+        "physical communication stage C blocked by one GPU; whole H10 indeterminate",
+        "forward parametersFP32, BF16autocast; physical permutation admissionFP32; transport retains observed sparse-state dtype",
+        "accepted padding dispatches included because native routers actually dispatch them",
+        "load/capacity gate enforced onestimatedselection then truecalibration; future violations disclosed",
+        "fixed logical router/capacity decisions preserved through expert storage mapping",
+        "network sensitivity8/32GiB5/20us secondary branches pending"
+      ],
+      "limits": {
+        "gpu_bytes": 12884901888,
+        "rss_bytes": 25769803776,
+        "seconds_per_seed": 3600
+      },
+      "physical_stage_C": "blocked_by_hardware",
+      "model_revision": "92fe2d22b024d9937146fe097ba3d3a7ba146e1b",
+      "data_revision": "b08601e04326c79dfdd32d625aee71d232d685c3",
+      "checkpoint_sha256": "ff91705b718f692fa0c994a49d094154583db40b536e80f20f52e05498ff6856"
+    },
+    "exports": {
+      "H10_runs.json": {
+        "raw_sha256": "8155a9e7e2280c4826009bb4e7323cdb82977157a5eb04cac847ef64db30a27d",
+        "export_sha256": "8155a9e7e2280c4826009bb4e7323cdb82977157a5eb04cac847ef64db30a27d"
+      }
+    },
+    "posthoc": {
+      "run_id": "posthoc-h10-feasibility-002",
+      "raw_sha256": "c49d678ed606795312536c59c41fa517a72cfa883995514c4caa730280b0039e",
+      "export_sha256": "c49d678ed606795312536c59c41fa517a72cfa883995514c4caa730280b0039e",
+      "new_primary_pi": false
+    }
+  },
+  "H11": {
+    "run_id": "h11-real-002",
+    "manifest_sha256": "d8da3e3958807c1e1505b1d9e8a21705b3d97747f354231e30918557f9896505",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "runner_sha256": "c485c0ec0ff9df7417cde6fbb336fadb229bd91168e02eca3e17711b2628f06b",
+      "torch": "2.2.0+cu121",
+      "device": "cuda",
+      "limitations": [
+        "width selection and reliability on fixed seed101 checkpoint only",
+        "implicit Python operators; scatter and parameter generation included",
+        "10-call cached-operator benchmark pending; these are fresh-operator calls",
+        "only compressed layer trained; BN and remaining weights frozen",
+        "three paired neural seeds; no global hypothesis confirmation",
+        "WDDM process peak unavailable; conservative device-usage guard"
+      ]
+    },
+    "exports": {
+      "H11_runs.json": {
+        "raw_sha256": "7f840a44b75af4871fb43851e36938abe4ebdf1f239da5ce00d8335b2fb6024d",
+        "export_sha256": "7f840a44b75af4871fb43851e36938abe4ebdf1f239da5ce00d8335b2fb6024d"
+      },
+      "H11_final.json": {
+        "raw_sha256": "026dd5497ee8bbe4c34316ff6c4d2969f0e2dccc87f5b1ce35d1c63d2ee309f0",
+        "export_sha256": "026dd5497ee8bbe4c34316ff6c4d2969f0e2dccc87f5b1ce35d1c63d2ee309f0"
+      }
+    }
+  },
+  "H12": {
+    "run_id": "h12-real-002",
+    "manifest_sha256": "b9966b9575faccf4c19dc318415e980aad8b683364a5dc07fc681207d99a02b2",
+    "metadata": {
+      "state": "completed",
+      "git_sha": "492f5a0c7eb692bb762d9f56907f21ce08490fca",
+      "base_sha": "a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b",
+      "source_hashes": {
+        "experiments\\hypotheses\\run_h12_real.py": "641b302ec9eb22fcd4b6d153cd91c865d2d55b67a94071f7d455f56dbaebb469",
+        "experiments\\hypotheses\\H12_functional_rank_rgn.md": "cc6c5b72be62f8731b433bf5141fd94ea0e3fc15f230ac9c1a444ff93f445513",
+        "experiments\\hypotheses\\run_h04_real.py": "ba68bc8ff8c111c2b3b6424b62ce9d201c57f70820e19e8211d8473f74bfe25d",
+        "experiments\\hypotheses\\run_local.py": "a301b6d92ac918cb052f808db95faa1ebf471d6d949c255dd797da437b8033df",
+        "experiments\\hypotheses\\run_h06_real_feasibility.py": "22223c75db0759bd0ecd0536b5cecdf9e56b118194d66caff05fd6fc7ff3dc04",
+        "tdecomp\\tensor\\tucker.py": "dd89986f91885fdf4c4586f7f488430ce680108eb372b70a629be49748a2fb2a",
+        "tdecomp\\_base.py": "19c8f0fa25ff88c052f850f576abf80c5fc24ee77fedbd0ecbedb96c9ddcb02e",
+        "tdecomp\\_random.py": "ed88f91bbbd0fe4d20f8d0e660b3e05d774072f223b0ad1025fec9f8d7839261",
+        "tests\\test_h12_real_runner.py": "9f346913ba4c7c484ab7b3b2f64c5e52499b83b74beaf622bb4f10e39b81dc1d"
+      },
+      "torch": "2.2.0+cu121",
+      "device": "cuda",
+      "limitations": [
+        "selection uses528-update training cost forecast from32; exact optimum C is not claimed",
+        "rank search occurs once on seed101; shared search cost is charged in full to each seed's10000-request C",
+        "selected seed101 retains candidate32; fixed pair seeds202/303 receive32 initial calibration, not new search",
+        "functional/fractional/energy primary only; nuclear ADMM, RGN solver comparison and5-bootstrap stability are separate pending secondary stages",
+        "forced full-rank reserve receives no initial32 at any seed, only128/400; no seventh candidate training; forced reserve forecast has528 updates with seconds unknown until measured",
+        "mathematical parameter storage is reported separately from observed execution memory",
+        "torchvision actual version differs from protocol interface0.20"
+      ]
+    },
+    "exports": {
+      "H12_runs.json": {
+        "raw_sha256": "c87dafc515a87e35fd17b0315d95461b8d12611d6865ae1bb69e2982235da31a",
+        "export_sha256": "311d4e051bfcc6fa319263f087cbc32760d138084d4c0ceca642f7a50dc5a712"
+      },
+      "H12_final.json": {
+        "raw_sha256": "b2aee2b2aea58fe137df5c106a0b87181448cc10f270abd0dd5a5bacf4339823",
+        "export_sha256": "b2aee2b2aea58fe137df5c106a0b87181448cc10f270abd0dd5a5bacf4339823"
+      },
+      "H12_paired_summary.csv": {
+        "raw_sha256": "aca7857660cd7816091dddfa613824a1b78525825bda5dc3b26f46a44c86b3f2",
+        "export_sha256": "aca7857660cd7816091dddfa613824a1b78525825bda5dc3b26f46a44c86b3f2"
+      },
+      "H12_table_units.json": {
+        "raw_sha256": "72746ba2b95bc94f4af39b0f1a72ae5082793fd6c53f6e16bfab0a5b6054b0eb",
+        "export_sha256": "72746ba2b95bc94f4af39b0f1a72ae5082793fd6c53f6e16bfab0a5b6054b0eb"
+      }
+    }
+  }
+}

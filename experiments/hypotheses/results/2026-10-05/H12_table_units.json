@@ -1,0 +1,6 @@
+{
+  "time_fields": "seconds except latency *_ms",
+  "accuracy": "fraction",
+  "cost": "seconds per single image over10000 requests",
+  "coefficients": "FP32 mathematical factor/core count"
+}

@@ -1,0 +1,677 @@
+[
+  {
+    "seed": 101,
+    "method": "original",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8291,
+      "cross_entropy": 0.5462213399648667,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 3.4526999997979146,
+        "p95_ms": 4.187835001084747,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.5028000002057524,
+        "p95_ms": 3.863455000464455,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "svd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8311,
+      "cross_entropy": 0.5039660846471786,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 2.156744083404541,
+        "normalized_mse": 0.19807315624899954,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.15195457286834715,
+        "normalized_mse": 0.10371290454384913,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 1.4776036877441405,
+        "normalized_mse": 0.04111302031376298,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 4.0159000009225565,
+        "p95_ms": 7.4028999988513515,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.817199999502918,
+        "p95_ms": 4.749564999747236,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "weighted_svd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8314,
+      "cross_entropy": 0.5032655600309371,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 3.751285718536377,
+        "normalized_mse": 0.3445142184367946,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.1741070505619049,
+        "normalized_mse": 0.11883254037364573,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 1.569222417602539,
+        "normalized_mse": 0.04366223072317943,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 4.2873000002146,
+        "p95_ms": 7.196905001455889,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.064400000061141,
+        "p95_ms": 4.873460000362684,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "weighted_rsvd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8317,
+      "cross_entropy": 0.5030834654569626,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 3.8502212615966798,
+        "normalized_mse": 0.35360035685718094,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.1751872303724289,
+        "normalized_mse": 0.11956979087861164,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 1.5826308712768555,
+        "normalized_mse": 0.0440353091290204,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 3.50944999991043,
+        "p95_ms": 4.522290000750218,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.86030000026949,
+        "p95_ms": 4.717624999102554,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 101,
+    "method": "haar",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8171,
+      "cross_entropy": 0.5311748969554901,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 10.725951420593262,
+        "normalized_mse": 0.9850603360861756,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.5088464224815369,
+        "normalized_mse": 0.34730077184337116,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 4.682321920166015,
+        "normalized_mse": 0.13028148062709546,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 5.22729999920557,
+        "p95_ms": 5.674319999434374,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.82800000008865,
+        "p95_ms": 5.300294999324251,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "original",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8354,
+      "cross_entropy": 0.5349409478902817,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 4.875700000411598,
+        "p95_ms": 8.315285000207949,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.016300000330375,
+        "p95_ms": 5.317610001202411,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "svd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8339,
+      "cross_entropy": 0.49712377197742463,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 2.164565117263794,
+        "normalized_mse": 0.19639001053094862,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.14730257077217102,
+        "normalized_mse": 0.09968291960315429,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 1.7078694598388673,
+        "normalized_mse": 0.047056325755384654,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 4.496149999795307,
+        "p95_ms": 8.8343649989838,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.8596499998675426,
+        "p95_ms": 4.92492499979562,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "weighted_svd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8336,
+      "cross_entropy": 0.49793324110507964,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 4.359559217834473,
+        "normalized_mse": 0.39554082890473974,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.171751748585701,
+        "normalized_mse": 0.11622822097551683,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 2.0774171057128905,
+        "normalized_mse": 0.05723834189614065,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 3.814849999798753,
+        "p95_ms": 7.232365000163553,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 7.6488000004246715,
+        "p95_ms": 9.355045000120299,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "weighted_rsvd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8336,
+      "cross_entropy": 0.497807998919487,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 4.228632342529297,
+        "normalized_mse": 0.3836618929397774,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.1730848330259323,
+        "normalized_mse": 0.11713034880928916,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 2.033581569519043,
+        "normalized_mse": 0.056030556805238996,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 3.7732500004494796,
+        "p95_ms": 4.920754999420751,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.8647000001219567,
+        "p95_ms": 4.20832500067263,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 202,
+    "method": "haar",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8173,
+      "cross_entropy": 0.5266440326213837,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 10.726600146484374,
+        "normalized_mse": 0.9732195621780465,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.5032302254676819,
+        "normalized_mse": 0.34054706475393853,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 4.333024411621094,
+        "normalized_mse": 0.11938629562385474,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 3.5352499999135034,
+        "p95_ms": 6.986445000256935,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.86505000096804,
+        "p95_ms": 7.410975001221231,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "original",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8343,
+      "cross_entropy": 0.539107198047638,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 0.0,
+        "normalized_mse": 0.0,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 6.38264999997773,
+        "p95_ms": 7.5277899996763145,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.8850499995533028,
+        "p95_ms": 4.53306999961569,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "svd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8315,
+      "cross_entropy": 0.4982239158630371,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 2.04606909866333,
+        "normalized_mse": 0.22118287267441158,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.15172509615421295,
+        "normalized_mse": 0.10031613141028099,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 2.2276111541748045,
+        "normalized_mse": 0.05968076126982505,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 4.020899999886751,
+        "p95_ms": 8.160560000487747,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.9811500000723754,
+        "p95_ms": 4.787690000011935,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "weighted_svd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8307,
+      "cross_entropy": 0.4974149898529053,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 3.6627974643707275,
+        "normalized_mse": 0.39595342392069127,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.17849721014499664,
+        "normalized_mse": 0.1180170587670893,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 2.011213708496094,
+        "normalized_mse": 0.05388317659228953,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 3.9538000000902684,
+        "p95_ms": 5.055270000048037,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.6170499997751904,
+        "p95_ms": 4.783360000237735,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "weighted_rsvd",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.8315,
+      "cross_entropy": 0.49754294009208677,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 3.5854230335235595,
+        "normalized_mse": 0.38758914194335997,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.17606046915054321,
+        "normalized_mse": 0.11640595792742361,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 1.9497574645996094,
+        "normalized_mse": 0.052236679440552596,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 6.674450000900833,
+        "p95_ms": 7.608415000231616,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 7.699499999944237,
+        "p95_ms": 9.17740999984744,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  },
+  {
+    "seed": 303,
+    "method": "haar",
+    "rank": 64,
+    "final_test": {
+      "accuracy": 0.819,
+      "cross_entropy": 0.5242891035556794,
+      "n": 10000
+    },
+    "errors": {
+      "layer": {
+        "mse": 9.140136569213867,
+        "normalized_mse": 0.98806128509339,
+        "n_scalars": 10240000
+      },
+      "block": {
+        "mse": 0.5025311376571655,
+        "normalized_mse": 0.3322586765193784,
+        "n_scalars": 10240000
+      },
+      "network": {
+        "mse": 4.398433112792969,
+        "normalized_mse": 0.11784006202066794,
+        "n_scalars": 100000
+      }
+    },
+    "latency": [
+      {
+        "p50_ms": 6.766599999536993,
+        "p95_ms": 9.887724999862257,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 4.587950000313867,
+        "p95_ms": 6.286820000696025,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      }
+    ]
+  }
+]

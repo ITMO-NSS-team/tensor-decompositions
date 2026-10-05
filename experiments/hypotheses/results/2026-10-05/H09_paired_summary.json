@@ -1,0 +1,170 @@
+[
+  {
+    "method": "adaptive",
+    "reference": "fixed",
+    "pairs": [
+      {
+        "seed": 101,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": 0.3948058512167276,
+        "test_accuracy_delta": 0.0010000000000000009,
+        "method_steps": 40,
+        "reference_steps": 70
+      },
+      {
+        "seed": 202,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": -0.01720789012038426,
+        "test_accuracy_delta": 0.0006000000000000449,
+        "method_steps": 70,
+        "reference_steps": 70
+      },
+      {
+        "seed": 303,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": 0.0250917493150441,
+        "test_accuracy_delta": -0.00029999999999996696,
+        "method_steps": 70,
+        "reference_steps": 70
+      }
+    ],
+    "criterion_minimum_reduction": 0.1,
+    "n": 3,
+    "interval_assumption": "paired approximate normality; df2 for three interventions",
+    "scope": "same warmup model per seed; r64 target gradient; rank32 and counterexample controls pending",
+    "timing_scope": {
+      "branch_origin": "after prior-work synchronization, before model deepcopy and optimizer construction",
+      "branch_setup_included": true,
+      "quality_endpoint": "tuning evaluation, model checkpoint save and current checkpoint SHA256 complete",
+      "current_checkpoint_sha_included_in_observation": true,
+      "observation_json": "outside its own observation timestamp; included in later observations and branch total",
+      "branch_total_endpoint": "resume save, frozen-buffer checks, batch-index SHA256 and resume SHA256 complete",
+      "batch_indices_and_resume_sha_included_in_branch_total": true,
+      "final_reporting_excluded": true,
+      "final_reporting": "resource telemetry sampling and final projection-events.json/branch.json serialization",
+      "common_warmup_excluded": true,
+      "common_setup": "shared five-epoch warmup, checkpoint loading, dataset construction and initial tuning evaluation; warmup cost reported separately"
+    },
+    "whole_protocol_complete": false,
+    "mean_relative_time_reduction": 0.13422990347046249,
+    "ci95": [
+      -0.42881065413402975,
+      0.6972704610749547
+    ],
+    "minimum_effect_excluded_by_interval": false,
+    "interval_supports_minimum_effect": false,
+    "paired_final_quality_within_1pp": true
+  },
+  {
+    "method": "adaptive",
+    "reference": "fixed_paid",
+    "pairs": [
+      {
+        "seed": 101,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": 0.38593628022041837,
+        "test_accuracy_delta": 0.0010000000000000009,
+        "method_steps": 40,
+        "reference_steps": 70
+      },
+      {
+        "seed": 202,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": -0.081081321477112,
+        "test_accuracy_delta": 0.0006000000000000449,
+        "method_steps": 70,
+        "reference_steps": 70
+      },
+      {
+        "seed": 303,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": 0.04525436085177292,
+        "test_accuracy_delta": -0.00029999999999996696,
+        "method_steps": 70,
+        "reference_steps": 70
+      }
+    ],
+    "criterion_minimum_reduction": 0.1,
+    "n": 3,
+    "interval_assumption": "paired approximate normality; df2 for three interventions",
+    "scope": "same warmup model per seed; r64 target gradient; rank32 and counterexample controls pending",
+    "timing_scope": {
+      "branch_origin": "after prior-work synchronization, before model deepcopy and optimizer construction",
+      "branch_setup_included": true,
+      "quality_endpoint": "tuning evaluation, model checkpoint save and current checkpoint SHA256 complete",
+      "current_checkpoint_sha_included_in_observation": true,
+      "observation_json": "outside its own observation timestamp; included in later observations and branch total",
+      "branch_total_endpoint": "resume save, frozen-buffer checks, batch-index SHA256 and resume SHA256 complete",
+      "batch_indices_and_resume_sha_included_in_branch_total": true,
+      "final_reporting_excluded": true,
+      "final_reporting": "resource telemetry sampling and final projection-events.json/branch.json serialization",
+      "common_warmup_excluded": true,
+      "common_setup": "shared five-epoch warmup, checkpoint loading, dataset construction and initial tuning evaluation; warmup cost reported separately"
+    },
+    "whole_protocol_complete": false,
+    "mean_relative_time_reduction": 0.1167031065316931,
+    "ci95": [
+      -0.4833848351812698,
+      0.716791048244656
+    ],
+    "minimum_effect_excluded_by_interval": false,
+    "interval_supports_minimum_effect": false,
+    "paired_final_quality_within_1pp": true
+  },
+  {
+    "method": "adaptive",
+    "reference": "dense",
+    "pairs": [
+      {
+        "seed": 101,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": 0.2956371491691331,
+        "test_accuracy_delta": 0.0006000000000000449,
+        "method_steps": 40,
+        "reference_steps": 70
+      },
+      {
+        "seed": 202,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": -0.10992166958435634,
+        "test_accuracy_delta": 0.000500000000000056,
+        "method_steps": 70,
+        "reference_steps": 70
+      },
+      {
+        "seed": 303,
+        "uncensored_and_informative": true,
+        "relative_time_reduction": -0.4860393448452709,
+        "test_accuracy_delta": 0.0034999999999999476,
+        "method_steps": 70,
+        "reference_steps": 50
+      }
+    ],
+    "criterion_minimum_reduction": 0.1,
+    "n": 3,
+    "interval_assumption": "paired approximate normality; df2 for three interventions",
+    "scope": "same warmup model per seed; r64 target gradient; rank32 and counterexample controls pending",
+    "timing_scope": {
+      "branch_origin": "after prior-work synchronization, before model deepcopy and optimizer construction",
+      "branch_setup_included": true,
+      "quality_endpoint": "tuning evaluation, model checkpoint save and current checkpoint SHA256 complete",
+      "current_checkpoint_sha_included_in_observation": true,
+      "observation_json": "outside its own observation timestamp; included in later observations and branch total",
+      "branch_total_endpoint": "resume save, frozen-buffer checks, batch-index SHA256 and resume SHA256 complete",
+      "batch_indices_and_resume_sha_included_in_branch_total": true,
+      "final_reporting_excluded": true,
+      "final_reporting": "resource telemetry sampling and final projection-events.json/branch.json serialization",
+      "common_warmup_excluded": true,
+      "common_setup": "shared five-epoch warmup, checkpoint loading, dataset construction and initial tuning evaluation; warmup cost reported separately"
+    },
+    "whole_protocol_complete": false,
+    "mean_relative_time_reduction": -0.10010795508683139,
+    "ci95": [
+      -1.0712335062720504,
+      0.8710175960983877
+    ],
+    "minimum_effect_excluded_by_interval": false,
+    "interval_supports_minimum_effect": false,
+    "paired_final_quality_within_1pp": true
+  }
+]
