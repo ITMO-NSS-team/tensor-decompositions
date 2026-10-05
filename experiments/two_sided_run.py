@@ -1,535 +1,260 @@
-import sys
+"""Small reproducible CPU protocol; historical results remain unchanged.
+
+Run from the repository after installing tdecomp:
+python experiments/two_sided_run.py --shape 48 32 --shape 32 48 --rank 4 --true-rank 12
+"""
+from argparse import ArgumentParser, SUPPRESS
+from dataclasses import dataclass
+from hashlib import sha256
+import json
+from pathlib import Path
+import platform
 import os
+import subprocess
 import sys
-import os
-import csv
-import itertools
-import torch
-import time
+from time import perf_counter, sleep
+import tracemalloc
+
 import numpy as np
-import matplotlib.pyplot as plt
-import logging
-from datetime import datetime
-from typing import List, Dict, Tuple, Callable, Any, Optional
+import torch
+import tensorly as tl
+
+from tdecomp.api import SVDContractError, SVDMethod, SVDRequest, compute_svd
 
 
-# Правильный путь с учетом вложенности
-correct_path = "/home/user/projects/tensor-decompositions/tensor-decompositions"
-sys.path.insert(0, correct_path)
+@dataclass(frozen=True)
+class Protocol:
+    shapes: tuple[tuple[int, int], ...] = ((48, 32), (32, 48))
+    rank: int = 4
+    true_rank: int = 12
+    spectrum: str = "geometric"
+    noise: float = 0.0
+    seed: int = 17
+    repeats: int = 3
+    warmup: int = 1
+    methods: tuple[SVDMethod, ...] = tuple(SVDMethod)
+    isolated_memory: bool = False
+    worker_timeout_seconds: float = 30.0
 
-# Проверка
-print("Обновленный sys.path:")
-print(sys.path[0])
-from tdecomp.matrix.decomposer import TwoSidedRandomSVD
 
-def setup_logging():
-    os.makedirs("logs", exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = f"logs/experiment_{timestamp}.txt"
-    
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler()
-        ]
-    )
-    return logging.getLogger(__name__)
+def _validate(config):
+    if not isinstance(config, Protocol):
+        raise ValueError("Expected Protocol")
+    for name in ("rank", "true_rank", "seed", "repeats", "warmup"):
+        value = getattr(config, name)
+        if type(value) is not int or value < (1 if name in ("rank", "repeats") else 0):
+            raise ValueError(f"Invalid {name}")
+    if not config.shapes or not config.methods or len(set(config.methods)) != len(config.methods):
+        raise ValueError("At least one shape and distinct method are required")
+    if any(not isinstance(method, SVDMethod) for method in config.methods):
+        raise ValueError("Methods must be SVDMethod members")
+    if config.spectrum not in ("flat", "geometric") or not np.isfinite(config.noise) or config.noise < 0:
+        raise ValueError("Invalid spectrum or noise")
+    if type(config.isolated_memory) is not bool or not 0 < config.worker_timeout_seconds <= 60:
+        raise ValueError("Invalid isolated-memory mode or timeout (maximum 60 seconds)")
+    for shape in config.shapes:
+        if (not isinstance(shape, tuple) or len(shape) != 2
+                or any(type(d) is not int or d < 1 for d in shape)
+                or config.rank > min(shape) or config.true_rank > min(shape)):
+            raise ValueError("Invalid shape, target rank, or true rank")
+        # Keep this executable protocol bounded independently of API budgets.
+        if np.prod(shape) > 2_000_000:
+            raise ValueError("Protocol shape exceeds two million entries")
 
-logger = setup_logging()
-torch.manual_seed(42)
 
-RANDOM_INIT_METHODS = ['normal', 'ortho', 'iid_entries', 'identity_copies']
-N_REPEATS = 20
-SQUARE_SIZES = [2**i for i in range(4, 11)]
-RECTANGULAR_FIXED_DIM = 256
-RECTANGULAR_VARIABLE_SIZES = [2**i for i in range(4, 11)]
+def generate_matrix(shape, true_rank, spectrum, noise, seed):
+    """Use a local RNG; true rank, target rank, spectrum, and noise are independent."""
+    rng = np.random.default_rng(seed)
+    left = np.linalg.qr(rng.normal(size=(shape[0], true_rank)), mode="reduced")[0]
+    right = np.linalg.qr(rng.normal(size=(shape[1], true_rank)), mode="reduced")[0]
+    singular = np.ones(true_rank) if spectrum == "flat" else np.geomspace(1, 0.01, true_rank)
+    X = (left * singular) @ right.T
+    if noise:
+        X += noise * rng.normal(size=shape) / np.sqrt(np.prod(shape))
+    return X
 
-class ExperimentRunner:
-    def __init__(self, device: str = None):
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        self.logger = logging.getLogger(__name__)
-        if self.device == "cuda":
-            torch.backends.cudnn.benchmark = True
-        
-    def clear_cuda_cache(self):
-        if self.device == "cuda":
-            torch.cuda.empty_cache()
-            torch.cuda.synchronize()
-    
-    def warmup(self):
-        if self.device == "cuda":
-            x = torch.randn(100, 100, device=self.device)
-            for _ in range(10):
-                _ = torch.linalg.svd(x)
-            del x  # Освобождаем память после разогрева
-            self.clear_cuda_cache()
-        
-    def run_method(
-        self,
-        method: Callable,
-        matrix_generator: Callable,
-        method_kwargs: Dict[str, Any] = None,
-        n_repeats: int = 1,
-        max_attempts: int = 3  
-    ) -> Optional[List[Dict]]:
-        method_kwargs = method_kwargs or {}
-        results = []
-        
-        for attempt in range(max_attempts):
+
+def _provenance():
+    root = Path(__file__).resolve().parents[1]
+    try:
+        revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+        dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=root, text=True).strip())
+    except (OSError, subprocess.CalledProcessError):
+        revision, dirty = None, None
+    digest = sha256()
+    sources = sorted((root / "tdecomp").rglob("*.py")) + [Path(__file__).resolve(), root / "pyproject.toml"]
+    for source in sources:
+        digest.update(str(source.relative_to(root)).replace("\\", "/").encode())
+        digest.update(source.read_bytes())
+    return {
+        "revision": revision, "dirty": dirty, "source_sha256": digest.hexdigest(),
+        "python": platform.python_version(), "numpy": np.__version__,
+        "torch": torch.__version__, "tensorly": tl.__version__,
+        "device": "cpu", "dtype": "float64", "torch_threads": torch.get_num_threads(),
+        "timing": "factorization separate from reconstruction; total includes API validation and diagnostics",
+        "memory": "tracemalloc Python allocations only; native BLAS/LAPACK peak not measured",
+    }
+
+
+def _execute(X, options, warmup, executor):
+    for _ in range(warmup):
+        executor(X, options)
+    try:
+        tracemalloc.start()
+        start = perf_counter()
+        result = executor(X, options)
+        total = perf_counter() - start
+        _, peak_python = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    start = perf_counter()
+    reconstructed = result.reconstruct()
+    reconstruction_seconds = perf_counter() - start
+    denominator = np.linalg.norm(X)
+    relative_error = 0.0 if denominator == 0 else float(np.linalg.norm(X - reconstructed) / denominator)
+    return {"status": "success", "components": result.components,
+            "numerical_rank": result.numerical_rank, "relative_error": relative_error,
+            "factorization_seconds": result.diagnostics.factorization_seconds,
+            "reconstruction_seconds": reconstruction_seconds,
+            "total_api_seconds": total, "peak_python_traced_bytes": peak_python,
+            "peak_native_bytes": None,
+            "estimated_working_bytes": result.diagnostics.estimated_working_bytes}
+
+
+def _memory_worker(spec):
+    import psutil
+    start = perf_counter()
+    X = generate_matrix(tuple(spec["shape"]), spec["true_rank"], spec["spectrum"], spec["noise"], spec["data_seed"])
+    process = psutil.Process(os.getpid())
+    baseline = process.memory_info().rss
+    result = _execute(X, SVDRequest(spec["rank"], method=SVDMethod(spec["method"]), seed=spec["method_seed"]), spec["warmup"], compute_svd)
+    info = process.memory_info()
+    peak = getattr(info, "peak_wset", None)
+    peak_source = "windows_peak_working_set" if peak is not None else "sampled_process_rss"
+    if platform.system() in ("Linux", "Darwin"):
+        import resource
+        value = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        peak = int(value if platform.system() == "Darwin" else value * 1024)
+        peak_source = "os_process_peak_rss"
+    result.update(worker_seconds=perf_counter() - start,
+                  baseline_process_rss_bytes=baseline, os_peak_process_rss_bytes=peak,
+                  os_peak_source=peak_source,
+                  input_sha256=sha256(X.tobytes()).hexdigest())
+    return result
+
+
+def _isolated_measurement(row, config):
+    try:
+        import psutil
+    except ImportError as error:
+        raise RuntimeError("--isolated-memory requires tdecomp[experiments] (psutil)") from error
+    spec = {key: row[key] for key in ("shape", "true_rank", "spectrum", "noise", "data_seed", "method", "method_seed")}
+    spec.update(rank=config.rank, warmup=config.warmup)
+    start = perf_counter()
+    process = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--worker-spec", json.dumps(spec)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    observed = psutil.Process(process.pid)
+    peak = 0
+    interval = 0.005
+    try:
+        while process.poll() is None:
+            if perf_counter() - start > config.worker_timeout_seconds:
+                process.kill()
+                raise RuntimeError("Isolated CPU worker exceeded its deadline")
             try:
-                for _ in range(n_repeats):
-                    self.clear_cuda_cache()
-                    try:
-                        # Генерация матрицы
-                        X = matrix_generator()
-                        
-                        if self.device == "cuda":
-                            torch.cuda.empty_cache()
-                            total_mem = torch.cuda.get_device_properties(0).total_memory / 1024**3
-                            allocated = torch.cuda.memory_allocated() / 1024**3
-                            logger.debug(f"Attempt {attempt+1}: GPU memory - Total: {total_mem:.1f}GB, Used: {allocated:.1f}GB")
-                        
-                        # Проверка доступной памяти перед запуском SVD
-                        if method == torch.linalg.svd and self.device == "cuda":
-                            m, n = X.shape
-                            required_mem = (m*n + m*m + n*n + min(m,n)) * 4 / 1024**3
-                            free_mem = total_mem - allocated
-                            
-                            if required_mem > free_mem * 0.9:
-                                logger.warning(f"Not enough memory for SVD. Required: {required_mem:.2f}GB, Available: {free_mem:.2f}GB")
-                                del X
-                                self.clear_cuda_cache()
-                                raise MemoryError("Not enough memory for SVD")
-                        
-                        if self.device == "cuda":
-                            torch.cuda.synchronize()
-                        start_time = time.perf_counter()
-                        
-                        if method == torch.linalg.svd:
-                            try:
-                                with torch.cuda.amp.autocast(enabled=False):  
-                                    U, S, Vh = method(X, full_matrices=False)
-                                X_approx = U @ torch.diag(S) @ Vh
-                                
-                                del U, Vh
-                            except RuntimeError as e:
-                                if 'out of memory' in str(e).lower():
-                                    logger.warning(f"OOM in SVD for {X.shape}, attempt {attempt+1}")
-                                    if 'X_approx' in locals(): 
-                                        del X_approx
-                                        self.clear_cuda_cache()
-                                    if 'S' in locals(): 
-                                        del S
-                                    del X
-                                    self.clear_cuda_cache()
-                                    raise MemoryError(f"OOM in SVD: {str(e)}") from e
-                                raise  # Пробрасываем оригинальную ошибку, если это не OOM
-                        else:
-                            try:
-                                decomposer = method(**method_kwargs)
-                                U, S, Vh = decomposer.decompose(X)
-                                X_approx = decomposer._two_sided_compose(U, S, Vh)
-                                
-                                del decomposer, U, Vh
-                            except RuntimeError as e:
-                                if 'out of memory' in str(e).lower():
-                                    logger.warning(f"OOM in {method.__name__} for {X.shape}, attempt {attempt+1}")
-                                    if 'X_approx' in locals(): 
-                                        del X_approx
-                                        self.clear_cuda_cache()
-                                    if 'S' in locals(): 
-                                        del S
-                                    if 'decomposer' in locals(): 
-                                        del decomposer
-                                    del X
-                                    self.clear_cuda_cache()
-                                    raise MemoryError(f"OOM in {method.__name__}: {str(e)}") from e
-                                raise  # Пробрасываем оригинальную ошибку
-                        
-                        if self.device == "cuda":
-                            torch.cuda.synchronize()
-                        elapsed = time.perf_counter() - start_time
-                        
-                        error = torch.norm(X - X_approx).item()
-                        rel_error = error / torch.norm(X).item()
-                        rank = len(S)
-                        
-                        results.append({
-                            "shape": tuple(X.shape),
-                            "error": error,
-                            "relative_error": rel_error,
-                            "time": elapsed,
-                            "rank": rank
-                        })
-                        
-                        del X, X_approx, S
-                        self.clear_cuda_cache()
-                    
-                    except MemoryError as e:
-                        self.clear_cuda_cache()
-                        logger.error(f"Memory error in run_method: {str(e)}")
-                        raise  # Пробрасываем MemoryError дальше
-                    
-                return results  
-                
-            except Exception as e:
-                logger.error(f"Attempt {attempt+1} failed: {str(e)}")
-                self.clear_cuda_cache()
-                if attempt == max_attempts - 1:
-                    logger.error(f"All {max_attempts} attempts failed for method {method.__name__}")
-                    raise  # Пробрасываем исключение после всех попыток
-                continue
-        
-        return None
-    
-    def aggregate_results(self, results: List[Dict]) -> Dict:
-        aggregated = {
-            "shape": results[0]["shape"],
-            "error_mean": np.mean([r["error"] for r in results]),
-            "error_std": np.std([r["error"] for r in results]),
-            "time_mean": np.mean([r["time"] for r in results]),
-            "time_std": np.std([r["time"] for r in results]),
-            "rank_mean": np.mean([r["rank"] for r in results]),
-            "rank_std": np.std([r["rank"] for r in results]),
-            "raw_results": results
-        }
-        del results  # Освобождаем память после агрегации
-        return aggregated
-    
-    def generate_matrix(self, shape: Tuple[int, int], rank: Optional[int] = None) -> Callable:
-        """Генератор матриц с возможностью задания ранга"""
-        def generator():
-            if rank is None or rank >= min(shape):  
-                matrix = torch.randn(*shape, device=self.device, dtype=torch.float32)
-            else:  
-                A = torch.randn(shape[0], rank, device=self.device, dtype=torch.float32)
-                B = torch.randn(rank, shape[1], device=self.device, dtype=torch.float32)
-                matrix = A @ B
-                del A, B  # Освобождаем промежуточные матрицы
-            return matrix
-        return generator
-    
-    def run_comparative_experiment(self):
-        self.warmup()
-        all_results = {}
-        baseline_results = []
-        
-        def adjust_rank(method: str, rank: Optional[int], size: int) -> Optional[int]:
-            if rank is None:
-                return None
-                
-            if method == 'lean_walsh':
-                if rank <= 1:
-                    return 1
-                adjusted_rank = 1 << (rank - 1).bit_length()
-                
-                if adjusted_rank > rank:
-                    adjusted_rank = adjusted_rank >> 1
-                return min(max(adjusted_rank, 1), size)
-            
-            return rank
-        
-        rank_strategies = [
-            ('full_rank', None), 
-            ('half_rank', lambda s: max(1, s // 2)),  
-            ('fixed_rank', lambda s: 32) 
-        ]
-        
-        def process_experiment(size, is_rectangular=False):
-            for method in RANDOM_INIT_METHODS:
-                for rank_name, rank_fn in rank_strategies:
-                    shape = (RECTANGULAR_FIXED_DIM, size) if is_rectangular else (size, size)
-                    current_rank = rank_fn(min(shape)) if rank_fn else None
-                    adjusted_rank = adjust_rank(method, current_rank, min(shape))
-                    
-                    if method == 'lean_walsh' and adjusted_rank is not None:
-                        if not (adjusted_rank > 0 and (adjusted_rank & (adjusted_rank - 1) == 0)):
-                            logger.error(f"Invalid rank for lean_walsh: {adjusted_rank}")
-                            continue
-                    
-                    key = f"{'rect_' if is_rectangular else ''}{method}_{rank_name}"
-                    logger.info(f"Processing {key} {shape[0]}x{shape[1]} (rank={adjusted_rank})")
-                    
-                    try:
-                        matrix_gen = self.generate_matrix(shape, rank=adjusted_rank)
-                        
-                        if method == RANDOM_INIT_METHODS[0]:
-                            logger.info(f"Running baseline SVD for {shape[0]}x{shape[1]} ({rank_name})")
-                            baseline = self.run_method(
-                                torch.linalg.svd,
-                                matrix_gen,
-                                n_repeats=N_REPEATS
-                            )
-                            if baseline is not None:
-                                baseline_results.append({
-                                    **self.aggregate_results(baseline),
-                                    "rank_strategy": rank_name,
-                                    "method": "svd_baseline",
-                                    "matrix_shape": f"{shape[0]}x{shape[1]}"
-                                })
-                                del baseline  
-                        
-                        results = self.run_method(
-                            TwoSidedRandomSVD,
-                            matrix_gen,
-                            method_kwargs={
-                                "random_init": method,
-                                "rank": adjusted_rank  
-                            },
-                            n_repeats=N_REPEATS
-                        )
-                        
-                        if results is not None:
-                            if key not in all_results:
-                                all_results[key] = []
-                            
-                            aggregated = self.aggregate_results(results)
-                            all_results[key].append({
-                                **aggregated,
-                                "rank_strategy": rank_name,
-                                "method": method,
-                                "matrix_shape": f"{shape[0]}x{shape[1]}",
-                                "actual_rank": adjusted_rank if adjusted_rank is not None else min(shape)
-                            })
-                            del results, aggregated 
-                    
-                    except Exception as e:
-                        logger.error(f"Error processing {shape[0]}x{shape[1]} with {method}: {str(e)}")
-                        self.clear_cuda_cache()
-                        continue
-                    
-                    self.clear_cuda_cache()
-        
-        try:
-            for size in SQUARE_SIZES:
-                process_experiment(size)
-            
-            for size in RECTANGULAR_VARIABLE_SIZES:
-                process_experiment(size, is_rectangular=True)
-            
-            self.plot_results(all_results, baseline_results)
-            self.save_results(all_results, baseline_results)
-            return all_results, baseline_results
-        
-        except Exception as e:
-            logger.critical(f"Critical error in run_comparative_experiment: {str(e)}")
-            self.clear_cuda_cache()
-            raise 
-            
-        finally:
-            self.clear_cuda_cache()
-            torch.cuda.empty_cache()
-    
-    def plot_results(self, method_results: Dict, baseline_results: List[Dict]):
-        plt.figure(figsize=(18, 12))
-        
-        for i, rank_name in enumerate(['full_rank', 'half_rank', 'fixed_rank']):
-            plt.subplot(2, 3, i+1)
-            plt.title(f'Square matrices ({rank_name})')
-            
-            base_sizes = [int(d["matrix_shape"].split('x')[0]) 
-                        for d in baseline_results 
-                        if d["rank_strategy"] == rank_name and 'x' in d["matrix_shape"] and 
-                        d["matrix_shape"].split('x')[0] == d["matrix_shape"].split('x')[1]]
-            base_errors = [d["error_mean"] 
-                        for d in baseline_results 
-                        if d["rank_strategy"] == rank_name and 'x' in d["matrix_shape"] and 
-                        d["matrix_shape"].split('x')[0] == d["matrix_shape"].split('x')[1]]
-            plt.plot(base_sizes, base_errors, 'k--', label='SVD Baseline')
-            
-            for method in RANDOM_INIT_METHODS:
-                key = f"{method}_{rank_name}"
-                if key in method_results:
-                    data = method_results[key]
-                    sizes = [int(d["matrix_shape"].split('x')[0]) for d in data]
-                    errors = [d["error_mean"] for d in data]
-                    plt.plot(sizes, errors, 'o-', label=method)
-            
-            plt.xlabel('Matrix Size')
-            plt.ylabel('Error')
-            plt.legend()
-            plt.grid(True)
-            plt.xscale('log')
-            plt.yscale('log')
-        
-        for i, rank_name in enumerate(['full_rank', 'half_rank', 'fixed_rank']):
-            plt.subplot(2, 3, i+4)
-            plt.title(f'Rectangular matrices ({rank_name})')
-            
-            base_sizes = [d["matrix_shape"] 
-                        for d in baseline_results 
-                        if d["rank_strategy"] == rank_name and 'x' in d["matrix_shape"] and 
-                        d["matrix_shape"].split('x')[0] != d["matrix_shape"].split('x')[1]]
-            base_errors = [d["error_mean"] 
-                        for d in baseline_results 
-                        if d["rank_strategy"] == rank_name and 'x' in d["matrix_shape"] and 
-                        d["matrix_shape"].split('x')[0] != d["matrix_shape"].split('x')[1]]
-            plt.plot(range(len(base_sizes)), base_errors, 'k--', label='SVD Baseline')
-            plt.xticks(range(len(base_sizes)), base_sizes, rotation=45)
-            
-            for method in RANDOM_INIT_METHODS:
-                key = f"rect_{method}_{rank_name}"
-                if key in method_results:
-                    data = method_results[key]
-                    sizes = [d["matrix_shape"] for d in data]
-                    errors = [d["error_mean"] for d in data]
-                    plt.plot(range(len(sizes)), errors, 'o-', label=method)
-                    plt.xticks(range(len(sizes)), sizes, rotation=45)
-            
-            plt.xlabel('Matrix Size')
-            plt.ylabel('Error')
-            plt.legend()
-            plt.grid(True)
-            plt.yscale('log')
-        
-        plt.tight_layout()
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        os.makedirs("visualizations", exist_ok=True)
-        error_plot_path = f"visualizations/comparison_results_{timestamp}.png"
-        plt.savefig(error_plot_path)
-        plt.close()
-        logger.info(f"Saved error visualization to {error_plot_path}")
-        
-        plt.figure(figsize=(18, 12))
-        
-        for i, rank_name in enumerate(['full_rank', 'half_rank', 'fixed_rank']):
-            plt.subplot(2, 3, i+1)
-            plt.title(f'Square matrices ({rank_name}) - Time')
-            
-            base_sizes = [int(d["matrix_shape"].split('x')[0]) 
-                        for d in baseline_results 
-                        if d["rank_strategy"] == rank_name and 'x' in d["matrix_shape"] and 
-                        d["matrix_shape"].split('x')[0] == d["matrix_shape"].split('x')[1]]
-            base_times = [d["time_mean"] 
-                        for d in baseline_results 
-                        if d["rank_strategy"] == rank_name and 'x' in d["matrix_shape"] and 
-                        d["matrix_shape"].split('x')[0] == d["matrix_shape"].split('x')[1]]
-            plt.plot(base_sizes, base_times, 'k--', label='SVD Baseline')
-            
-            for method in RANDOM_INIT_METHODS:
-                key = f"{method}_{rank_name}"
-                if key in method_results:
-                    data = method_results[key]
-                    sizes = [int(d["matrix_shape"].split('x')[0]) for d in data]
-                    times = [d["time_mean"] for d in data]
-                    plt.plot(sizes, times, 'o-', label=method)
-            
-            plt.xlabel('Matrix Size')
-            plt.ylabel('Time (s)')
-            plt.legend()
-            plt.grid(True)
-            plt.xscale('log')
-            plt.yscale('log')
-        
-        for i, rank_name in enumerate(['full_rank', 'half_rank', 'fixed_rank']):
-            plt.subplot(2, 3, i+4)
-            plt.title(f'Rectangular matrices ({rank_name}) - Time')
-            
-            base_sizes = [d["matrix_shape"] 
-                        for d in baseline_results 
-                        if d["rank_strategy"] == rank_name and 'x' in d["matrix_shape"] and 
-                        d["matrix_shape"].split('x')[0] != d["matrix_shape"].split('x')[1]]
-            base_times = [d["time_mean"] 
-                        for d in baseline_results 
-                        if d["rank_strategy"] == rank_name and 'x' in d["matrix_shape"] and 
-                        d["matrix_shape"].split('x')[0] != d["matrix_shape"].split('x')[1]]
-            plt.plot(range(len(base_sizes)), base_times, 'k--', label='SVD Baseline')
-            plt.xticks(range(len(base_sizes)), base_sizes, rotation=45)
-            
-            for method in RANDOM_INIT_METHODS:
-                key = f"rect_{method}_{rank_name}"
-                if key in method_results:
-                    data = method_results[key]
-                    sizes = [d["matrix_shape"] for d in data]
-                    times = [d["time_mean"] for d in data]
-                    plt.plot(range(len(sizes)), times, 'o-', label=method)
-                    plt.xticks(range(len(sizes)), sizes, rotation=45)
-            
-            plt.xlabel('Matrix Size')
-            plt.ylabel('Time (s)')
-            plt.legend()
-            plt.grid(True)
-            plt.yscale('log')
-        
-        plt.tight_layout()
-        time_plot_path = f"visualizations/time_comparison_{timestamp}.png"
-        plt.savefig(time_plot_path)
-        plt.close()
-        logger.info(f"Saved time visualization to {time_plot_path}")
+                peak = max(peak, observed.memory_info().rss)
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+            sleep(interval)
+        stdout, stderr = process.communicate(timeout=1)
+    finally:
+        if process.poll() is None:
+            process.kill()
+        process.wait(timeout=1)
+    elapsed = perf_counter() - start
+    if process.returncode:
+        raise RuntimeError(f"Isolated worker failed ({process.returncode}): {stderr[-1000:]}")
+    result = json.loads(stdout)
+    if result["input_sha256"] != row["input_sha256"]:
+        raise RuntimeError("Isolated worker input checksum differs from shared protocol input")
+    peak = max(peak, result["os_peak_process_rss_bytes"] or 0)
+    result.update(peak_process_rss_bytes=peak,
+                  process_rss_peak_above_baseline_bytes=max(0, peak - result["baseline_process_rss_bytes"]),
+                  rss_sample_interval_seconds=interval, isolated_total_seconds=elapsed,
+                  startup_and_transport_seconds=max(0.0, elapsed - result["worker_seconds"]),
+                  memory_scope="fresh process including imports, input, warmup, factorization, reconstruction; not tensor workspace")
+    return result
 
-    def save_results(self, method_results: Dict, baseline_results: List[Dict]):
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        os.makedirs("results", exist_ok=True)
-        
-        rows = []
-        
-        for res in baseline_results:
-            rows.append({
-                "matrix_shape": res["matrix_shape"],
-                "method": res["method"],
-                "rank_strategy": res["rank_strategy"],
-                "error_mean": res["error_mean"],
-                "error_std": res["error_std"],
-                "time_mean": res["time_mean"],
-                "time_std": res["time_std"],
-                "rank_mean": res["rank_mean"],
-                "rank_std": res["rank_std"],
-                "matrix_type": "square" if res["matrix_shape"].split('x')[0] == res["matrix_shape"].split('x')[1] else "rectangular"
-            })
-        
-        for key, data_list in method_results.items():
-            for res in data_list:
-                rows.append({
-                    "matrix_shape": res["matrix_shape"],
-                    "method": res["method"],
-                    "rank_strategy": res["rank_strategy"],
-                    "error_mean": res["error_mean"],
-                    "error_std": res["error_std"],
-                    "time_mean": res["time_mean"],
-                    "time_std": res["time_std"],
-                    "rank_mean": res["rank_mean"],
-                    "rank_std": res["rank_std"],
-                    "matrix_type": "square" if res["matrix_shape"].split('x')[0] == res["matrix_shape"].split('x')[1] else "rectangular"
-                })
-        
-        csv_filename = f"results/results_summary_{timestamp}.csv"
-        with open(csv_filename, 'w', newline='') as csvfile:
-            fieldnames = [
-                'matrix_shape', 'method', 'rank_strategy', 
-                'error_mean', 'error_std', 'time_mean', 'time_std',
-                'rank_mean', 'rank_std', 'matrix_type'
-            ]
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
-        
-        txt_filename = f"results/results_summary_{timestamp}.txt"
-        with open(txt_filename, "w") as f:
-            f.write("=== EXPERIMENT RESULTS SUMMARY ===\n\n")
-            f.write(f"Timestamp: {timestamp}\n")
-            f.write(f"Number of repeats: {N_REPEATS}\n")
-            f.write(f"Device: {self.device}\n\n")
-            
-            for rank_name in ['full_rank', 'half_rank', 'fixed_rank']:
-                f.write(f"\n=== RANK STRATEGY: {rank_name} ===\n")
-                
-                all_shapes = sorted(set(r['matrix_shape'] for r in rows if r['rank_strategy'] == rank_name),
-                                  key=lambda x: (int(x.split('x')[0]), int(x.split('x')[1])))
-                
-                for shape in all_shapes:
-                    f.write(f"\n  Matrix {shape}:\n")
-                    shape_rows = [r for r in rows if r['matrix_shape'] == shape and r['rank_strategy'] == rank_name]
-                    
-                    for row in sorted(shape_rows, key=lambda x: (x['method'] != 'svd_baseline', x['method'])):
-                        f.write(f"    {row['method']:<20} | "
-                               f"Error: {row['error_mean']:.3e} ± {row['error_std']:.1e} | "
-                               f"Time: {row['time_mean']:.3f}s ± {row['time_std']:.3f} | "
-                               f"Rank: {row['rank_mean']:.1f}\n")
-        
-        logger.info(f"Results saved to:\nCSV: {csv_filename}\nText: {txt_filename}")
+
+def run_protocol(config=Protocol(), *, executor=compute_svd):
+    """Keep one status per configuration/repeat, including explicit failures; no retry."""
+    _validate(config)
+    rows = []
+    for shape_index, shape in enumerate(config.shapes):
+        for repetition in range(config.repeats):
+            data_seed = config.seed + shape_index * 100_000 + repetition
+            X = generate_matrix(shape, config.true_rank, config.spectrum, config.noise, data_seed)
+            checksum = sha256(X.tobytes()).hexdigest()
+            # Same-rank independent optimum; outside every method timer.
+            singular = np.linalg.svd(X, compute_uv=False)
+            denominator = np.linalg.norm(X)
+            optimal_error = 0.0 if denominator == 0 else float(np.linalg.norm(singular[config.rank:]) / denominator)
+            for method in config.methods:
+                options = SVDRequest(config.rank, method=method, seed=data_seed + 1_000_000)
+                row = {"shape": list(shape), "repeat": repetition, "method": method.value,
+                       "target_rank": config.rank, "true_rank": config.true_rank,
+                       "spectrum": config.spectrum, "noise": config.noise,
+                       "data_seed": data_seed, "method_seed": options.seed,
+                       "input_sha256": checksum, "optimal_relative_error": optimal_error}
+                try:
+                    if config.isolated_memory:
+                        if executor is not compute_svd:
+                            raise ValueError("Custom executor is supported only in-process")
+                        row.update(_isolated_measurement(row, config))
+                    else:
+                        row.update(_execute(X, options, config.warmup, executor))
+                except (SVDContractError, np.linalg.LinAlgError, RuntimeError, MemoryError) as error:
+                    row.update(status="failure", error_type=type(error).__name__,
+                               error_code=getattr(error, "code", "execution_failure"), error=str(error))
+                finally:
+                    if tracemalloc.is_tracing():
+                        tracemalloc.stop()
+                rows.append(row)
+    return {"protocol_version": 1, "provenance": _provenance(), "warmup": config.warmup,
+            "memory_mode": "isolated_process_rss" if config.isolated_memory else "in_process_python_allocations",
+            "expected_records": len(config.shapes) * config.repeats * len(config.methods), "records": rows}
+
+
+def main():
+    parser = ArgumentParser(description=__doc__)
+    parser.add_argument("--worker-spec", help=SUPPRESS)
+    parser.add_argument("--shape", type=int, nargs=2, action="append")
+    parser.add_argument("--rank", type=int, default=4)
+    parser.add_argument("--true-rank", type=int, default=12)
+    parser.add_argument("--spectrum", choices=("flat", "geometric"), default="geometric")
+    parser.add_argument("--noise", type=float, default=0)
+    parser.add_argument("--seed", type=int, default=17)
+    parser.add_argument("--repeats", type=int, default=3)
+    parser.add_argument("--warmup", type=int, default=1)
+    parser.add_argument("--method", choices=[method.value for method in SVDMethod], action="append")
+    parser.add_argument("--isolated-memory", action="store_true")
+    parser.add_argument("--worker-timeout", type=float, default=30)
+    parser.add_argument("--output", type=Path, default=Path("experiments/results/cpu-protocol.json"))
+    args = parser.parse_args()
+    if args.worker_spec:
+        print(json.dumps(_memory_worker(json.loads(args.worker_spec)), allow_nan=False))
+        return 0
+    config = Protocol(shapes=tuple(tuple(shape) for shape in args.shape) if args.shape else Protocol.shapes,
+                      rank=args.rank, true_rank=args.true_rank, spectrum=args.spectrum,
+                      noise=args.noise, seed=args.seed, repeats=args.repeats, warmup=args.warmup,
+                      methods=tuple(SVDMethod(method) for method in args.method) if args.method else tuple(SVDMethod),
+                      isolated_memory=args.isolated_memory, worker_timeout_seconds=args.worker_timeout)
+    result = run_protocol(config)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(result, indent=2, allow_nan=False), encoding="utf-8")
+    failures = sum(row["status"] == "failure" for row in result["records"])
+    print(f"{len(result['records'])} records, {failures} failures: {args.output}")
+    return 1 if failures else 0
+
 
 if __name__ == "__main__":
-    runner = ExperimentRunner()
-    runner.run_comparative_experiment()
+    raise SystemExit(main())

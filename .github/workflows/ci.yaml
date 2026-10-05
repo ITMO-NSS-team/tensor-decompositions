@@ -1,0 +1,93 @@
+name: Acceptance
+
+on:
+  pull_request:
+  push:
+    branches: [main, release-0.3]
+  workflow_call:
+    inputs:
+      require_license:
+        description: Require approved license metadata before publishing
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '3.10'
+            torch: '2.2.0'
+          - python: '3.12'
+            torch: '2.5.1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install supported CPU profile
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch==${{ matrix.torch }} --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install '.[test,experiments]'
+      - name: Run public regressions without import stubs
+        run: python -m pytest -q
+      - name: Verify optional native Transformers adapters
+        run: |
+          python -m pip install 'transformers>=4.46,<5'
+          python -m pytest tests/test_experiment_helpers.py -k optional -q
+      - name: Run portable optimizer training comparison
+        run: python -m examples.tensorgrad_train --steps 2 --output tensorgrad-training.json
+      - name: Run small CPU comparison protocol
+        run: |
+          python -m pip install '.[experiments]'
+          python experiments/two_sided_run.py --shape 12 8 --shape 8 12 --rank 2 --true-rank 5 --repeats 1 --warmup 0 --isolated-memory --output cpu-protocol.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: protocol-${{ matrix.python }}
+          path: |
+            cpu-protocol.json
+            tensorgrad-training.json
+
+  tensorflow-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install '.[test,tensorflow]' tensorflow==2.16.2
+      - name: Verify native optional TensorFlow no_grad
+        run: python -m pytest tests/test_delivery.py::test_native_tensorflow_no_grad -q
+
+  build:
+    needs: [tests, tensorflow-smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: python -m pip install torch==2.2.0 --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m pip install '.[test]'
+      - name: Build wheel and sdist
+        run: python -m build
+      - name: Build wheel from sdist
+        run: python -m pip wheel --no-deps dist/*.tar.gz --wheel-dir from-sdist
+      - name: Validate metadata and installed native public imports
+        run: python tools/verify_distribution.py dist/*.whl from-sdist/*.whl
+      - name: Require license before release
+        if: inputs.require_license
+        run: python tools/verify_distribution.py dist/*.whl from-sdist/*.whl --require-license
+      - run: python -m twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-package-dist
+          path: dist/

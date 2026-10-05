@@ -1,18 +1,16 @@
-import pytest 
-
+"""Small anisotropic CPU Tucker checks; no import-time tensor allocation."""
+import os
+import pytest
 import torch
-
 from tdecomp.tensor.tucker import DECOMPOSERS
-from tdecomp._base import TensorDecomposer
 
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+DEVICE = os.environ.get('TDECOMP_TEST_DEVICE', 'cpu')
 
-X = torch.randn(100, 100, 100, device=DEVICE)
-RTOL = 1e-3
-
-@pytest.mark.parametrize('name', DECOMPOSERS.keys())
-def test_tensor_decomposer(name):
-    decomposer: TensorDecomposer = DECOMPOSERS[name]()
-    approximation = decomposer.decompose(X)
-    error = decomposer.get_approximation_error(X, *approximation, relative=True)
-    assert error < RTOL, f'{name} returns approximation violating rtol: error = {error} & relative tolerance = {RTOL}'
+@pytest.mark.parametrize('name', DECOMPOSERS)
+def test_full_rank_tensor_roundtrip(name):
+    generator = torch.Generator(device=DEVICE).manual_seed(4)
+    x = torch.randn((3,4,5), device=DEVICE, dtype=torch.float64, generator=generator)
+    dec = DECOMPOSERS[name](random_state=7)
+    core, factors = dec.decompose(x)
+    reconstruction = dec.compose(core, *factors)
+    assert torch.allclose(reconstruction, x, rtol=1e-9, atol=1e-9)

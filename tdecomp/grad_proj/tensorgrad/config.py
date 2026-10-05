@@ -1,68 +1,114 @@
 from dataclasses import dataclass
-from typing import Optional, Literal, Union, List
+from typing import Optional, Literal, TypeAlias
+from .projectors._common import validate_rank, validate_ratio, sparse_name, svd_name
+
+Galore2DProjectionSide: TypeAlias = Literal["right", "left", "full"]
+SparseType: TypeAlias = Literal["topk", "randk", "randomk", "probability"]
+
+
+def positive_integer(name, value, optional=False):
+    if optional and value is None:
+        return
+    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+        raise ValueError(f"{name} must be a positive integer")
+
 
 @dataclass
 class DataConfig:
-    batch_size: int = None
-    n_train: int = None
-    tmp_dir: str = "/tmp/t2t_datagen"  # From tensor2tensor example :cite[4]
+    batch_size: Optional[int] = None
+    n_train: Optional[int] = None
+    tmp_dir: str = "/tmp/t2t_datagen"
+
+    def __post_init__(self):
+        positive_integer("batch_size", self.batch_size, optional=True)
+        positive_integer("n_train", self.n_train, optional=True)
+
 
 @dataclass
 class OptimizerConfig:
-    # Basic optimizer parameters
     learning_rate: float = 1e-3
-    optimizer_type: Literal["tensorgrad", "tensorgrad_sum", "adamw", "lamb", "sgd"] = "tensorgrad"
+    optimizer_type: str = "tensorgrad"
     n_epochs: int = 100
-    scheduler: Literal["cosine", "exponential",
-                       "StepLR", "step", "constant", 
-                       "ReduceLROnPlateau", "CosineAnnealingLR"] = "cosine"
+    scheduler: str = "cosine"
     gamma: float = 0.1
     scheduler_patience: int = 5
     scheduler_T_max: int = 100
     step_size: int = 30
-    
-    # TensorGRaD specific parameters :cite[1]:cite[2]
-    rank: int = 128
+    rank: object = 128
     scale: float = 1.0
-    proj_type: Literal["low_rank", "structured_sparse", "unstructured_sparse"] = "low_rank"
-    galore_2d_proj_type: Literal["right", "left", "full"] = "left"
-    sparse_ratio: float = 0.1  # Ratio of elements to keep in sparse projections
-    sparse_type: Literal['topk', 'randK', 'probability'] = "topk"
+    proj_type: str = "low_rank"
+    galore_2d_proj_type: str = "left"
+    sparse_ratio: object = 0.1
+    sparse_type: str = "topk"
     scale_by_mask_ratio: bool = True
-    reset_sparse_optimizer_states: bool = False
+    scaling: Optional[str] = None
+    reset_sparse_optimizer_states: bool = True
+    moment_policy: str = "reset"
     enforce_full_complex_precision: bool = False
-    svd_type: Literal["truncated_svd", "randomized_svd", "full_svd"] = 'truncated_svd'
-    
-    # Second projector parameters
-    second_proj_type: Literal["low_rank", "structured_sparse", "unstructured_sparse"]  = "unstructured_sparse"
-    second_sparse_ratio: float = 0.25
-    second_sparse_type: Literal['topk', 'randK', 'probability'] = "topk"
+    svd_type: object = "truncated_svd"
+    second_proj_type: str = "unstructured_sparse"
+    second_sparse_ratio: object = 0.25
+    second_sparse_type: str = "topk"
     second_scale: float = 1.0
-    second_rank: int = 128
+    second_rank: object = 128
     second_scale_by_mask_ratio: bool = False
-    
-    # Scheduler update gap parameters
-    update_proj_gap: int = 100  # Steps between projection updates
-    update_proj_gap_end: int = 1000  # Final value for update gap
-    update_proj_gap_mode: Literal["linear", "cosine", "step"] = "linear"
-    
-    # Tucker decomposition parameters :cite[1]
-    n_iter_max_tucker: int = 10  # Max iterations for Tucker decomposition
+    second_scaling: Optional[str] = None
+    projection_mode: str = "composite"
+    update_proj_gap: int = 100
+    update_proj_gap_end: int = 1000
+    update_proj_gap_mode: str = "fixed"
+    projection_total_iters: Optional[int] = None
+    n_iter_max_tucker: int = 10
     tucker_warm_restart: bool = True
-    
-    # Sparsity regularization
     tensorgrad_sum_lambda_sparse: float = 0.05
-    
-    # Tensor network options :cite[2]
-    tensor_network_type: Optional[Literal["mps", "peps", "tree", "mera"]] = None
-    tensor_network_chi: Optional[int] = None  # Bond dimension for tensor networks
-    
-    # Additional flags
+    tensor_network_type: Optional[str] = None
+    tensor_network_chi: Optional[int] = None
     naive_galore: bool = False
     adamw_support_complex: bool = True
     first_dim_rollup: bool = False
-    use_checkpoint: bool = False  # For memory optimization :cite[2]
-    cuda: Optional[int] = None  # GPU ID if using CUDA :cite[2]
+    use_checkpoint: bool = False
+    cuda: Optional[int] = None
+    exclude_first_parameter: bool = False
+    random_state: int = 0
+    weight_decay: float = 0.0
+    betas: tuple = (0.9, 0.999)
+    eps: float = 1e-8
+    momentum: float = 0.0
+
+    def __post_init__(self):
+        import math
+        from .projectors.projector_utils import normalize_group
+        if self.optimizer_type not in {"tensorgrad", "tensorgrad_sum", "adamw", "sgd"}:
+            raise ValueError(f"unsupported optimizer_type={self.optimizer_type!r}")
+        for name in ("n_epochs", "scheduler_T_max", "step_size", "n_iter_max_tucker"):
+            positive_integer(name, getattr(self, name))
+        if self.projection_total_iters is not None:
+            positive_integer("projection_total_iters", self.projection_total_iters)
+        if self.scheduler_patience < 0:
+            raise ValueError("scheduler_patience must be nonnegative")
+        if self.scheduler not in {"cosine", "exponential", "StepLR", "step", "constant", "ReduceLROnPlateau", "CosineAnnealingLR"}:
+            raise ValueError(f"unknown scheduler={self.scheduler!r}")
+        for name in ("learning_rate", "weight_decay", "eps", "momentum", "tensorgrad_sum_lambda_sparse"):
+            value = getattr(self, name)
+            if not isinstance(value, (int, float)) or not math.isfinite(value) or value < 0:
+                raise ValueError(f"{name} must be finite and nonnegative")
+        if not isinstance(self.gamma, (int, float)) or not math.isfinite(self.gamma) or self.gamma <= 0:
+            raise ValueError("gamma must be finite and positive")
+        if self.scheduler == "ReduceLROnPlateau" and self.gamma >= 1:
+            raise ValueError("ReduceLROnPlateau gamma must be less than 1")
+        if len(self.betas) != 2 or any(not 0 <= value < 1 for value in self.betas):
+            raise ValueError("betas must contain two values in [0, 1)")
+        if isinstance(self.random_state, bool) or not isinstance(self.random_state, int) or self.random_state < 0:
+            raise ValueError("random_state must be a nonnegative integer seed")
+        for name in ("scale_by_mask_ratio", "second_scale_by_mask_ratio", "reset_sparse_optimizer_states",
+                     "enforce_full_complex_precision", "tucker_warm_restart", "naive_galore",
+                     "adamw_support_complex", "first_dim_rollup", "use_checkpoint", "exclude_first_parameter"):
+            if type(getattr(self, name)) is not bool:
+                raise ValueError(f"{name} must be bool")
+        normalized = normalize_group(vars(self) | {"epochs": self.n_epochs})
+        self.svd_type = normalized["svd_type"]
+        self.sparse_type, self.second_sparse_type = normalized["sparse_type"], normalized["second_sparse_type"]
+
 
 @dataclass
 class WandBConfig:
@@ -70,12 +116,9 @@ class WandBConfig:
     log_gradients: bool = False
     log_projections: bool = False
 
+
 @dataclass
 class TensorGRaDConfig:
     data: DataConfig
     opt: OptimizerConfig
-    # wandb: WandBConfig
-    model_type: Literal["symbolic", "neural_network", "tensor_network"] = "neural_network"
-    # tensor_diagram_optimization: bool = True  # Enable symbolic tensor optimizations :cite[1]:cite[6]
-    # automatic_simplification: bool = True  # Automatically simplify tensor expressions :cite[1]
-    # use_fast_jl: bool = False  # Use Fast Johnson-Lindenstrauss transform :cite[1]
+    model_type: str = "neural_network"
