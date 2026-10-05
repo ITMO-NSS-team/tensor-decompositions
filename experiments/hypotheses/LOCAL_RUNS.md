@@ -16,6 +16,8 @@
 
 `run_sketch_pilot.py` проверяет H11 на CPU/FP64: нормировку гауссовского и разреженного эскизов, число ненулевых элементов, ортогональность полного SRHT и состязательную коллизию CountSketch. Затем выполняются 240 матричных пилотов: четыре метода × три ширины × 20 состояний генератора, r=4/q=1. SRHT пока реализован плотной эталонной матрицей. Поэтому его время не доказывает ускорение неявного преобразования; 20 настроечных повторов не заменяют 100 независимых проверок надёжности и нейросетевое восстановление H11.
 
+`run_h11_neural.py` выполняет первую синтетическую серию H11: Gaussian, CountSketch, разреженный JL и эталонный SRHT, ширина 8 после отдельного матричного пилота, ранг 4, одна степенная итерация. Все четыре метода проходят одинаковые 128/512 шагов калибровки/восстановления при пяти состояниях генератора. После аппроксимации её факторы инициализируются дополнительным точным SVD; его стоимость включена в подготовку. Эта реализация позволяет проверить качество, но не доказывает выигрыш скорости структурированного метода. Отдельный нейросетевой эталон точного SVD ранга 4, неявное применение структурированных операторов и 100 независимых проверок надёжности ещё нужны для полного протокола H11.
+
 Окружение первой серии: Python 3.10, PyTorch 2.2.0+cu121, torchvision 0.17.0+cu121, TensorLy 0.9.0, NumPy 1.26.4. Версия torchvision отличается от ссылки на интерфейс 0.20 в протоколах; фактическая архитектура, версии и число параметров записываются. Параметры и состояние AdamW — FP32, обучение реального эталона использует BF16 autocast. Для H01 используется FP32; предварительные математические проверки выполняются в FP64.
 
 Ограничения запуска: 12 GiB видеопамяти, 24 GiB RAM, 10 минут на синтетический вариант, 6 часов на один реальный эталон. В Windows/WDDM память процесса по данным драйвера недоступна. Сценарии сохраняют allocated/reserved PyTorch и снимок драйвера, а перед продолжением консервативно проверяют общее потребление устройства. RSS измеряется периодически; это не непрерывное измерение пика. При превышении лимита, NaN/Inf или ошибке вариант останавливается, причина остаётся в манифесте. Уменьшение пакета автоматически не выполняется.
@@ -28,6 +30,7 @@
 .audit-venv/Scripts/python.exe -X utf8 tensor-decompositions/experiments/hypotheses/run_local.py --output audit/hypothesis-runs-2026-10-05/h01-synthetic-NEW
 .audit-venv/Scripts/python.exe -X utf8 tensor-decompositions/experiments/hypotheses/run_cnn_local.py --output audit/hypothesis-runs-2026-10-05/h04-synthetic-h06-pilot-NEW
 .audit-venv/Scripts/python.exe -X utf8 tensor-decompositions/experiments/hypotheses/run_sketch_pilot.py --output audit/hypothesis-runs-2026-10-05/h11-sketch-pilot-NEW
+.audit-venv/Scripts/python.exe -X utf8 tensor-decompositions/experiments/hypotheses/run_h11_neural.py --output audit/hypothesis-runs-2026-10-05/h11-synthetic-NEW
 .audit-venv/Scripts/python.exe -X utf8 tensor-decompositions/experiments/hypotheses/train_cifar_baseline.py --output audit/hypothesis-runs-2026-10-05/cifar-baseline-NEW --data audit/datasets/cifar10
 ```
 
