@@ -1,0 +1,554 @@
+[
+  {
+    "seed": 101,
+    "method": "original",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8302,
+      "cross_entropy": 0.547021344614029,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 5.77640000028623,
+        "p95_ms": 8.321739999973943,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.506399999423593,
+        "p95_ms": 3.96546499850956,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.657550000549236,
+        "p95_ms": 2.9373299997132563,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.5481499997113133,
+        "p95_ms": 4.941464999956224,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.2467828841854498e-07,
+    "dense_materialization_seconds": 0
+  },
+  {
+    "seed": 101,
+    "method": "direct_tucker",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8287,
+      "cross_entropy": 0.5089096363306046,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 7.1547999996255385,
+        "p95_ms": 7.638705000135815,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 7.366650001131347,
+        "p95_ms": 8.173529999658058,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.0126999990898184,
+        "p95_ms": 5.347030000120867,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.8593499991984572,
+        "p95_ms": 2.9620200004501385,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.2467828841854498e-07,
+    "dense_materialization_seconds": 0
+  },
+  {
+    "seed": 101,
+    "method": "dense_materialized_tucker",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8287,
+      "cross_entropy": 0.5088782381296157,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 3.7260999997670297,
+        "p95_ms": 4.447135001009882,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.549349999957485,
+        "p95_ms": 4.845839999507006,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.725800000007439,
+        "p95_ms": 3.7234800008263846,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.5562000009813346,
+        "p95_ms": 2.7482050006256027,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.2467828841854498e-07,
+    "dense_materialization_seconds": 0.01302639999994426
+  },
+  {
+    "seed": 101,
+    "method": "matrix_svd",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8282,
+      "cross_entropy": 0.5107652921676635,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 6.997549999141484,
+        "p95_ms": 7.404455001233146,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 7.338799999160983,
+        "p95_ms": 7.76413999910801,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.9812000002493733,
+        "p95_ms": 5.594825001116987,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.7932000002692803,
+        "p95_ms": 2.929549998953007,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.2467828841854498e-07,
+    "dense_materialization_seconds": 0
+  },
+  {
+    "seed": 202,
+    "method": "original",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8358,
+      "cross_entropy": 0.535396293926239,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 3.4394499998597894,
+        "p95_ms": 3.9494300002843366,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.6665500001618057,
+        "p95_ms": 4.860640000515559,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.774699999463337,
+        "p95_ms": 3.1405050000103074,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.6106500008609146,
+        "p95_ms": 2.880009999898901,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.2436707070028206e-07,
+    "dense_materialization_seconds": 0
+  },
+  {
+    "seed": 202,
+    "method": "direct_tucker",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8338,
+      "cross_entropy": 0.5002220157146454,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 7.260200000018813,
+        "p95_ms": 7.690549999642825,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 7.578700001431571,
+        "p95_ms": 8.066575000702867,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.0581000000893255,
+        "p95_ms": 6.109974999981204,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.9253000002427143,
+        "p95_ms": 3.0422499995438557,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.2436707070028206e-07,
+    "dense_materialization_seconds": 0
+  },
+  {
+    "seed": 202,
+    "method": "dense_materialized_tucker",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8339,
+      "cross_entropy": 0.5002006824970245,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 3.623399999924004,
+        "p95_ms": 4.1359049993843655,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.5938999990321463,
+        "p95_ms": 4.666054999324842,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.711700000872952,
+        "p95_ms": 3.6598149989004014,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.588100000139093,
+        "p95_ms": 2.7825899993331404,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.2436707070028206e-07,
+    "dense_materialization_seconds": 0.002508300000044983
+  },
+  {
+    "seed": 202,
+    "method": "matrix_svd",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8301,
+      "cross_entropy": 0.5120859302520752,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 3.801750000093307,
+        "p95_ms": 7.530450000467681,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.834149999420333,
+        "p95_ms": 4.048345000228436,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.950349999991886,
+        "p95_ms": 3.332380000847477,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.856900000551832,
+        "p95_ms": 3.049595000811678,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.2436707070028206e-07,
+    "dense_materialization_seconds": 0
+  },
+  {
+    "seed": 303,
+    "method": "original",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.834,
+      "cross_entropy": 0.5389636929512024,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 6.914649999998801,
+        "p95_ms": 7.513070001277811,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 7.246850000228733,
+        "p95_ms": 7.93710999932955,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.727449999838427,
+        "p95_ms": 3.0688649994772277,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.6075499999933527,
+        "p95_ms": 2.8116000007685216,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.0160972269422928e-07,
+    "dense_materialization_seconds": 0
+  },
+  {
+    "seed": 303,
+    "method": "direct_tucker",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8345,
+      "cross_entropy": 0.5003244292259217,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 3.8598500004809466,
+        "p95_ms": 4.090025000004971,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.932199999326258,
+        "p95_ms": 4.144879998875695,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.993149999383604,
+        "p95_ms": 3.1909150007777494,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.878999999666121,
+        "p95_ms": 3.1008849993668264,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.0160972269422928e-07,
+    "dense_materialization_seconds": 0
+  },
+  {
+    "seed": 303,
+    "method": "dense_materialized_tucker",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8341,
+      "cross_entropy": 0.5003612860679626,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 3.6994000010963646,
+        "p95_ms": 4.18355000028896,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 3.8008999999874504,
+        "p95_ms": 4.003365000517078,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 2.838349999365164,
+        "p95_ms": 3.2603850007944852,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 2.714649999688845,
+        "p95_ms": 2.894814999490336,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.0160972269422928e-07,
+    "dense_materialization_seconds": 0.0024391000006289687
+  },
+  {
+    "seed": 303,
+    "method": "matrix_svd",
+    "selected_rank": 32,
+    "final_test": {
+      "accuracy": 0.8298,
+      "cross_entropy": 0.5062096710681915,
+      "n": 10000
+    },
+    "latency": [
+      {
+        "p50_ms": 6.922650000888098,
+        "p95_ms": 7.388105001336953,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 7.451850000506965,
+        "p95_ms": 8.133634999558126,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "BF16"
+      },
+      {
+        "p50_ms": 5.3391999999803375,
+        "p95_ms": 5.788424998536357,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 64,
+        "precision": "FP32"
+      },
+      {
+        "p50_ms": 4.900049999378098,
+        "p95_ms": 5.366680000315682,
+        "warmups": 30,
+        "measured": 200,
+        "batch": 1,
+        "precision": "FP32"
+      }
+    ],
+    "direct_dense_fp32_relative": 2.0160972269422928e-07,
+    "dense_materialization_seconds": 0
+  }
+]

@@ -56,6 +56,13 @@ def initialize(seed, device):
     return models.resnet18(weights=None,num_classes=10).to(device)
 
 
+def training_schedule(optimizer, h09_warmup=False):
+    """H09 needs a fresh five-epoch constant-lr optimizer state."""
+    if h09_warmup:
+        return 5, torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda epoch: 1.)
+    return 30, torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=30)
+
+
 @torch.no_grad()
 def evaluate(model, loader, device):
     model.eval();correct=0;count=0;total_loss=0.
@@ -73,9 +80,15 @@ def main():
     parser.add_argument('--data',type=Path,required=True)
     parser.add_argument('--seeds',type=int,nargs='+',default=[101,202,303])
     parser.add_argument('--pilot-only',action='store_true')
+    parser.add_argument('--h09-warmup',action='store_true',
+                        help='fresh five-epoch constant-lr warmup; save full optimizer state, no test')
     args=parser.parse_args()
+    if args.h09_warmup:
+        git('merge-base','--is-ancestor','a5eaec03c82d8d1c6ce11bdbb47622e5fd71219b','HEAD')
     args.output.mkdir(parents=True,exist_ok=False)
     args.data.mkdir(parents=True,exist_ok=True)
+    (args.output/'train_cifar_baseline.py.source').write_bytes(Path(__file__).read_bytes())
+    (args.output/'run_local.py.source').write_bytes(Path(__file__).with_name('run_local.py').read_bytes())
     torch.set_num_threads(8)
     torch.backends.cuda.matmul.allow_tf32=False
     torch.backends.cudnn.allow_tf32=False
@@ -83,12 +96,14 @@ def main():
     device='cuda' if torch.cuda.is_available() else 'cpu'
     manifest={'run_id':args.output.name,'state':'preparing','git_sha':git('rev-parse','HEAD'),
               'git_status':git('status','--porcelain'),'runner_sha256':sha(__file__),
-              'protocol_sha256':sha(Path(__file__).with_name('H01_input_distribution.md')),
+              'protocol_sha256':sha(Path(__file__).with_name('H09_gradient_drift.md' if args.h09_warmup else 'H01_input_distribution.md')),
               'torch':torch.__version__,'torchvision':torchvision.__version__,
               'python':sys.version,'cuda':torch.version.cuda,'device':device,
               'gpu':torch.cuda.get_device_name() if device=='cuda' else None,
               'gpu_driver_snapshot':gpu_snapshot(),'command':sys.argv,'pid':os.getpid(),
-              'seeds':args.seeds,'epochs':30,'microbatch':128,'effective_batch':128,
+              'seeds':args.seeds,'epochs':5 if args.h09_warmup else 30,'microbatch':128,'effective_batch':128,
+              'mode':'h09_fresh_warmup' if args.h09_warmup else 'shared_baseline',
+              'lr_schedule':'constant' if args.h09_warmup else 'cosine30',
               'optimizer':'AdamW','lr':.001,'weight_decay':.0001,
               'precision':'FP32 parameters/optimizer; BF16 autocast on CUDA',
               'data':'CIFAR-10 train only','architecture':'torchvision ResNet-18; original 7x7/stride2 stem',
@@ -144,12 +159,12 @@ def main():
                 seed_dir=args.output/f'seed-{seed}';seed_dir.mkdir()
                 model=initialize(seed,device)
                 opt=torch.optim.AdamW(model.parameters(),lr=.001,weight_decay=.0001)
-                scheduler=torch.optim.lr_scheduler.CosineAnnealingLR(opt,T_max=30)
+                epoch_count,scheduler=training_schedule(opt,args.h09_warmup)
                 loader=DataLoader(Subset(train_data,splits['baseline']),batch_size=128,shuffle=True,
                                   generator=torch.Generator().manual_seed(seed+7000),num_workers=0,
                                   pin_memory=device=='cuda')
                 start=time.perf_counter();epochs=[]
-                for epoch in range(30):
+                for epoch in range(epoch_count):
                     model.train();loss_sum=0.;seen=0
                     for step,(x,y) in enumerate(loader):
                         x=x.to(device,non_blocking=True);y=y.to(device,non_blocking=True)
@@ -158,10 +173,10 @@ def main():
                             loss=nn.functional.cross_entropy(model(x),y)
                         if not torch.isfinite(loss):raise ArithmeticError('nonfinite baseline loss')
                         loss.backward();opt.step();loss_sum+=float(loss)*len(y);seen+=len(y)
-                        if step%25==0:guard(start,limit=21600)
+                        if step%25==0:guard(start,limit=7200 if args.h09_warmup else 21600)
                     scheduler.step()
                     metrics=evaluate(model,tune_loader,device)
-                    row={'seed':seed,'epoch':epoch+1,'train_cross_entropy':loss_sum/seen,
+                    row={'seed':seed,'epoch':epoch+1,'learning_rate':opt.param_groups[0]['lr'],'train_cross_entropy':loss_sum/seen,
                          'tuning':metrics,'elapsed_seconds':time.perf_counter()-start,
                          'gpu_reserved_bytes':torch.cuda.memory_reserved() if device=='cuda' else 0,
                          'rss_bytes':psutil.Process().memory_info().rss}
@@ -176,8 +191,9 @@ def main():
                     print(json.dumps(row),flush=True)
                 torch.save(model.state_dict(),seed_dir/'model.pt')
                 write_json(seed_dir/'result.json',{'seed':seed,'checkpoint_sha256':sha(seed_dir/'model.pt'),
-                           'state':'baseline_ready' if metrics['accuracy']>=.70 else 'baseline_not_ready',
-                           'final_tuning':metrics,'epochs':30,'final_test_opened':False})
+                           'resume_sha256':sha(seed_dir/'resume.pt'),
+                           'state':'warmup_ready' if args.h09_warmup else ('baseline_ready' if metrics['accuracy']>=.70 else 'baseline_not_ready'),
+                           'final_tuning':metrics,'epochs':epoch_count,'final_test_opened':False})
                 del opt,model
                 if device=='cuda':torch.cuda.empty_cache()
         manifest['state']='completed'

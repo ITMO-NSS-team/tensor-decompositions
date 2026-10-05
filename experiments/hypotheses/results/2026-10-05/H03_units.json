@@ -1,0 +1,8 @@
+{
+  "seconds": "wall-clock seconds",
+  "p50_ms_p95_ms": "milliseconds",
+  "bytes": "bytes",
+  "perplexity": "exp(mean natural-log next-token CE)",
+  "mean_preservation_relative_error": "||Q1-1||2/sqrt(width)",
+  "paired_delta": "(reference total quality cost - method total quality cost)/reference cost"
+}

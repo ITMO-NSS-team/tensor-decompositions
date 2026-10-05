@@ -1,0 +1,158 @@
+[
+  {
+    "seed": 101,
+    "layer": "layer2.1.conv2",
+    "grid_tuples_including_reserve": 225,
+    "excluded_tuples": 224,
+    "not_excluded_compressed_tuples": [],
+    "not_excluded_other_nonreserve_tuples": [],
+    "best_nonreserve_relative_lower_bound": 0.3300888767555232,
+    "channel_rank96_modal_lower_bounds": [
+      0.3311618238549773,
+      0.3300888767555232
+    ],
+    "spatial_rank2_modal_lower_bounds": [
+      0.5090960008173053,
+      0.4839090217234121
+    ],
+    "spectra_sha256": "1cf13e60ebdd6bc9512c822372280bb44a509ce1c6b01cc66e5abbcd3f7fba38",
+    "full_rank_reserve": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "full_rank_reserve_exact_error": 0.0,
+    "scope": "necessary feasibility only; no constructed compressed candidate or neural experiment"
+  },
+  {
+    "seed": 101,
+    "layer": "layer3.0.conv2",
+    "grid_tuples_including_reserve": 145,
+    "excluded_tuples": 144,
+    "not_excluded_compressed_tuples": [],
+    "not_excluded_other_nonreserve_tuples": [],
+    "best_nonreserve_relative_lower_bound": 0.5700599482386934,
+    "channel_rank96_modal_lower_bounds": [
+      0.5700599482386934,
+      0.5463673278575174
+    ],
+    "spatial_rank2_modal_lower_bounds": [
+      0.5324198050629448,
+      0.5129937839280317
+    ],
+    "spectra_sha256": "5c04aec1a3aade9fb9757953c48c928ecb263d977d5118fd0578c6014b06d441",
+    "full_rank_reserve": [
+      256,
+      256,
+      3,
+      3
+    ],
+    "full_rank_reserve_exact_error": 0.0,
+    "scope": "necessary feasibility only; no constructed compressed candidate or neural experiment"
+  },
+  {
+    "seed": 202,
+    "layer": "layer2.1.conv2",
+    "grid_tuples_including_reserve": 225,
+    "excluded_tuples": 224,
+    "not_excluded_compressed_tuples": [],
+    "not_excluded_other_nonreserve_tuples": [],
+    "best_nonreserve_relative_lower_bound": 0.32856720503120357,
+    "channel_rank96_modal_lower_bounds": [
+      0.32856720503120357,
+      0.32922189728381007
+    ],
+    "spatial_rank2_modal_lower_bounds": [
+      0.5047811900377731,
+      0.48458491810990767
+    ],
+    "spectra_sha256": "66fe1f8f37a76cce5728b6129f17f676f29f6459f76b284720d0c337f3fc3e7c",
+    "full_rank_reserve": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "full_rank_reserve_exact_error": 0.0,
+    "scope": "necessary feasibility only; no constructed compressed candidate or neural experiment"
+  },
+  {
+    "seed": 202,
+    "layer": "layer3.0.conv2",
+    "grid_tuples_including_reserve": 145,
+    "excluded_tuples": 144,
+    "not_excluded_compressed_tuples": [],
+    "not_excluded_other_nonreserve_tuples": [],
+    "best_nonreserve_relative_lower_bound": 0.5686354499455467,
+    "channel_rank96_modal_lower_bounds": [
+      0.5686354499455467,
+      0.5465206024826712
+    ],
+    "spatial_rank2_modal_lower_bounds": [
+      0.5279656000551003,
+      0.5239571334831111
+    ],
+    "spectra_sha256": "3a3180e990e8b02957656886013042be5f5fad653d76099abbea98e21140af64",
+    "full_rank_reserve": [
+      256,
+      256,
+      3,
+      3
+    ],
+    "full_rank_reserve_exact_error": 0.0,
+    "scope": "necessary feasibility only; no constructed compressed candidate or neural experiment"
+  },
+  {
+    "seed": 303,
+    "layer": "layer2.1.conv2",
+    "grid_tuples_including_reserve": 225,
+    "excluded_tuples": 224,
+    "not_excluded_compressed_tuples": [],
+    "not_excluded_other_nonreserve_tuples": [],
+    "best_nonreserve_relative_lower_bound": 0.3279060691060722,
+    "channel_rank96_modal_lower_bounds": [
+      0.3279060691060722,
+      0.32857422573540457
+    ],
+    "spatial_rank2_modal_lower_bounds": [
+      0.5051639810802586,
+      0.48399959046928676
+    ],
+    "spectra_sha256": "4aad0413c2198e89994cf824a88167892397c2dd38e5713808ed0e5f38b72357",
+    "full_rank_reserve": [
+      128,
+      128,
+      3,
+      3
+    ],
+    "full_rank_reserve_exact_error": 0.0,
+    "scope": "necessary feasibility only; no constructed compressed candidate or neural experiment"
+  },
+  {
+    "seed": 303,
+    "layer": "layer3.0.conv2",
+    "grid_tuples_including_reserve": 145,
+    "excluded_tuples": 144,
+    "not_excluded_compressed_tuples": [],
+    "not_excluded_other_nonreserve_tuples": [],
+    "best_nonreserve_relative_lower_bound": 0.5702747624205179,
+    "channel_rank96_modal_lower_bounds": [
+      0.5702747624205179,
+      0.547639631469782
+    ],
+    "spatial_rank2_modal_lower_bounds": [
+      0.5349874607938729,
+      0.5188622443172399
+    ],
+    "spectra_sha256": "0ce4d1eb4d7976d15558ac76162050a67dda0818d07b8e333c2ea89c3d729326",
+    "full_rank_reserve": [
+      256,
+      256,
+      3,
+      3
+    ],
+    "full_rank_reserve_exact_error": 0.0,
+    "scope": "necessary feasibility only; no constructed compressed candidate or neural experiment"
+  }
+]

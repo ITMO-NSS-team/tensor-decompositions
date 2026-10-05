@@ -1,0 +1,39 @@
+{
+  "adaptive_error_over_energy": {
+    "paired_values": [
+      4.551124835485625,
+      4.528027987982768,
+      4.513921240904567
+    ],
+    "mean": 4.531024688124321,
+    "ci95_low": 4.484367712999198,
+    "ci95_high": 4.577681663249443,
+    "n_independent_checkpoints": 3,
+    "assumption": "paired approximate normality, weak n=3 uncertainty"
+  },
+  "adaptive_accuracy_minus_clean_pp": {
+    "paired_values": [
+      -5.710000000000004,
+      -5.940000000000001,
+      -5.9300000000000015
+    ],
+    "mean": -5.860000000000002,
+    "ci95_low": -6.182937902539686,
+    "ci95_high": -5.537062097460319,
+    "n_independent_checkpoints": 3,
+    "assumption": "paired approximate normality, weak n=3 uncertainty"
+  },
+  "mean_accuracy": {
+    "clean": 0.8334000000000001,
+    "full_noisy": 0.8325,
+    "energy": 0.8327,
+    "adaptive_null": 0.7747999999999999
+  },
+  "scope": "negative primary adaptive-vs-energy comparison in fixed artificial Gaussian intervention; full H08 protocol incomplete",
+  "remaining": [
+    "independent16probe baseline",
+    "correlated-noise controls",
+    "full3000-image tuning quality admission before a future test series"
+  ],
+  "null_setup_cost_policy": "all four shape-specific Gaussian calibrations and validation charged, separately amortizable"
+}

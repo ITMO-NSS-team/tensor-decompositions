@@ -124,7 +124,7 @@ class FactorLinear(nn.Module):
         return F.linear(F.linear(x, self.b), self.a)
 
 
-def h01_data(seed, device):
+def h01_data(seed, device, control='aligned'):
     gen = torch.Generator(device=device).manual_seed(seed)
     u = torch.linalg.qr(torch.randn(64, 64, generator=gen, device=device)).Q
     v = torch.linalg.qr(torch.randn(64, 64, generator=gen, device=device)).Q
@@ -138,11 +138,17 @@ def h01_data(seed, device):
             layer.weight.copy_(torch.randn(layer.weight.shape, generator=gen, device=device)
                                / layer.in_features**.5)
     scale = torch.tensor([.01] * 8 + [1.] * 8 + [.1**.5] * 48, device=device)
+    orientation=v
+    if control in ('rotated','test_drift'):
+        orient_rng=torch.Generator(device=device).manual_seed(seed+200000)
+        orientation=torch.linalg.qr(torch.randn(64,64,generator=orient_rng,device=device)).Q
+    if control=='isotropic':scale=torch.ones_like(scale)
     splits = {}
     for k, (name, count) in enumerate([('recovery',4096), ('calibration',512),
                                        ('tuning',512), ('test',1024)], 1):
         rng = torch.Generator(device=device).manual_seed(seed + 1000*k)
-        x = (torch.randn(count, 64, generator=rng, device=device) * scale) @ v.T
+        basis=orientation if control=='rotated' or (control=='test_drift' and name=='test') else v
+        x = (torch.randn(count, 64, generator=rng, device=device) * scale) @ basis.T
         with torch.no_grad():
             splits[name] = (x, teacher(x))
     return teacher.eval(), splits
@@ -159,10 +165,10 @@ def errors(student, teacher, pair):
                                           / exact_layer.square().sum())}
 
 
-def h01(out, seeds, device):
+def h01(out, seeds, device, rank=8, control='aligned'):
     rows = []
     for seed in seeds:
-        teacher, splits = h01_data(seed, device)
+        teacher, splits = h01_data(seed, device, control)
         seed_dir = out / f'seed-{seed}'
         seed_dir.mkdir()
         torch.save(teacher.state_dict(), seed_dir / 'teacher.pt')
@@ -173,6 +179,7 @@ def h01(out, seeds, device):
         sync()
         moment_start = time.perf_counter()
         moment = xcal.T @ xcal / len(xcal)
+        if control=='isotropic':moment=torch.eye(64,device=device)  # Declared exact M=I negative control.
         sync()
         moment_seconds = time.perf_counter() - moment_start
         for method in ('svd','weighted_svd','weighted_rsvd','haar'):
@@ -181,7 +188,7 @@ def h01(out, seeds, device):
                 torch.cuda.reset_peak_memory_stats()
             sync()
             factor_start = time.perf_counter()
-            a,b = factorize(teacher[0].weight.detach(),8,method,moment,seed+100000)
+            a,b = factorize(teacher[0].weight.detach(),rank,method,moment,seed+100000)
             sync()
             factor_seconds = time.perf_counter()-factor_start
             student = copy.deepcopy(teacher)
@@ -217,7 +224,8 @@ def h01(out, seeds, device):
             torch.save(student.state_dict(),seed_dir/f'{method}.pt')
             write_json(seed_dir/f'{method}-history.json',histories)
             row = {'hypothesis_id':'H01','setting':'synthetic','seed':seed,'method':method,
-                   'rank':8,'sketch_width':16 if method=='weighted_rsvd' else None,
+                   'rank':rank,'control':control,'moment_mode':'exact_identity' if control=='isotropic' else 'calibration_empirical',
+                   'sketch_width':rank+8 if method=='weighted_rsvd' else None,
                    'power':1 if method=='weighted_rsvd' else None,
                    'moment_seconds':moment_seconds if method.startswith('weighted') else 0,
                    'factor_seconds':factor_seconds,'recovery_seconds':recovery_seconds,
@@ -281,8 +289,11 @@ def main():
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--seeds',type=int,nargs='+',default=[11,22,33,44,55])
     parser.add_argument('--admission-only',action='store_true')
+    parser.add_argument('--rank',type=int,choices=[4,8,16],default=8)
+    parser.add_argument('--control',choices=['aligned','isotropic','rotated','test_drift'],default='aligned')
     args=parser.parse_args()
     args.output.mkdir(parents=True,exist_ok=False)
+    (args.output/'run_local.py.source').write_bytes(Path(__file__).read_bytes())
     torch.set_num_threads(8)
     torch.backends.cuda.matmul.allow_tf32=False
     torch.backends.cudnn.allow_tf32=False
@@ -296,18 +307,18 @@ def main():
               'numpy':np.__version__,'cuda':torch.version.cuda,'device':device,
               'gpu':torch.cuda.get_device_name() if device=='cuda' else None,
               'gpu_driver_snapshot':gpu_snapshot(),'ram_total_bytes':psutil.virtual_memory().total,
-              'command':sys.argv,'seeds':args.seeds,'rank':8,'batch':32,'precision':'FP32',
+              'command':sys.argv,'seeds':args.seeds,'rank':args.rank,'control':args.control,'batch':32,'precision':'FP32',
               'calibration_steps':128,'recovery_steps':512,'state':'running',
               'scope':'H01 four-method synthetic first pass; H04 admission',
               'limits':{'gpu_bytes':12*1024**3,'rss_bytes':24*1024**3,'variant_seconds':600},
               'measurement_limitations':['WDDM process GPU memory unavailable; total device bound used',
                   'RSS sampled; not a continuous peak','no full recovery-time-to-threshold test',
-                  'negative controls limited to admission; full hypothesis not confirmed']}
+                  'secondary methods and full hypothesis not confirmed']}
     write_json(args.output/'manifest.json',manifest)
     try:
         write_json(args.output/'admission.json',{'H01':invariants(),'H04':h04_check()})
         if not args.admission_only:
-            h01(args.output,args.seeds,device)
+            h01(args.output,args.seeds,device,args.rank,args.control)
         manifest['state']='completed'
     except Exception as error:
         manifest.update(state='resource_failure' if isinstance(error,(MemoryError,TimeoutError)) else 'implementation_failure',

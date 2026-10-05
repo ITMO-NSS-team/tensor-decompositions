@@ -1,0 +1,362 @@
+[
+  {
+    "seed": 101,
+    "method": "uniform",
+    "status": "completed",
+    "relative_tensor_error": 0.7492029666900635,
+    "unique_columns": 243,
+    "preparation_full_passes": 0.0,
+    "sampled_span_rank": 243,
+    "sampled_rank_threshold": 0.0002045093715423718,
+    "logical_elements_read": 2277376.0,
+    "logical_full_pass_equivalents": 3.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.14417990000220016,
+    "tuning_before": {
+      "accuracy": 0.8413333333333334,
+      "cross_entropy": 0.539776357014974,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8396666666666667,
+      "cross_entropy": 0.4938449522654215,
+      "n": 3000
+    },
+    "checkpoint_sha256": "3cec349df8e60753b57b4e2f022ff47a2039fceb6f61dc99e59cbdee8cdae852",
+    "parameters": 69632,
+    "total_seconds": 25.78489879999688,
+    "rss_bytes": 1725067264,
+    "gpu_peak_allocated_bytes": 244658688,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 101,
+    "method": "column_norm",
+    "status": "completed",
+    "relative_tensor_error": 0.7500738501548767,
+    "unique_columns": 239,
+    "preparation_full_passes": 1.0,
+    "sampled_span_rank": 239,
+    "sampled_rank_threshold": 0.0002068128524115309,
+    "logical_elements_read": 2867200.0,
+    "logical_full_pass_equivalents": 4.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.24477329999717767,
+    "tuning_before": {
+      "accuracy": 0.8403333333333334,
+      "cross_entropy": 0.5393413232167562,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8396666666666667,
+      "cross_entropy": 0.4930262139638265,
+      "n": 3000
+    },
+    "checkpoint_sha256": "3e3b87c651fc22fe82ed65aca9ae47e958c824a00dcd5623d102dc624309444d",
+    "parameters": 69632,
+    "total_seconds": 26.484786900000472,
+    "rss_bytes": 1760428032,
+    "gpu_peak_allocated_bytes": 245396480,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 101,
+    "method": "leverage",
+    "status": "completed",
+    "relative_tensor_error": 0.7497709393501282,
+    "unique_columns": 239,
+    "preparation_full_passes": 2.0,
+    "sampled_span_rank": 239,
+    "sampled_rank_threshold": 0.00020452230819500983,
+    "logical_elements_read": 3457024.0,
+    "logical_full_pass_equivalents": 5.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.2154450000016368,
+    "tuning_before": {
+      "accuracy": 0.841,
+      "cross_entropy": 0.5422177098592122,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.84,
+      "cross_entropy": 0.49275935427347817,
+      "n": 3000
+    },
+    "checkpoint_sha256": "2185ee84d79bc7642c89c6ed004b41d74c331da0aa747dd7a22bf309a7eee8d0",
+    "parameters": 69632,
+    "total_seconds": 28.03869400000258,
+    "rss_bytes": 1766699008,
+    "gpu_peak_allocated_bytes": 245396480,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 101,
+    "method": "contraction",
+    "status": "completed",
+    "relative_tensor_error": 0.7487791776657104,
+    "unique_columns": 245,
+    "preparation_full_passes": 6.0,
+    "sampled_span_rank": 245,
+    "sampled_rank_threshold": 0.000198571098735556,
+    "logical_elements_read": 5816320.0,
+    "logical_full_pass_equivalents": 9.86111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.2893030999985058,
+    "tuning_before": {
+      "accuracy": 0.8403333333333334,
+      "cross_entropy": 0.5412757562001547,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8393333333333334,
+      "cross_entropy": 0.49432222684224447,
+      "n": 3000
+    },
+    "checkpoint_sha256": "06645ef11350f981cfb0139615b342d5172032dad8b81a8051e16b3c98595886",
+    "parameters": 69632,
+    "total_seconds": 27.2654306000004,
+    "rss_bytes": 1780170752,
+    "gpu_peak_allocated_bytes": 245402624,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 202,
+    "method": "uniform",
+    "status": "completed",
+    "relative_tensor_error": 0.7494064569473267,
+    "unique_columns": 238,
+    "preparation_full_passes": 0.0,
+    "sampled_span_rank": 238,
+    "sampled_rank_threshold": 0.00022070780687499791,
+    "logical_elements_read": 2277376.0,
+    "logical_full_pass_equivalents": 3.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.18498670000190032,
+    "tuning_before": {
+      "accuracy": 0.8433333333333334,
+      "cross_entropy": 0.5128210213979085,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.84,
+      "cross_entropy": 0.4741995360056559,
+      "n": 3000
+    },
+    "checkpoint_sha256": "38103edf70bf950aa94a867f953eb76cd16b0b252d042c653dc64c78c3b48c72",
+    "parameters": 69632,
+    "total_seconds": 27.644875500001945,
+    "rss_bytes": 1780178944,
+    "gpu_peak_allocated_bytes": 245788672,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 202,
+    "method": "column_norm",
+    "status": "completed",
+    "relative_tensor_error": 0.7496176362037659,
+    "unique_columns": 236,
+    "preparation_full_passes": 1.0,
+    "sampled_span_rank": 236,
+    "sampled_rank_threshold": 0.00019461248302832246,
+    "logical_elements_read": 2867200.0,
+    "logical_full_pass_equivalents": 4.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.251061099999788,
+    "tuning_before": {
+      "accuracy": 0.8426666666666667,
+      "cross_entropy": 0.5117005418141682,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8406666666666667,
+      "cross_entropy": 0.47348419698079425,
+      "n": 3000
+    },
+    "checkpoint_sha256": "b0a90cbfa4990d07bb5bf49005e020fa64cd4abbec142b19164b364e2aba9199",
+    "parameters": 69632,
+    "total_seconds": 22.369515500002308,
+    "rss_bytes": 1780195328,
+    "gpu_peak_allocated_bytes": 245786624,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 202,
+    "method": "leverage",
+    "status": "completed",
+    "relative_tensor_error": 0.7487481832504272,
+    "unique_columns": 241,
+    "preparation_full_passes": 2.0,
+    "sampled_span_rank": 241,
+    "sampled_rank_threshold": 0.0002059629186987877,
+    "logical_elements_read": 3457024.0,
+    "logical_full_pass_equivalents": 5.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.2524984999981825,
+    "tuning_before": {
+      "accuracy": 0.8436666666666667,
+      "cross_entropy": 0.5112616736094157,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.842,
+      "cross_entropy": 0.4746211140950521,
+      "n": 3000
+    },
+    "checkpoint_sha256": "c8cca6e96b54ebd3d9ed16fd4e730a81c4a53e4c607679e739c01b26c6ee7e40",
+    "parameters": 69632,
+    "total_seconds": 22.786099600001762,
+    "rss_bytes": 1780195328,
+    "gpu_peak_allocated_bytes": 245791744,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 202,
+    "method": "contraction",
+    "status": "completed",
+    "relative_tensor_error": 0.749532163143158,
+    "unique_columns": 238,
+    "preparation_full_passes": 6.0,
+    "sampled_span_rank": 238,
+    "sampled_rank_threshold": 0.0002072734641842544,
+    "logical_elements_read": 5816320.0,
+    "logical_full_pass_equivalents": 9.86111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.2661633999996411,
+    "tuning_before": {
+      "accuracy": 0.843,
+      "cross_entropy": 0.5112659149169921,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.843,
+      "cross_entropy": 0.47323157501220703,
+      "n": 3000
+    },
+    "checkpoint_sha256": "53915407f36c6dbcab1f9878ec7b215d6f6eb1450dfa3c2bfaf3896f77df4e43",
+    "parameters": 69632,
+    "total_seconds": 22.317312999999558,
+    "rss_bytes": 1779281920,
+    "gpu_peak_allocated_bytes": 245788672,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 303,
+    "method": "uniform",
+    "status": "completed",
+    "relative_tensor_error": 0.7516143918037415,
+    "unique_columns": 242,
+    "preparation_full_passes": 0.0,
+    "sampled_span_rank": 242,
+    "sampled_rank_threshold": 0.00021363065752666444,
+    "logical_elements_read": 2277376.0,
+    "logical_full_pass_equivalents": 3.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.18357230000037816,
+    "tuning_before": {
+      "accuracy": 0.848,
+      "cross_entropy": 0.5214037437438965,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.844,
+      "cross_entropy": 0.488273021697998,
+      "n": 3000
+    },
+    "checkpoint_sha256": "e0285fa3168e322c3f76bc56c5230f747828d0cd8f0d008cb48c7d8710618832",
+    "parameters": 69632,
+    "total_seconds": 22.58329109999977,
+    "rss_bytes": 1780273152,
+    "gpu_peak_allocated_bytes": 245792768,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 303,
+    "method": "column_norm",
+    "status": "completed",
+    "relative_tensor_error": 0.7523800730705261,
+    "unique_columns": 239,
+    "preparation_full_passes": 1.0,
+    "sampled_span_rank": 239,
+    "sampled_rank_threshold": 0.00019905167573597282,
+    "logical_elements_read": 2867200.0,
+    "logical_full_pass_equivalents": 4.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.18641369999750168,
+    "tuning_before": {
+      "accuracy": 0.848,
+      "cross_entropy": 0.5237513427734375,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8453333333333334,
+      "cross_entropy": 0.48898857498168946,
+      "n": 3000
+    },
+    "checkpoint_sha256": "788430b453b9a9533d9c19baeecce0e2b34c7345da851bd2f562d20a14d6650b",
+    "parameters": 69632,
+    "total_seconds": 22.877709000000323,
+    "rss_bytes": 1779675136,
+    "gpu_peak_allocated_bytes": 245789696,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 303,
+    "method": "leverage",
+    "status": "completed",
+    "relative_tensor_error": 0.7522217631340027,
+    "unique_columns": 240,
+    "preparation_full_passes": 2.0,
+    "sampled_span_rank": 240,
+    "sampled_rank_threshold": 0.00019881634216289967,
+    "logical_elements_read": 3457024.0,
+    "logical_full_pass_equivalents": 5.861111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.21149520000108168,
+    "tuning_before": {
+      "accuracy": 0.846,
+      "cross_entropy": 0.5225143299102784,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8443333333333334,
+      "cross_entropy": 0.4877600701649984,
+      "n": 3000
+    },
+    "checkpoint_sha256": "59243222de2706bb33c44a4cebbd3b2aa17bde2a24ff2e7324af85f506641207",
+    "parameters": 69632,
+    "total_seconds": 22.33848229999785,
+    "rss_bytes": 1780613120,
+    "gpu_peak_allocated_bytes": 245790720,
+    "gpu_peak_reserved_bytes": 274726912
+  },
+  {
+    "seed": 303,
+    "method": "contraction",
+    "status": "completed",
+    "relative_tensor_error": 0.7506929039955139,
+    "unique_columns": 246,
+    "preparation_full_passes": 6.0,
+    "sampled_span_rank": 246,
+    "sampled_rank_threshold": 0.00020415059407241642,
+    "logical_elements_read": 5816320.0,
+    "logical_full_pass_equivalents": 9.86111111111111,
+    "passes_scope": "explicit tensor contractions/projections/sampling/reference residual; excludes opaque QR/SVD internal rereads",
+    "factor_seconds": 0.28164429999742424,
+    "tuning_before": {
+      "accuracy": 0.848,
+      "cross_entropy": 0.5226550114949544,
+      "n": 3000
+    },
+    "tuning_after": {
+      "accuracy": 0.8426666666666667,
+      "cross_entropy": 0.48849000231424966,
+      "n": 3000
+    },
+    "checkpoint_sha256": "aeb8113e6aba881745192e01499646f41946c51d9364c11c356a359ccd6b45a5",
+    "parameters": 69632,
+    "total_seconds": 22.81063770000037,
+    "rss_bytes": 1780813824,
+    "gpu_peak_allocated_bytes": 245796864,
+    "gpu_peak_reserved_bytes": 274726912
+  }
+]

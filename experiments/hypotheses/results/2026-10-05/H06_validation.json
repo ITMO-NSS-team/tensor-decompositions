@@ -1,0 +1,18 @@
+{
+  "independent_test_command": "python -m pytest tests/test_h06_real_feasibility.py -q",
+  "result": "11 passed in 2.68s",
+  "checks": [
+    "actual protocol grids and unique full-rank reserves",
+    "independently tuple-indexed original unfoldings",
+    "maximum versus sum of modal tails and necessary-only status",
+    "analytic diagonal spectrum and best rank-one residual",
+    "scale invariance, zero relative error and full-rank semantics",
+    "values-only wide SVD; CUDA calls prohibited by mocks",
+    "completed baseline metadata and checkpoint hash guard",
+    "invalid rank contract rejection"
+  ],
+  "execution_device": "cpu",
+  "gpu_run": false,
+  "final_test_opened": false,
+  "neural_experiment_completed": false
+}

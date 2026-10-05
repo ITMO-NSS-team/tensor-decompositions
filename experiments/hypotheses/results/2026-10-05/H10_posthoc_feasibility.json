@@ -1,0 +1,209 @@
+[
+  {
+    "seed": 101,
+    "posthoc": true,
+    "new_primary_pi": false,
+    "scenarios": {
+      "calibration": {
+        "all12_layers_jointly_feasible": true,
+        "infeasible_layers": [],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 2160,
+          "2": 2160,
+          "3": 1800,
+          "4": 1152,
+          "5": 1800,
+          "6": 1800,
+          "7": 2160,
+          "8": 2160,
+          "9": 1080,
+          "10": 1800,
+          "11": 2520
+        },
+        "number_of_all_layer_assignments": 1031678292030089003532288000000000000000,
+        "future_oracle_only": false
+      },
+      "calibration_and_tuning": {
+        "all12_layers_jointly_feasible": true,
+        "infeasible_layers": [],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 1800,
+          "2": 1440,
+          "3": 1800,
+          "4": 864,
+          "5": 1800,
+          "6": 1800,
+          "7": 2160,
+          "8": 1800,
+          "9": 1080,
+          "10": 1440,
+          "11": 1800
+        },
+        "number_of_all_layer_assignments": 204698073815493849907200000000000000000,
+        "future_oracle_only": false
+      },
+      "calibration_and_tuning_and_future_posthoc_oracle": {
+        "all12_layers_jointly_feasible": false,
+        "infeasible_layers": [
+          4
+        ],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 1080,
+          "2": 1440,
+          "3": 1440,
+          "4": 0,
+          "5": 1800,
+          "6": 1800,
+          "7": 2160,
+          "8": 1440,
+          "9": 1080,
+          "10": 1440,
+          "11": 1440
+        },
+        "number_of_all_layer_assignments": 0,
+        "future_oracle_only": true
+      }
+    }
+  },
+  {
+    "seed": 202,
+    "posthoc": true,
+    "new_primary_pi": false,
+    "scenarios": {
+      "calibration": {
+        "all12_layers_jointly_feasible": true,
+        "infeasible_layers": [],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 2160,
+          "2": 2160,
+          "3": 1800,
+          "4": 1152,
+          "5": 1800,
+          "6": 1800,
+          "7": 2520,
+          "8": 2160,
+          "9": 1080,
+          "10": 2160,
+          "11": 2520
+        },
+        "number_of_all_layer_assignments": 1444349608842124604945203200000000000000,
+        "future_oracle_only": false
+      },
+      "calibration_and_tuning": {
+        "all12_layers_jointly_feasible": true,
+        "infeasible_layers": [],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 1800,
+          "2": 1440,
+          "3": 1800,
+          "4": 864,
+          "5": 1800,
+          "6": 1800,
+          "7": 2160,
+          "8": 2160,
+          "9": 1080,
+          "10": 1800,
+          "11": 2160
+        },
+        "number_of_all_layer_assignments": 368456532867888929832960000000000000000,
+        "future_oracle_only": false
+      },
+      "calibration_and_tuning_and_future_posthoc_oracle": {
+        "all12_layers_jointly_feasible": false,
+        "infeasible_layers": [
+          4
+        ],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 1080,
+          "2": 1440,
+          "3": 1440,
+          "4": 0,
+          "5": 1800,
+          "6": 1800,
+          "7": 2160,
+          "8": 1800,
+          "9": 720,
+          "10": 1440,
+          "11": 1800
+        },
+        "number_of_all_layer_assignments": 0,
+        "future_oracle_only": true
+      }
+    }
+  },
+  {
+    "seed": 303,
+    "posthoc": true,
+    "new_primary_pi": false,
+    "scenarios": {
+      "calibration": {
+        "all12_layers_jointly_feasible": true,
+        "infeasible_layers": [],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 2160,
+          "2": 2160,
+          "3": 1800,
+          "4": 1152,
+          "5": 1800,
+          "6": 2160,
+          "7": 2160,
+          "8": 2160,
+          "9": 1080,
+          "10": 1800,
+          "11": 2520
+        },
+        "number_of_all_layer_assignments": 1238013950436106804238745600000000000000,
+        "future_oracle_only": false
+      },
+      "calibration_and_tuning": {
+        "all12_layers_jointly_feasible": true,
+        "infeasible_layers": [],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 1800,
+          "2": 1440,
+          "3": 1800,
+          "4": 864,
+          "5": 1800,
+          "6": 2160,
+          "7": 2160,
+          "8": 2160,
+          "9": 1080,
+          "10": 1440,
+          "11": 2520
+        },
+        "number_of_all_layer_assignments": 412671316812035601412915200000000000000,
+        "future_oracle_only": false
+      },
+      "calibration_and_tuning_and_future_posthoc_oracle": {
+        "all12_layers_jointly_feasible": false,
+        "infeasible_layers": [
+          4
+        ],
+        "feasible_assignments_by_layer": {
+          "0": 1440,
+          "1": 1080,
+          "2": 1440,
+          "3": 1440,
+          "4": 0,
+          "5": 1800,
+          "6": 2160,
+          "7": 2160,
+          "8": 2160,
+          "9": 1080,
+          "10": 1440,
+          "11": 1800
+        },
+        "number_of_all_layer_assignments": 0,
+        "future_oracle_only": true
+      }
+    }
+  }
+]
